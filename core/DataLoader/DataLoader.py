@@ -13,10 +13,10 @@ class DataLoader(ABC):
         加载轴承目录，确定各个轴承数据的位置
         """
         self.root_dir = root_dir  # 此轴承数据集根目录
-        self.bearing_dict = {}  # 单个轴承数据文件夹位置字典
+        self.item_dict = {}  # 单个数据文件夹位置字典
         pass
 
     @abstractmethod
-    def load_bearing(self, bearing_name) -> Bearing:
+    def load_data(self, item_name):
         pass
 
