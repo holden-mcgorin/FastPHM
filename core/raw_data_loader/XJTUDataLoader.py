@@ -3,8 +3,8 @@ import re
 
 import pandas as pd
 
-from core.Bearing.Bearing import Bearing
-from core.DataLoader.DataLoader import DataLoader
+from core.entity.Bearing import Bearing
+from core.rawdata_loader.DataLoader import DataLoader
 
 
 class XJTUDataLoader(DataLoader):
@@ -14,6 +14,7 @@ class XJTUDataLoader(DataLoader):
             condition_dir = os.path.join(root_dir, condition)
             for bearing_name in os.listdir(condition_dir):
                 self.item_dict[bearing_name] = os.path.join(root_dir, condition, bearing_name)
+        print('成功登记以下轴承数据：')
         for key, value in self.item_dict.items():
             print(f"轴承: {key}，位置: {value}")
 
@@ -22,7 +23,7 @@ class XJTUDataLoader(DataLoader):
         match = re.search(r'\d+', file_name)
         return int(match.group()) if match else 0
 
-    def load_data(self, item_name):
+    def load_raw_data(self, item_name):
         """
         加载轴承的原始振动信号，返回包含raw_data的Bearing对象
         :param item_name:
@@ -30,6 +31,7 @@ class XJTUDataLoader(DataLoader):
         """
         bearing_raw_data = pd.DataFrame()
         bearing_dir = self.item_dict[item_name]
+
         files = sorted(os.listdir(bearing_dir), key=self.__extract_number)
         for file_name in files:
             if file_name.endswith('.csv'):
@@ -46,7 +48,7 @@ class XJTUDataLoader(DataLoader):
 
 if __name__ == '__main__':
     bearing = Bearing('Bearing1_1')
-    data_loader = XJTUDataLoader('D://data//dataset//XJTU-SY_Bearing_Datasets')
-    bearing.raw_data = data_loader.load_data(bearing.name)
+    data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
+    bearing.raw_data = data_loader.load_raw_data(bearing.name)
     print(bearing.raw_data)
     bearing.raw_data_figure()

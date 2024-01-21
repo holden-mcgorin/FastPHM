@@ -40,3 +40,6 @@ class Bearing:
         if is_save:
             plt.savefig(self.name + '.png', dpi=300)
         plt.show()
+
+    def feature_data_figure(self):
+        pass

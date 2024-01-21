@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from core.Bearing import Bearing
+from core.entity import Bearing
 
 
 class DataLoader(ABC):
@@ -17,6 +17,6 @@ class DataLoader(ABC):
         pass
 
     @abstractmethod
-    def load_data(self, item_name):
+    def load_raw_data(self, item_name):
         pass
 
