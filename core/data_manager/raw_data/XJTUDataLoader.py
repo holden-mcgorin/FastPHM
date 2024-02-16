@@ -3,11 +3,11 @@ import re
 
 import pandas as pd
 
-from core.data_manager.raw_data.ABCRawDataLoader import ABCRawDataLoader
+from core.data_manager.raw_data.ABCDataLoader import ABCDataLoader
 from core.entity.Bearing import Bearing
 
 
-class XJTUDataLoader(ABCRawDataLoader):
+class XJTUDataLoader(ABCDataLoader):
     def __init__(self, root_dir):
         super().__init__(root_dir)
         for condition in ['35Hz12kN', '37.5Hz11kN', '40Hz10kN']:

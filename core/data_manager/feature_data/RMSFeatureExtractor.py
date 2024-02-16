@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 
-from core.data_manager.feature_data.ABCFeatureGenerator import ABCFeatureGenerator
+from core.data_manager.feature_data.ABCFeatureExtractor import ABCFeatureExtractor
 
 
-class RMSFeatureGenerator(ABCFeatureGenerator):
+class RMSFeatureExtractor(ABCFeatureExtractor):
     def __init__(self, span):
         self.span = span
 
-    def extract_feature(self, raw_data):
+    def extract(self, raw_data) -> DataFrame:
         feature_values = pd.DataFrame()
         for i in range(0, len(raw_data) - self.span + 1, self.span):
             window = raw_data[i:i + self.span]

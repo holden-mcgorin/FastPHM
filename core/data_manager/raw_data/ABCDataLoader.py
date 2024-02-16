@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from core.entity import Bearing
 
 
-class ABCRawDataLoader(ABC):
+class ABCDataLoader(ABC):
     """
     所有数据读取器的抽象基类
     """
