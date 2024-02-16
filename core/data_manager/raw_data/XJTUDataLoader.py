@@ -3,11 +3,11 @@ import re
 
 import pandas as pd
 
+from core.data_manager.raw_data.RawDataLoader import RawDataLoader
 from core.entity.Bearing import Bearing
-from core.rawdata_loader.DataLoader import DataLoader
 
 
-class XJTUDataLoader(DataLoader):
+class XJTUDataLoader(RawDataLoader):
     def __init__(self, root_dir):
         super().__init__(root_dir)
         for condition in ['35Hz12kN', '37.5Hz11kN', '40Hz10kN']:
@@ -22,6 +22,9 @@ class XJTUDataLoader(DataLoader):
     def __extract_number(self, file_name):
         match = re.search(r'\d+', file_name)
         return int(match.group()) if match else 0
+
+    def get_all_bearings_name(self):
+        return self.item_dict.keys()
 
     def load_raw_data(self, item_name):
         """
@@ -44,11 +47,3 @@ class XJTUDataLoader(DataLoader):
                                          'Vertical_vibration_signals': 'Vertical Vibration'},
                                 inplace=True)
         return bearing_raw_data
-
-
-if __name__ == '__main__':
-    bearing = Bearing('Bearing1_1')
-    data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
-    bearing.raw_data = data_loader.load_raw_data(bearing.name)
-    print(bearing.raw_data)
-    bearing.raw_data_figure()
