@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from core.data_manager.feature_data.FeatureGenerator import FeatureGenerator
+from core.data_manager.feature_data.ABCFeatureGenerator import ABCFeatureGenerator
 
 
-class RMSFeatureGenerator(FeatureGenerator):
+class RMSFeatureGenerator(ABCFeatureGenerator):
     def __init__(self, span):
         self.span = span
 
@@ -15,5 +15,5 @@ class RMSFeatureGenerator(FeatureGenerator):
             rms = np.sqrt(np.mean(window ** 2))
             feature_values = feature_values.append(rms.to_frame().T, ignore_index=True)
         return feature_values
-        pass
+
 

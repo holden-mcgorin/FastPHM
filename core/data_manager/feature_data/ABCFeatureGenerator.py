@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class FeatureGenerator(ABC):
+class ABCFeatureGenerator(ABC):
     """
     所有特征提取器的基类
     """

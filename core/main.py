@@ -1,4 +1,4 @@
-from core.data_manager.feature_data import RMSFeatureGenerator
+from core.data_manager.feature_data.RMSFeatureGenerator import RMSFeatureGenerator
 from core.data_manager.raw_data.XJTUDataLoader import XJTUDataLoader
 from core.entity.Bearing import Bearing
 
