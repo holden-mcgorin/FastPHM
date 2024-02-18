@@ -6,7 +6,10 @@ from core.data_manager.feature_data.ABCFeatureExtractor import ABCFeatureExtract
 
 
 class RMSFeatureExtractor(ABCFeatureExtractor):
-    def __init__(self, span):
+    def __init__(self, span: int):
+        """
+        :param span:用于计算RMS的区间大小
+        """
         self.span = span
 
     def extract(self, raw_data) -> DataFrame:
@@ -16,5 +19,3 @@ class RMSFeatureExtractor(ABCFeatureExtractor):
             rms = np.sqrt(np.mean(window ** 2))
             feature_values = feature_values.append(rms.to_frame().T, ignore_index=True)
         return feature_values
-
-

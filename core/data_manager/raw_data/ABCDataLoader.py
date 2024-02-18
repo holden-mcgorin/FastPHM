@@ -17,6 +17,6 @@ class ABCDataLoader(ABC):
         pass
 
     @abstractmethod
-    def load_raw_data(self, item_name):
+    def load_data(self, item_name):
         pass
 
