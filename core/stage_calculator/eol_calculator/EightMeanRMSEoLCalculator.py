@@ -3,19 +3,20 @@ from pandas import DataFrame
 from core.stage_calculator.eol_calculator.ABCEoLCalculator import ABCEoLCalculator
 
 
-class TenAmplitudeEoLCalculator(ABCEoLCalculator):
+class EightMeanRMSEoLCalculator(ABCEoLCalculator):
     def get_eol(self, raw_data: DataFrame, feature_data: DataFrame, scale, fpt_raw, fpt_feature):
         # todo 这里只取第一列做计算fpt，多列情况不适应
         raw_data = raw_data.iloc[:, 0]
         feature_data = feature_data.iloc[:, 0]
         eol_raw, eol_feature, failure_threshold_raw, failure_threshold_feature = 0, 0, 0, 0
-        normal_stage_raw = raw_data[:fpt_raw]
-        failure_threshold_raw = 10 * normal_stage_raw.abs().max()
+        normal_stage_feature = feature_data[:fpt_feature]
+        failure_threshold_feature = 8 * normal_stage_feature.abs().mean()
+        print(normal_stage_feature.abs().mean())
 
-        for i in range(fpt_raw, len(raw_data)):
-            if abs(raw_data[i]) > failure_threshold_raw:
-                eol_raw = i
+        for i in range(fpt_feature, len(feature_data)):
+            if abs(feature_data[i]) > failure_threshold_feature:
+                eol_feature = i
                 break
-        eol_feature = eol_raw // scale
-        failure_threshold_feature = feature_data[eol_feature]
+        eol_raw = eol_raw * scale
+        failure_threshold_raw = raw_data[eol_raw]
         return eol_raw, eol_feature, failure_threshold_raw, failure_threshold_feature
