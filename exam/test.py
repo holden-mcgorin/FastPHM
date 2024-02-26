@@ -9,10 +9,15 @@ from core.stage_calculator.fpt_calculator.ThreeSigmaFPTCalculator import ThreeSi
 
 if __name__ == '__main__':
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
+    feature_extractor = RMSFeatureExtractor(32768)
+    fpt_calculator = ThreeSigmaFPTCalculator()
+    eol_calculator = NinetyFivePercentRMSEoLCalculator()
+    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator)
+
     for bearing_name in data_loader.get_bearings_name():
         bearing = data_loader.get_bearing(bearing_name, column='Horizontal Vibration')
-        bearing.feature_data = RMSFeatureExtractor(32768).extract(bearing.raw_data)
-        BearingStageCalculator(ThreeSigmaFPTCalculator(), NinetyFivePercentRMSEoLCalculator()).calculate_state(bearing, 32768)
+        bearing.feature_data = feature_extractor.extract(bearing.raw_data)
+        stage_calculator.calculate_state(bearing, 32768)
         bearing.plot_feature()
 
     # print(bearing.stage_data)
