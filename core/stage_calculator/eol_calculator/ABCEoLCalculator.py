@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
 
+from pandas import DataFrame
+
 
 class ABCEoLCalculator(ABC):
 
     @abstractmethod
-    def get_eol(self, raw_data, feature_data, scale, fpt_raw, fpt_feature) -> (int, int, int, int):
+    def get_eol(self, raw_data: DataFrame, feature_data: DataFrame, scale: int, fpt_raw: int, fpt_feature: int) -> (
+            int, int, int, int):
         """
         :param raw_data:
         :param feature_data:
