@@ -12,9 +12,9 @@ class BearingStageCalculator:
 
     def calculate_state(self, bearing: Bearing):
         fpt_raw, fpt_feature = self.fpt_calculator.get_fpt(bearing.raw_data, bearing.feature_data, self.scale)
+
         eol_raw, eol_feature, failure_threshold_raw, failure_threshold_feature = self.eol_calculator.get_eol(
-            bearing.raw_data, bearing.feature_data, self.scale, fpt_raw,
-            fpt_feature)
-        bearing_stage = BearingStage(fpt_raw, fpt_feature, eol_raw, eol_feature, failure_threshold_raw,
-                                     failure_threshold_feature)
-        bearing.stage_data = bearing_stage
+            bearing.raw_data, bearing.feature_data, self.scale, fpt_raw, fpt_feature)
+
+        bearing.stage_data = BearingStage(fpt_raw, fpt_feature, eol_raw, eol_feature, failure_threshold_raw,
+                                          failure_threshold_feature)

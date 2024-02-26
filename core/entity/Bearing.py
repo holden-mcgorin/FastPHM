@@ -32,6 +32,10 @@ class Bearing:
 
     # 常量，生成的图片大小
     FIG_SIZE = (10, 6)
+    COLOR_NORMAL_STAGE = 'green'
+    COLOR_DEGENERATION_STAGE = 'orange'
+    COLOR_FAILURE_STAGE = 'red'
+    COLOR_FAILURE_THRESHOLD = 'darkred'
 
     def __init__(self, name: str,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: DataFrame = None,
@@ -63,13 +67,13 @@ class Bearing:
                 plt.plot(self.raw_data[key], label=key)
         else:
             plt.plot(np.arange(self.stage_data.fpt_raw + 1), self.raw_data[:self.stage_data.fpt_raw + 1],
-                     label='normal stage', color='green')
+                     label='normal stage', color=self.COLOR_NORMAL_STAGE)
             plt.plot(np.arange(self.stage_data.eol_raw - self.stage_data.fpt_raw + 1) + self.stage_data.fpt_raw,
                      self.raw_data[self.stage_data.fpt_raw:self.stage_data.eol_raw + 1],
-                     label='degeneration stage', color='orange')
+                     label='degeneration stage', color=self.COLOR_DEGENERATION_STAGE)
             plt.plot(np.arange(len(self.raw_data) - self.stage_data.eol_raw) + self.stage_data.eol_raw,
                      self.raw_data[self.stage_data.eol_raw:],
-                     label='failure stage', color='red')
+                     label='failure stage', color=self.COLOR_FAILURE_STAGE)
 
         plt.title(self.name + ' Vibration Signals')
         plt.xlabel('Time (Sample Index)')
@@ -88,16 +92,18 @@ class Bearing:
             plt.legend()
         else:
             plt.plot(np.arange(self.stage_data.fpt_feature + 1), self.feature_data[:self.stage_data.fpt_feature + 1],
-                     label='normal stage', color='green')
+                     label='normal stage', color=self.COLOR_NORMAL_STAGE)
             plt.plot(
                 np.arange(self.stage_data.eol_feature - self.stage_data.fpt_feature + 1) + self.stage_data.fpt_feature,
                 self.feature_data[self.stage_data.fpt_feature:self.stage_data.eol_feature + 1],
                 label='degeneration stage',
-                color='orange')
+                color=self.COLOR_DEGENERATION_STAGE)
             plt.plot(np.arange(len(self.feature_data[self.stage_data.eol_feature:])) + self.stage_data.eol_feature,
-                     self.feature_data[self.stage_data.eol_feature:], label='failure stage', color='red')
+                     self.feature_data[self.stage_data.eol_feature:],
+                     label='failure stage',
+                     color=self.COLOR_FAILURE_STAGE)
             # 画失效阈值
-            plt.axhline(y=self.stage_data.failure_threshold_feature, color='red', linestyle='-',
+            plt.axhline(y=self.stage_data.failure_threshold_feature, color=self.COLOR_FAILURE_THRESHOLD, linestyle='-',
                         label='failure threshold')
             # 绘制垂直线表示中间点
             plt.axvline(x=self.stage_data.fpt_feature, color='skyblue', linestyle='--')
@@ -105,10 +111,10 @@ class Bearing:
 
             # 添加标注
             # todo 这里默认特征值为一维的数据
-            plt.text(self.stage_data.fpt_feature + 2, self.feature_data.iloc[self.stage_data.fpt_feature, 0] + 0.5, 'FPT',
-                     color='black', fontsize=12)
-            plt.text(self.stage_data.eol_feature - 9, self.feature_data.iloc[self.stage_data.eol_feature, 0] - 0.5, 'EoL',
-                     color='black', fontsize=12)
+            plt.text(self.stage_data.fpt_feature + 2, self.feature_data.iloc[self.stage_data.fpt_feature, 0] + 0.5,
+                     'FPT', color='black', fontsize=12)
+            plt.text(self.stage_data.eol_feature - 9, self.feature_data.iloc[self.stage_data.eol_feature, 0] - 0.5,
+                     'EoL', color='black', fontsize=12)
 
             legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
             plt.gca().add_artist(legend)
