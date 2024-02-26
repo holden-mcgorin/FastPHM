@@ -5,14 +5,15 @@ from core.stage_calculator.fpt_calculator.ABCFPTCalculator import ABCFPTCalculat
 
 class BearingStageCalculator:
 
-    def __init__(self, fpt_calculator: ABCFPTCalculator, eol_calculator: ABCEoLCalculator) -> None:
+    def __init__(self, fpt_calculator: ABCFPTCalculator, eol_calculator: ABCEoLCalculator, scale: int) -> None:
         self.fpt_calculator = fpt_calculator
         self.eol_calculator = eol_calculator
+        self.scale = scale
 
-    def calculate_state(self, bearing: Bearing, scale: int):
-        fpt_raw, fpt_feature = self.fpt_calculator.get_fpt(bearing.raw_data, bearing.feature_data, scale)
+    def calculate_state(self, bearing: Bearing):
+        fpt_raw, fpt_feature = self.fpt_calculator.get_fpt(bearing.raw_data, bearing.feature_data, self.scale)
         eol_raw, eol_feature, failure_threshold_raw, failure_threshold_feature = self.eol_calculator.get_eol(
-            bearing.raw_data, bearing.feature_data, scale, fpt_raw,
+            bearing.raw_data, bearing.feature_data, self.scale, fpt_raw,
             fpt_feature)
         bearing_stage = BearingStage(fpt_raw, fpt_feature, eol_raw, eol_feature, failure_threshold_raw,
                                      failure_threshold_feature)

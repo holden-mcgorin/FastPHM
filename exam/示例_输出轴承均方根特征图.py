@@ -12,12 +12,12 @@ if __name__ == '__main__':
     feature_extractor = RMSFeatureExtractor(32768)
     fpt_calculator = ThreeSigmaFPTCalculator()
     eol_calculator = NinetyFivePercentRMSEoLCalculator()
-    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator)
+    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
 
     for bearing_name in data_loader.get_bearings_name():
         bearing = data_loader.get_bearing(bearing_name, column='Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
-        stage_calculator.calculate_state(bearing, 32768)
+        stage_calculator.calculate_state(bearing)
         bearing.plot_feature()
 
     # print(bearing.stage_data)

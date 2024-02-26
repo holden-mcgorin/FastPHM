@@ -8,10 +8,17 @@ from core.data_manager.train_data.ABCDataGenerator import ABCDataGenerator
 
 
 class SlideWindowDataGenerator(ABCDataGenerator):
-
-    def __init__(self, window_size: int, step: int = 1, temp_dir: str = './temp'):
+    """
+    利用硬盘空间分段缓存生成滑动窗口训练数据
+    """
+    def __init__(self, window_size: int, window_step: int = 1, temp_dir: str = './temp'):
+        """
+        @param window_size: 滑动窗口大小
+        @param window_step: 滑动窗口每次滑动的步长
+        @param temp_dir: 临时缓存数据的存储文件夹位置（最后会自动删除）
+        """
         self.window_size = window_size
-        self.step = step
+        self.window_step = window_step
         self.temp_dir = temp_dir
 
     def generate_data(self, source_data: DataFrame) -> DataFrame:
@@ -25,7 +32,7 @@ class SlideWindowDataGenerator(ABCDataGenerator):
         temp_file_list = []
         for i in range(len(index_list) - 1):
             partial_window_data = self.__create_partial_window_data(source_data, index_list[i], index_list[i + 1])
-            partial_window_data = partial_window_data[::self.step]  # 取步长
+            partial_window_data = partial_window_data[::self.window_step]  # 取步长
             temp_filename = str(index_list[i]) + '_' + str(index_list[i + 1]) + '.csv'
             self.__save_temp(partial_window_data, temp_filename)
             temp_file_list.append(temp_filename)
