@@ -7,7 +7,28 @@ from matplotlib import pyplot as plt
 from pandas import DataFrame
 
 
+class PredictHistory:
+    """
+    轴承预测数据
+    """
+
+    def __init__(self, begin_index: int, prediction: list) -> None:
+        """
+        :param begin_index: 开始预测时的下标
+        :param prediction: 预测结果列表
+        """
+        self.begin_index = begin_index
+        self.prediction = prediction
+
+    def __str__(self) -> str:
+        return f"begin_index = {self.begin_index}\nprediction = {self.prediction}"
+
+
 class BearingStage:
+    """
+    轴承阶段数据
+    """
+
     def __init__(self, fpt_raw=None, fpt_feature=None,
                  eol_raw=None, eol_feature=None,
                  failure_threshold_raw=None, failure_threshold_feature=None):
@@ -39,14 +60,13 @@ class Bearing:
 
     def __init__(self, name: str,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: DataFrame = None,
-                 stage_data: BearingStage = None,
-                 raw_data_loc: str = None):
+                 stage_data: BearingStage = None, predict_history: PredictHistory = None):
         self.name = name
         self.raw_data = raw_data
         self.feature_data = feature_data
         self.train_data = train_data
         self.stage_data = stage_data
-        self.raw_data_loc = raw_data_loc
+        self.predict_history = predict_history
 
     def __str__(self) -> str:
         return self.name
@@ -84,12 +104,19 @@ class Bearing:
         plt.show()
 
     def plot_feature(self):
+        """
+        绘画轴承特征图
+        当轴承包含阶段数据时将绘画轴承的阶段特征图
+        当轴承包含预测数据时将绘画轴承的预期曲线
+        :return:
+        """
         plt.figure(figsize=self.FIG_SIZE)
 
+        # 当轴承包含阶段数据时将绘画轴承的阶段特征图
         if self.stage_data is None:
             for key in self.feature_data:
                 plt.plot(self.feature_data[key], label=key)
-            plt.legend()
+
         else:
             plt.plot(np.arange(self.stage_data.fpt_feature + 1), self.feature_data[:self.stage_data.fpt_feature + 1],
                      label='normal stage', color=self.COLOR_NORMAL_STAGE)
@@ -105,6 +132,7 @@ class Bearing:
             # 画失效阈值
             plt.axhline(y=self.stage_data.failure_threshold_feature, color=self.COLOR_FAILURE_THRESHOLD, linestyle='-',
                         label='failure threshold')
+
             # 绘制垂直线表示中间点
             plt.axvline(x=self.stage_data.fpt_feature, color='skyblue', linestyle='--')
             plt.axvline(x=self.stage_data.eol_feature, color='skyblue', linestyle='--')
@@ -113,12 +141,18 @@ class Bearing:
             # todo 这里默认特征值为一维的数据
             plt.text(self.stage_data.fpt_feature + 2, self.feature_data.iloc[self.stage_data.fpt_feature, 0] + 0.5,
                      'FPT', color='black', fontsize=12)
-            plt.text(self.stage_data.eol_feature - 9, self.feature_data.iloc[self.stage_data.eol_feature, 0] - 0.5,
+            plt.text(self.stage_data.eol_feature + 2, self.feature_data.iloc[self.stage_data.fpt_feature, 0] + 0.5,
                      'EoL', color='black', fontsize=12)
 
-            legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
-            plt.gca().add_artist(legend)
+        # 当轴承包含预测数据时将绘画轴承的预期曲线
+        if self.predict_history is not None:
+            plt.plot(np.arange(len(self.predict_history.prediction) + 1) + self.predict_history.begin_index - 1,
+                     [(float(self.feature_data.iloc[
+                                 self.predict_history.begin_index - 1, 0]))] + self.predict_history.prediction,
+                     label='prediction')
 
+        legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
+        plt.gca().add_artist(legend)
         plt.title(self.name + ' Vibration Signals')
         plt.xlabel('Time (Sample Index)')
         plt.ylabel('vibration')

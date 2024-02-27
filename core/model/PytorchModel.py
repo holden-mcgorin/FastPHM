@@ -4,8 +4,10 @@ from pandas import DataFrame
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 
+from core.predictor.ABCPredictable import ABCPredictable
 
-class PytorchModel:
+
+class PytorchModel(ABCPredictable):
     """
     剩余寿命预测模型
     对pytorch神经网络的封装
@@ -77,13 +79,13 @@ class PytorchModel:
         plt.legend()
         plt.show()
 
-    def predict(self, input_data):
+    def predict(self, input_data: list) -> list:
         """
         输出一次预测结果
         :param input_data: 输入数据
         :return: 一次预测结果
         """
-        input_data = input_data.to(self.device)
+        input_data = torch.tensor(input_data, dtype=torch.float64).to(self.device)
         with torch.no_grad():
-            output = self.model(input_data)
+            output = self.model(input_data).tolist()
         return output
