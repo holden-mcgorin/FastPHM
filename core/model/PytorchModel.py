@@ -89,3 +89,16 @@ class PytorchModel(ABCPredictable):
         with torch.no_grad():
             output = self.model(input_data).tolist()
         return output
+
+    def predict_keep_dropout(self, input_data: list) -> list:
+        """
+        输出一次预测结果(保持dropout层)
+        :param input_data: 输入数据
+        :return: 一次预测结果
+        """
+        self.model.train()
+        input_data = torch.tensor(input_data, dtype=torch.float64).to(self.device)
+        with torch.no_grad():
+            output = self.model(input_data).tolist()
+        self.model.eval()
+        return output

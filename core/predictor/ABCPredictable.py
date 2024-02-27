@@ -14,3 +14,6 @@ class ABCPredictable(ABC):
     @abstractmethod
     def predict(self, input_data: list):
         pass
+
+    def predict_keep_dropout(self, input_data: list) -> list:
+        pass

@@ -12,13 +12,20 @@ class PredictHistory:
     轴承预测数据
     """
 
-    def __init__(self, begin_index: int, prediction: list) -> None:
+    def __init__(self, begin_index: int, prediction: list = None,
+                 min_list: list = None, mean_list: list = None, max_list: list = None) -> None:
         """
         :param begin_index: 开始预测时的下标
-        :param prediction: 预测结果列表
+        :param prediction: 预测结果列表(确定性预测)
+        :param min_list: 最小值（不确定性预测）
+        :param mean_list: 平均值（不确定性预测）
+        :param max_list: 最大值（不确定性预测）
         """
         self.begin_index = begin_index
         self.prediction = prediction
+        self.min_list = min_list
+        self.mean_list = mean_list
+        self.max_list = max_list
 
     def __str__(self) -> str:
         return f"begin_index = {self.begin_index}\nprediction = {self.prediction}"
@@ -146,10 +153,23 @@ class Bearing:
 
         # 当轴承包含预测数据时将绘画轴承的预期曲线
         if self.predict_history is not None:
-            plt.plot(np.arange(len(self.predict_history.prediction) + 1) + self.predict_history.begin_index - 1,
-                     [(float(self.feature_data.iloc[
-                                 self.predict_history.begin_index - 1, 0]))] + self.predict_history.prediction,
-                     label='prediction')
+            # 确定性预测
+            if self.predict_history.prediction is not None:
+                plt.plot(np.arange(len(self.predict_history.prediction) + 1) + self.predict_history.begin_index - 1,
+                         [(float(self.feature_data.iloc[
+                                     self.predict_history.begin_index - 1, 0]))] + self.predict_history.prediction,
+                         label='prediction')
+            # 画置信区间（不确定性预测）
+            if self.predict_history.min_list is not None and self.predict_history.max_list is not None:
+                plt.fill_between(np.arange(len(self.predict_history.min_list)) + self.predict_history.begin_index,
+                                 self.predict_history.min_list, self.predict_history.max_list, alpha=0.25,
+                                 label='uncertainty')
+            # 画均值曲线（不确定性预测）
+            if self.predict_history.mean_list is not None:
+                plt.plot(np.arange(len(self.predict_history.mean_list)) + self.predict_history.begin_index,
+                         self.predict_history.mean_list,
+                         label='mean prediction')
+
 
         legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
         plt.gca().add_artist(legend)

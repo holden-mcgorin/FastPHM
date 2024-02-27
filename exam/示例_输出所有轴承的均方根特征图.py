@@ -17,4 +17,3 @@ if __name__ == '__main__':
         stage_calculator.calculate_state(bearing)
         bearing.plot_feature()
 
-    # print(bearing.stage_data)
