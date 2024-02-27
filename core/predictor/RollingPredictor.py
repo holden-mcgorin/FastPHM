@@ -33,7 +33,7 @@ class RollingPredictor(ABCPredictor):
         predict_history = []
         len_of_input_data = len(input_data)
         reach_threshold = False
-        for i in range(10000):
+        for i in range(max_epoch):
             result = self.predictable.predict(input_data)
             for item in result:
                 predict_history.append(item)
