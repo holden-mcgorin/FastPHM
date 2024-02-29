@@ -18,7 +18,7 @@
 
 ## 文件结构说明
 
-- core —— 框架核心代码
+- rulframework —— 框架代码
 - doc —— 框架详细说明文档
 - exam —— 完整流程的试验代码示例（使用jupyter notebook）
 

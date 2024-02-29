@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 from pandas import DataFrame
 
-from rulframework.data_manager.train_data.ABCDataGenerator import ABCDataGenerator
+from rulframework.data_manager.train.ABCDataGenerator import ABCDataGenerator
 
 
 class SlideWindowDataGenerator(ABCDataGenerator):

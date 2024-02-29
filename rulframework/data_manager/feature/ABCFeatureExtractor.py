@@ -10,6 +10,6 @@ class ABCFeatureExtractor(ABC):
     def extract(self, raw_data) -> DataFrame:
         """
         从原始数据中提取特征
-        :return:feature_data
+        :return:feature
         """
         pass

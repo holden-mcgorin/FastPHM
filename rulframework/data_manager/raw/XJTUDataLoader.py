@@ -1,7 +1,7 @@
 import os
 import re
 import pandas as pd
-from rulframework.data_manager.raw_data.ABCDataLoader import ABCDataLoader
+from rulframework.data_manager.raw.ABCDataLoader import ABCDataLoader
 from rulframework.entity.Bearing import Bearing
 
 
