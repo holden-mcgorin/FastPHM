@@ -1,14 +1,14 @@
-from core.data_manager.feature_data.RMSFeatureExtractor import RMSFeatureExtractor
-from core.data_manager.raw_data.XJTUDataLoader import XJTUDataLoader
-from core.data_manager.train_data.SlideWindowDataGenerator import SlideWindowDataGenerator
-from core.entity.Bearing import PredictHistory
-from core.model.PytorchModel import PytorchModel
-from core.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
-from core.model.uncertainty.MLP_64_48_drop_32 import MLP_64_48_drop_32
-from core.predictor.RollingPredictor import RollingPredictor
-from core.stage_calculator.BearingStageCalculator import BearingStageCalculator
-from core.stage_calculator.eol_calculator.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
-from core.stage_calculator.fpt_calculator.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.data_manager.feature_data.RMSFeatureExtractor import RMSFeatureExtractor
+from rulframework.data_manager.raw_data.XJTUDataLoader import XJTUDataLoader
+from rulframework.data_manager.train_data.SlideWindowDataGenerator import SlideWindowDataGenerator
+from rulframework.entity.Bearing import PredictHistory
+from rulframework.model.PytorchModel import PytorchModel
+from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
+from rulframework.model.uncertainty.MLP_64_48_drop_32 import MLP_64_48_drop_32
+from rulframework.predictor.RollingPredictor import RollingPredictor
+from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
+from rulframework.stage_calculator.eol_calculator.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage_calculator.fpt_calculator.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器

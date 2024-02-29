@@ -1,8 +1,8 @@
 import os
 import re
 import pandas as pd
-from core.data_manager.raw_data.ABCDataLoader import ABCDataLoader
-from core.entity.Bearing import Bearing
+from rulframework.data_manager.raw_data.ABCDataLoader import ABCDataLoader
+from rulframework.entity.Bearing import Bearing
 
 
 class XJTUDataLoader(ABCDataLoader):

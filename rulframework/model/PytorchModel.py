@@ -4,7 +4,7 @@ from pandas import DataFrame
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 
-from core.predictor.ABCPredictable import ABCPredictable
+from rulframework.predictor.ABCPredictable import ABCPredictable
 
 
 class PytorchModel(ABCPredictable):

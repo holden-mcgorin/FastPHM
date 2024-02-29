@@ -1,6 +1,6 @@
 from abc import ABC
 
-from core.predictor.ABCPredictable import ABCPredictable
+from rulframework.predictor.ABCPredictable import ABCPredictable
 
 
 class ABCPredictor(ABC):

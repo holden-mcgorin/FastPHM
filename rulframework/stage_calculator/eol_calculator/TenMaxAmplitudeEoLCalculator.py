@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from core.stage_calculator.eol_calculator.ABCEoLCalculator import ABCEoLCalculator
+from rulframework.stage_calculator.eol_calculator.ABCEoLCalculator import ABCEoLCalculator
 
 
 class TenMaxAmplitudeEoLCalculator(ABCEoLCalculator):

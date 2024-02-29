@@ -1,8 +1,8 @@
-from core.data_manager.feature_data.RMSFeatureExtractor import RMSFeatureExtractor
-from core.data_manager.raw_data.XJTUDataLoader import XJTUDataLoader
-from core.stage_calculator.BearingStageCalculator import BearingStageCalculator
-from core.stage_calculator.eol_calculator.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
-from core.stage_calculator.fpt_calculator.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.data_manager.feature_data.RMSFeatureExtractor import RMSFeatureExtractor
+from rulframework.data_manager.raw_data.XJTUDataLoader import XJTUDataLoader
+from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
+from rulframework.stage_calculator.eol_calculator.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage_calculator.fpt_calculator.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
@@ -16,4 +16,3 @@ if __name__ == '__main__':
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
         bearing.plot_feature()
-

@@ -1,5 +1,5 @@
-from core.predictor.ABCPredictable import ABCPredictable
-from core.predictor.ABCPredictor import ABCPredictor
+from rulframework.predictor.ABCPredictable import ABCPredictable
+from rulframework.predictor.ABCPredictor import ABCPredictor
 
 
 class RollingPredictor(ABCPredictor):

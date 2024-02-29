@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from core.entity import Bearing
+from rulframework.entity import Bearing
 
 
 class ABCDataLoader(ABC):
