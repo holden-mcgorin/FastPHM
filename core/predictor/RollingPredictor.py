@@ -47,7 +47,7 @@ class RollingPredictor(ABCPredictor):
         return predict_history
 
     def predict_till_epoch_uncertainty(self, input_data: list, epoch_num: int,
-                                       sampling_num: int = 100, confidence_interval: float = 0.95):
+                                       sampling_num: int = 1000, confidence_interval: float = 0.95):
         """
         :param input_data: 初始输入数据
         :param epoch_num: 滚动次数
@@ -85,4 +85,48 @@ class RollingPredictor(ABCPredictor):
             max_list.append(max(new_list))
             min_list.append(min(new_list))
             mean_list.append(sum(new_list) / len(new_list))
+        return min_list, mean_list, max_list
+
+    def predict_till_epoch_uncertainty_flat(self, input_data: list, epoch_num: int, threshold: int,
+                                            sampling_num: int = 100, confidence_interval: float = 0.95):
+        """
+        对 predict_till_epoch_uncertainty 的结果进行修正以画图
+        去掉超过失效阈值的图像
+        :param threshold:
+        :param input_data:
+        :param epoch_num:
+        :param sampling_num:
+        :param confidence_interval:
+        :return:
+        """
+        min_list, mean_list, max_list = self.predict_till_epoch_uncertainty(input_data, epoch_num, sampling_num,
+                                                                            confidence_interval)
+
+        # 检查超过开始阈值的下标
+        threshold_index_min, threshold_index_mean, threshold_index_max = 0, 0, 0
+        min_flag, mean_flag, max_flag = False, False, False  # 是否获取到超过阈值的起始下标
+        length = len(max_list)
+        for i in range(length):
+            if not max_flag and max_list[i] > threshold:
+                threshold_index_max = i
+                max_flag = True
+            if not mean_flag and mean_list[i] > threshold:
+                threshold_index_mean = i
+                mean_flag = True
+            if not min_flag and min_list[i] > threshold:
+                threshold_index_min = i
+                min_flag = True
+
+        # 开始修正
+        if max_flag:
+            for i in range(threshold_index_max, length):
+                max_list[i] = threshold
+        if min_flag:
+            for i in range(threshold_index_min, length):
+                min_list[i] = threshold
+        if mean_flag:
+            for i in range(threshold_index_mean+1, length):
+                del mean_list[threshold_index_mean+1]
+
+        mean_list[-1] = threshold
         return min_list, mean_list, max_list

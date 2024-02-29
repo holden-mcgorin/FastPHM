@@ -1,28 +1,23 @@
-import torch
-import torch.nn as nn
+import matplotlib.pyplot as plt
+import numpy as np
 
-class DNNWithDropout(nn.Module):
-    def __init__(self):
-        super(DNNWithDropout, self).__init__()
-        self.fc1 = nn.Linear(7, 5)  # 输入层到隐藏层
-        self.dropout = nn.Dropout(0.5)   # Dropout 层，丢弃概率为 0.5
-        self.fc2 = nn.Linear(5, 3)  # 隐藏层到输出层
+# 生成示例数据
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
 
-    def forward(self, x):
-        x = torch.relu(self.fc1(x))  # 输入层到隐藏层，使用 ReLU 激活函数
-        x = self.dropout(x)          # Dropout 层
-        x = torch.relu(self.fc2(x))  # 隐藏层到输出层，使用 ReLU 激活函数
-        return x
+# 绘制曲线
+plt.plot(y1, x, label='sin(x)')
+plt.plot(y2, x, label='cos(x)')
 
-# 创建模型实例
-model = DNNWithDropout()
+# 使用 plt.fill_between 沿着 y 轴绘制填充区域
+plt.fill_betweenx(x, y1, y2, where=(y1 >= y2), color='lightgray', alpha=0.3)
 
-# 将模型设置为评估模式（测试模式）
-model.train()
+# 添加图例和标签
+plt.legend()
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Example of plt.fill_between')
 
-# 获取模型输出，保持 Dropout 层
-with torch.no_grad():  # 禁用梯度计算
-    input_data = torch.randn(1, 7)  # 示例输入数据
-    output = model(input_data)
-
-print("模型输出:", output)
+# 显示图形
+plt.show()
