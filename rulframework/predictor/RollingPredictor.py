@@ -1,9 +1,9 @@
-from rulframework.predictor.ABCPredictable import ABCPredictable
+from rulframework.model.ABCModel import ABCModel
 from rulframework.predictor.ABCPredictor import ABCPredictor
 
 
 class RollingPredictor(ABCPredictor):
-    def __init__(self, predictable: ABCPredictable) -> None:
+    def __init__(self, predictable: ABCModel) -> None:
         super().__init__(predictable)
 
     def predict_till_epoch(self, input_data: list, epoch_num: int):

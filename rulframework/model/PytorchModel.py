@@ -4,10 +4,10 @@ from pandas import DataFrame
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 
-from rulframework.predictor.ABCPredictable import ABCPredictable
+from rulframework.model.ABCModel import ABCModel
 
 
-class PytorchModel(ABCPredictable):
+class PytorchModel(ABCModel):
     """
     剩余寿命预测模型
     对pytorch神经网络的封装
@@ -36,7 +36,7 @@ class PytorchModel(ABCPredictable):
         # 用于保存每次epoch的训练损失
         self.train_losses = []
 
-    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int):
+    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000):
         """
         训练模型
         :param train_data_x: 训练数据
@@ -90,7 +90,7 @@ class PytorchModel(ABCPredictable):
             output = self.model(input_data).tolist()
         return output
 
-    def predict_keep_dropout(self, input_data: list) -> list:
+    def predict_uncertainty(self, input_data: list) -> list:
         """
         输出一次预测结果(保持dropout层)
         :param input_data: 输入数据

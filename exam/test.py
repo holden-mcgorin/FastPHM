@@ -1,23 +1,31 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import torch
+import pyro
+import pyro.distributions as dist
+from pyro.infer.mcmc import HMC, MCMC
 
-# 生成示例数据
-x = np.linspace(0, 10, 100)
-y1 = np.sin(x)
-y2 = np.cos(x)
 
-# 绘制曲线
-plt.plot(y1, x, label='sin(x)')
-plt.plot(y2, x, label='cos(x)')
+# 定义一个简单的概率模型
+def model():
+    # 定义参数的先验分布
+    mu = pyro.sample("mu", dist.Normal(0, 1))
+    sigma = pyro.sample("sigma", dist.Uniform(0, 1))
 
-# 使用 plt.fill_between 沿着 y 轴绘制填充区域
-plt.fill_betweenx(x, y1, y2, where=(y1 >= y2), color='lightgray', alpha=0.3)
+    # 定义观测数据的条件分布
+    with pyro.plate("data", size=100):
+        obs = pyro.sample("obs", dist.Normal(mu, sigma))
 
-# 添加图例和标签
-plt.legend()
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Example of plt.fill_between')
 
-# 显示图形
-plt.show()
+# 使用 HMC 进行推断
+nuts_kernel = HMC(model, step_size=0.1, num_steps=4)
+mcmc = MCMC(nuts_kernel, num_samples=1000, warmup_steps=200)
+mcmc.run()
+
+# 获取参数的后验分布
+posterior_samples = mcmc.get_samples()
+
+# 打印参数后验分布的统计信息
+for param_name in posterior_samples.keys():
+    print(param_name)
+    print("Mean:", posterior_samples[param_name].mean(dim=0))
+    print("Std:", posterior_samples[param_name].std(dim=0))
+    print()
