@@ -30,5 +30,6 @@
 
 觉得项目写的还行的大佬们点个star呗，觉得哪里写得不行的地方也欢迎issue一下，您的关注是我最大的更新动力！😀
 ##### @键哥工作室 @AndrewStudio
-##### 邮箱：andrewstudio@foxmail.com
+##### 个人邮箱：andrewstudio@foxmail.com
+##### 个人网站：http://139.9.192.174/#/home
 
