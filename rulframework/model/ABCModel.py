@@ -17,6 +17,3 @@ class ABCModel(ABC):
     @abstractmethod
     def predict(self, input_data: list) -> list:
         pass
-
-    def predict_uncertainty(self, input_data: list) -> list:
-        pass

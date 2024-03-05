@@ -31,13 +31,13 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PyroModel(MLP_60_48_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 1000)
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
     min_list, mean_list, max_list = \
-        predictor.predict_till_epoch_uncertainty_flat(input_data, 1, bearing.stage_data.failure_threshold_feature)
+        predictor.predict_till_epoch_uncertainty_flat(input_data, 4, bearing.stage_data.failure_threshold_feature)
 
     bearing.predict_history = PredictHistory(59, min_list=min_list, mean_list=mean_list, max_list=max_list)
     bearing.plot_feature()
