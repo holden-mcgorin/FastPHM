@@ -51,7 +51,6 @@ def prepare_counts_df(predictive):
     counts = predictive['counts'].numpy()
     counts_mean = counts.mean(axis=0)
     counts_std = counts.std(axis=0)
-
     counts_df = pd.DataFrame({
         "feat": X_.squeeze(),
         "mean": counts_mean,

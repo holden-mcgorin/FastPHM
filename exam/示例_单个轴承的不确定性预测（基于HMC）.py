@@ -7,6 +7,8 @@ from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
 from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
+from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
+from rulframework.predictor.confidence_interval.MiddleSampleCICalculator import MiddleSampleCICalculator
 from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
 from rulframework.stage_calculator.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
 from rulframework.stage_calculator.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
@@ -35,9 +37,11 @@ if __name__ == '__main__':
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
+    ci_calculator = MiddleSampleCICalculator(0.9)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
     min_list, mean_list, max_list = \
-        predictor.predict_till_epoch_uncertainty_flat(input_data, 4, bearing.stage_data.failure_threshold_feature)
+        predictor.predict_till_epoch_uncertainty_flat(input_data, 4, bearing.stage_data.failure_threshold_feature,
+                                                      ci_calculator)
 
     bearing.predict_history = PredictHistory(59, min_list=min_list, mean_list=mean_list, max_list=max_list)
     bearing.plot_feature()

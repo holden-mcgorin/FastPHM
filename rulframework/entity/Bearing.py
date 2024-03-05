@@ -163,7 +163,7 @@ class Bearing:
             if self.predict_history.min_list is not None and self.predict_history.max_list is not None:
                 plt.fill_between(np.arange(len(self.predict_history.min_list)) + self.predict_history.begin_index,
                                  self.predict_history.min_list, self.predict_history.max_list, alpha=0.25,
-                                 label='uncertainty')
+                                 label='confidence_interval')
             # 画均值曲线（不确定性预测）
             if self.predict_history.mean_list is not None:
                 plt.plot(np.arange(len(self.predict_history.mean_list)) + self.predict_history.begin_index,
