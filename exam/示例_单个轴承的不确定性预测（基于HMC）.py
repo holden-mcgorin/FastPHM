@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
-    ci_calculator = MiddleSampleCICalculator(0.9)
+    ci_calculator = MeanPlusStdCICalculator(2)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
     min_list, mean_list, max_list = \
         predictor.predict_till_epoch_uncertainty_flat(input_data, 4, bearing.stage_data.failure_threshold_feature,

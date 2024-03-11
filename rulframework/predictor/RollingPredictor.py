@@ -50,7 +50,7 @@ class RollingPredictor(ABCPredictor):
         return predict_history
 
     def predict_till_epoch_uncertainty(self, input_data: list, epoch_num: int,
-                                       ci_calculator: ABCCICalculator, sampling_num: int = 1000, ):
+                                       ci_calculator: ABCCICalculator, sampling_num: int = 100, ):
         """
         :param input_data: 初始输入数据
         :param epoch_num: 滚动次数
@@ -145,6 +145,6 @@ class RollingPredictor(ABCPredictor):
         if mean_flag:
             for i in range(threshold_index_mean + 1, length):
                 del mean_list[threshold_index_mean + 1]
+            mean_list[-1] = threshold
 
-        mean_list[-1] = threshold
         return min_list, mean_list, max_list

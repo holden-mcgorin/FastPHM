@@ -27,7 +27,6 @@ class PyroModel(ABCModel):
         # 观测数据
         pyro.sample('obs', dist.Normal(y_pred, 0.1), obs=y)
 
-    # 构建贝叶斯神经网络模型
     def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000):
         """
         贝叶斯推断
@@ -44,6 +43,7 @@ class PyroModel(ABCModel):
         mcmc.run(x, y)
         self.samples = mcmc.get_samples()
 
+    # 构建贝叶斯神经网络模型
     def predict(self, input_data: list) -> list:
         """
         预测一次
@@ -69,3 +69,6 @@ class PyroModel(ABCModel):
         # 进行一次神经网络的前向传播
         x = torch.tensor(input_data, dtype=torch.float64).to(self.device)
         return self.torch_model(x).tolist()
+
+    def plot_loss(self):
+        pass

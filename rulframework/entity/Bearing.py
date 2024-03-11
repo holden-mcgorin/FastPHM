@@ -102,7 +102,7 @@ class Bearing:
                      self.raw_data[self.stage_data.eol_raw:],
                      label='failure stage', color=self.COLOR_FAILURE_STAGE)
 
-        plt.title(self.name + ' Vibration Signals')
+        plt.title(self.name + ' Raw Vibration Signals')
         plt.xlabel('Time (Sample Index)')
         plt.ylabel('vibration')
         plt.legend()
@@ -173,7 +173,7 @@ class Bearing:
 
         legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
         plt.gca().add_artist(legend)
-        plt.title(self.name + ' Vibration Signals')
+        plt.title(self.name + ' Feature Graph')
         plt.xlabel('Time (Sample Index)')
-        plt.ylabel('vibration')
+        plt.ylabel('feature value')
         plt.show()

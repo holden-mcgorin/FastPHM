@@ -11,9 +11,17 @@ class ABCModel(ABC):
     使预测器与模型能够规范接口联合使用
     """
     @abstractmethod
+    def __init__(self, model):
+        pass
+
+    @abstractmethod
     def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000):
         pass
 
     @abstractmethod
     def predict(self, input_data: list) -> list:
+        pass
+
+    @abstractmethod
+    def plot_loss(self):
         pass

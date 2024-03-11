@@ -9,7 +9,7 @@ class ThreeSigmaFPTCalculator(ABCFPTCalculator):
         fpt_feature = 0
         feature_data = feature_data.iloc[:, 0]  # todo 这里只取第一列做计算fpt，多列情况不适应
         for i in range(1, len(feature_data)):
-            sliced_list = feature_data[:i]
+            sliced_list = feature_data[:i + 1]
             if max(sliced_list) > self.__mean_plus_3std(sliced_list):
                 fpt_feature = i
                 break

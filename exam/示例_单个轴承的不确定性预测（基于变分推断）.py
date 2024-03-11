@@ -2,11 +2,10 @@ from rulframework.data_manager.feature.RMSFeatureExtractor import RMSFeatureExtr
 from rulframework.data_manager.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data_manager.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
-from rulframework.model.PytorchModel import PytorchModel
-from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
+from rulframework.model.BnnModel import BnnModel
+from rulframework.model.uncertainty.BNN_60_48_32 import BNN_60_48_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
 from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
-from rulframework.predictor.confidence_interval.MiddleSampleCICalculator import MiddleSampleCICalculator
 from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
 from rulframework.stage_calculator.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
 from rulframework.stage_calculator.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
@@ -30,7 +29,7 @@ if __name__ == '__main__':
     bearing.train_data = data_generator.generate_data(bearing.feature_data)
 
     # 定义模型并训练
-    model = PytorchModel(MLP_60_48_drop_32())
+    model = BnnModel(BNN_60_48_32())
     model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
     model.plot_loss()
 
@@ -39,7 +38,7 @@ if __name__ == '__main__':
     ci_calculator = MeanPlusStdCICalculator(2)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
     min_list, mean_list, max_list = \
-        predictor.predict_till_epoch_uncertainty_flat(input_data, 5, bearing.stage_data.failure_threshold_feature,
+        predictor.predict_till_epoch_uncertainty_flat(input_data, 3, bearing.stage_data.failure_threshold_feature,
                                                       ci_calculator)
 
     bearing.predict_history = PredictHistory(59, min_list=min_list, mean_list=mean_list, max_list=max_list)

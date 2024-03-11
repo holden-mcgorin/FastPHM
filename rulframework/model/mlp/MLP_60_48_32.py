@@ -10,6 +10,6 @@ class MLP_60_48_32(nn.Module):
 
     def forward(self, x):
         x = self.fc1(x)
-        x = self.relu(x)
         x = self.fc2(x)
+        x = self.relu(x)
         return x
