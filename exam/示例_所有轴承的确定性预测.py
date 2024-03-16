@@ -17,8 +17,8 @@ if __name__ == '__main__':
     eol_calculator = NinetyFivePercentRMSEoLCalculator()
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
 
-    # 划分训练集与测试集
-    train_set = ['Bearing1_1', 'Bearing1_2', 'Bearing1_3', 'Bearing2_2', 'Bearing2_3']
+    # 划分训练集与测试集（全部是外圈故障轴承）（外圈退化较怕平稳，内圈退化较急促）
+    train_set = ['Bearing1_1', 'Bearing1_2', 'Bearing1_3', 'Bearing2_2']
     test_set = ['Bearing2_5']
 
     # 定义模型

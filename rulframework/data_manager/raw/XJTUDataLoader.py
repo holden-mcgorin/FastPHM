@@ -14,7 +14,7 @@ class XJTUDataLoader(ABCDataLoader):
                 self.item_dict[bearing_name] = os.path.join(root_dir, condition, bearing_name)
         print('成功登记以下轴承数据：')
         for key, value in self.item_dict.items():
-            print(f"轴承: {key}，位置: {value}")
+            print(f"  {key}，位置: {value}")
 
     def get_bearings_name(self) -> list:
         return list(self.item_dict.keys())

@@ -19,4 +19,3 @@ class ABCDataLoader(ABC):
     @abstractmethod
     def load_data(self, item_name):
         pass
-

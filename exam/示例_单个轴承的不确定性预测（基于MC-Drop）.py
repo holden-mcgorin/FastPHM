@@ -2,6 +2,14 @@ from rulframework.data_manager.feature.RMSFeatureExtractor import RMSFeatureExtr
 from rulframework.data_manager.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data_manager.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
+from rulframework.evaluator.Evaluator import Evaluator
+from rulframework.evaluator.metric.CI import CI
+from rulframework.evaluator.metric.Error import Error
+from rulframework.evaluator.metric.ErrorPercentage import ErrorPercentage
+from rulframework.evaluator.metric.MAPE import MAPE
+from rulframework.evaluator.metric.MSE import MSE
+from rulframework.evaluator.metric.Median import Median
+from rulframework.evaluator.metric.RUL import RUL
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
@@ -32,7 +40,7 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PytorchModel(MLP_60_48_drop_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 200)
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 150)
     model.plot_loss()
 
     # 使用预测器进行预测
@@ -53,3 +61,8 @@ if __name__ == '__main__':
     bearing.predict_history = trimmer.trim(predict_history)
 
     bearing.plot_feature()
+
+    # 计算评价指标
+    evaluator = Evaluator()
+    evaluator.add_metric(RUL(), Median(), CI(), Error(), ErrorPercentage(), MSE(), MAPE())
+    evaluator.evaluate(bearing)

@@ -52,8 +52,10 @@ class ThresholdTrimmer:
                 for i in range(threshold_index_max, length):
                     max_list[i] = self.threshold
             if min_flag:
-                for i in range(threshold_index_min, length):
-                    min_list[i] = self.threshold
+                for i in range(threshold_index_min + 1, length):
+                    del min_list[threshold_index_min + 1]
+                    del max_list[threshold_index_min + 1]
+                min_list[-1] = self.threshold
             if mean_flag:
                 for i in range(threshold_index_mean + 1, length):
                     del mean_list[threshold_index_mean + 1]

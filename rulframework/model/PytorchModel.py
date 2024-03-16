@@ -65,7 +65,7 @@ class PytorchModel(ABCModel):
             avg_loss = total_loss / len(train_loader)
             self.train_losses.append(avg_loss)  # 保存训练损失
 
-            print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.10f}")
+            print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.10f}", end="\r")
 
     def plot_loss(self):
         """
