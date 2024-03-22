@@ -14,7 +14,6 @@ from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
 from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
-from rulframework.predictor.confidence_interval.MiddleSampleCICalculator import MiddleSampleCICalculator
 from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
 from rulframework.stage_calculator.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
 from rulframework.stage_calculator.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
@@ -40,7 +39,7 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PytorchModel(MLP_60_48_drop_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 150)
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
     model.plot_loss()
 
     # 使用预测器进行预测

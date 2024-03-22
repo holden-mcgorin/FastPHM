@@ -17,7 +17,8 @@ if __name__ == '__main__':
     #     stage_calculator.calculate_state(bearing)
     #     bearing.plot_feature()
 
-    bearing = data_loader.get_bearing("Bearing3_5", column='Horizontal Vibration')
+    bearing = data_loader.get_bearing("Bearing1_3", column='Horizontal Vibration')
     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
-    stage_calculator.calculate_state(bearing)
+    # stage_calculator.calculate_state(bearing)
+    bearing.plot_raw()
     bearing.plot_feature()
