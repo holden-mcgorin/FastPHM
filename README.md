@@ -1,7 +1,6 @@
 # 剩余使用寿命预测框架
 
 ## 👻功能简介
-<hr style="height:1px;border:none;margin-top: 0;border-bottom:1px solid #555555;" /> 
 - 简化剩余使用寿命预测试验的代码编写
 - 对常见RUL处理的方法模块化，使用者可利用框架自由搭配处理方法
 - 附带实验示例代码（MLP确定性预测、MC-Drop不确定性预测）
@@ -14,20 +13,17 @@
 - 支持自定义组件
 
 
-## 🔧使用方法
-<hr style="height:1px;border:none;margin-top: 0;border-bottom:1px solid #555555;" /> 
+## 💡使用方法
 1. 安装依赖 pip install -r requirements.txt
 
 2. 使用jupyter notebook 运行示例代码
 
 ## 📂文件结构说明
-<hr style="height:1px;border:none;margin-top: 0;border-bottom:1px solid #555555;" /> 
 - rulframework —— 框架代码
 - doc —— 框架详细说明文档
 - exam —— 完整流程的试验代码示例（使用jupyter notebook）
 
 ## ⚠注意事项
-<hr style="height:1px;border:none;margin-top: 0;border-bottom:1px solid #555555;" /> 
 - 读取数据集时，不要改变原始数据集内部文件的相对位置（可以只保留部分数据，但不要改变相对位置），可能导致无法读取数据
 
 觉得项目写的还行的大佬们点个star呗，觉得哪里写得不行的地方也欢迎issue一下，您的关注是我最大的更新动力！😀
