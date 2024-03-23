@@ -1,20 +1,21 @@
 import os
 import re
+from typing import Dict
+
 import pandas as pd
 from rulframework.data_manager.raw.ABCDataLoader import ABCDataLoader
 from rulframework.entity.Bearing import Bearing
 
 
 class XJTUDataLoader(ABCDataLoader):
-    def __init__(self, root_dir):
-        super().__init__(root_dir)
+
+    def _build_item_dict(self, root) -> Dict[str, str]:
+        item_dict = {}
         for condition in ['35Hz12kN', '37.5Hz11kN', '40Hz10kN']:
-            condition_dir = os.path.join(root_dir, condition)
+            condition_dir = os.path.join(root, condition)
             for bearing_name in os.listdir(condition_dir):
-                self.item_dict[bearing_name] = os.path.join(root_dir, condition, bearing_name)
-        print('成功登记以下轴承数据：')
-        for key, value in self.item_dict.items():
-            print(f"  {key}，位置: {value}")
+                item_dict[bearing_name] = os.path.join(root, condition, bearing_name)
+        return item_dict
 
     def get_bearings_name(self) -> list:
         return list(self.item_dict.keys())
@@ -27,10 +28,10 @@ class XJTUDataLoader(ABCDataLoader):
         :return:带有原始数据、轴承名的轴承对象
         """
         bearing = Bearing(bearing_name)
-        bearing.raw_data = self.load_data(bearing_name, column)
+        bearing.raw_data = self.load(bearing_name, column)
         return bearing
 
-    def load_data(self, item_name, column=None):
+    def load(self, item_name, column=None):
         """
         加载轴承的原始振动信号，返回包含raw_data的Bearing对象
         :param column: 只取指定列数据（水平或垂直信号）
