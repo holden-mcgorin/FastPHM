@@ -8,5 +8,5 @@ if __name__ == '__main__':
     bearing1_1 = data_loader_xj.get_bearing('Bearing1_1', columns='Horizontal Vibration')
     bearing1_1.plot_raw()
 
-    bearing1_6 = data_loader_phm.get_bearing('Bearing1_6', columns='Vertical Vibration')
+    bearing1_6 = data_loader_phm.get_bearing('Bearing2_4', columns='Vertical Vibration')
     bearing1_6.plot_raw()

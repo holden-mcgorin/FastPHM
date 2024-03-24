@@ -10,6 +10,10 @@ from rulframework.data_manager.raw.ABCDataLoader import ABCDataLoader
 
 class PHM2012DataLoader(ABCDataLoader):
 
+    @property
+    def span(self) -> int:
+        return 2560
+
     def _build_item_dict(self, root) -> Dict[str, str]:
         item_dict = {}
         for folder in ['Learning_set', 'Full_Test_Set']:

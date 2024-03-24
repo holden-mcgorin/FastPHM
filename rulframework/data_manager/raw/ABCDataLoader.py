@@ -30,6 +30,14 @@ class ABCDataLoader(ABC):
                f'{items}'
 
     @property
+    @abstractmethod
+    def span(self) -> int:
+        """
+        :return: 该数据集连续采样的样本区间大小
+        """
+        pass
+
+    @property
     def all(self) -> list:
         return list(self._item_dict.keys())
 

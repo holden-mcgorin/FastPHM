@@ -8,6 +8,10 @@ from rulframework.data_manager.raw.ABCDataLoader import ABCDataLoader
 
 class XJTUDataLoader(ABCDataLoader):
 
+    @property
+    def span(self) -> int:
+        return 32768
+
     def _build_item_dict(self, root) -> Dict[str, str]:
         item_dict = {}
         for condition in ['35Hz12kN', '37.5Hz11kN', '40Hz10kN']:
