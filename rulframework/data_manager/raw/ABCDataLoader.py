@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Generator, Dict
 
+from pandas import DataFrame
+
 from rulframework.entity.Bearing import Bearing
 
 
@@ -17,11 +19,19 @@ class ABCDataLoader(ABC):
         获取数据集根目录，确定各个数据项的位置
         :param root: 数据集的根目录
         """
-        self.root = root  # 此数据集根目录
-        self.item_dict = self._build_item_dict(root)  # 单个数据文件夹位置字典
-        print('成功登记以下数据项：')
-        for key, value in self.item_dict.items():
-            print(f"  {key}，位置: {value}")
+        self._root = root  # 此数据集根目录
+        self._item_dict = self._build_item_dict(root)  # 单个数据文件夹位置字典
+        print(self)
+
+    def __str__(self) -> str:
+        items = '\n'.join([f"  {key}，位置: {value}" for key, value in self._item_dict.items()])
+        return f'<<<< 数据集位置：{self._root} >>>>\n' \
+               f'>> 已成功登记以下数据项：\n' \
+               f'{items}'
+
+    @property
+    def all(self) -> list:
+        return list(self._item_dict.keys())
 
     @abstractmethod
     def _build_item_dict(self, root) -> Dict[str, str]:
@@ -34,20 +44,32 @@ class ABCDataLoader(ABC):
         pass
 
     @abstractmethod
-    def load(self, item_name) -> object:
+    def _load(self, item_name) -> DataFrame:
         """
-        根据名称从数据集中获取数据
+        根据数据项名称从数据集中获取数据
         :param item_name:数据项名称
         :return:
         """
         pass
 
-    def all_data(self) -> Generator[object, None, None]:
+    def get_bearing(self, bearing_name, columns: str = None) -> Bearing:
         """
-        返回这个数据集的generator
-        1. 用 for i in generator 遍历所有数据
-        2. 用 next(generator) 逐个获取数据
+        根据轴承名称从数据集中获取轴承对象
+        :param bearing_name:数据项名称
+        :param columns: 只取指定列数据（水平或垂直信号）
         :return:
         """
-        for item_name in self.item_dict.keys():
-            yield self.load(item_name)
+        # 从数据文件中加载数据（该方法需要在子类中重写）
+        raw_data = self._load(bearing_name)
+
+        # 如果有column参数则仅取该列数据
+        if columns is not None:
+            columns_names = raw_data.columns.tolist()
+            for name in columns_names:
+                if name != columns:
+                    raw_data.drop(name, axis=1, inplace=True)
+
+        # 生成轴承对象并返回
+        bearing = Bearing(bearing_name)
+        bearing.raw_data = raw_data
+        return bearing

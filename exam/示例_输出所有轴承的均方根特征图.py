@@ -11,14 +11,8 @@ if __name__ == '__main__':
     eol_calculator = NinetyFivePercentRMSEoLCalculator()
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
 
-    # for bearing_name in data_loader.get_bearings_name():
-    #     bearing = data_loader.get_bearing(bearing_name, column='Horizontal Vibration')
-    #     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
-    #     stage_calculator.calculate_state(bearing)
-    #     bearing.plot_feature()
-
-    bearing = data_loader.get_bearing("Bearing1_3", column='Horizontal Vibration')
-    bearing.feature_data = feature_extractor.extract(bearing.raw_data)
-    # stage_calculator.calculate_state(bearing)
-    bearing.plot_raw()
-    bearing.plot_feature()
+    for bearing_name in data_loader.all:
+        bearing = data_loader.get_bearing(bearing_name, columns='Horizontal Vibration')
+        bearing.feature_data = feature_extractor.extract(bearing.raw_data)
+        stage_calculator.calculate_state(bearing)
+        bearing.plot_feature()

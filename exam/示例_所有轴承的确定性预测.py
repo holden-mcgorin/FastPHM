@@ -28,7 +28,7 @@ if __name__ == '__main__':
     data_generator = SlideWindowDataGenerator(92)
     for train_bearing in train_set:
         print(f'正在使用{train_bearing}训练模型：')
-        bearing = data_loader.get_bearing(train_bearing, column='Horizontal Vibration')
+        bearing = data_loader.get_bearing(train_bearing, 'Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         bearing.train_data = data_generator.generate_data(bearing.feature_data)
         model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 10000)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     for teat_bearing in test_set:
         print(f'正在使用{teat_bearing}测试模型：')
-        bearing = data_loader.get_bearing(teat_bearing, column='Horizontal Vibration')
+        bearing = data_loader.get_bearing(teat_bearing, 'Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
         fpt = bearing.stage_data.fpt_feature

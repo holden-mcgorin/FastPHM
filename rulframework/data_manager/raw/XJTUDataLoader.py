@@ -4,7 +4,6 @@ from typing import Dict
 
 import pandas as pd
 from rulframework.data_manager.raw.ABCDataLoader import ABCDataLoader
-from rulframework.entity.Bearing import Bearing
 
 
 class XJTUDataLoader(ABCDataLoader):
@@ -17,29 +16,15 @@ class XJTUDataLoader(ABCDataLoader):
                 item_dict[bearing_name] = os.path.join(root, condition, bearing_name)
         return item_dict
 
-    def get_bearings_name(self) -> list:
-        return list(self.item_dict.keys())
-
-    def get_bearing(self, bearing_name: str, column=None) -> Bearing:
-        """
-        获取带有原始数据、轴承名的轴承对象
-        :param column: 只取指定列数据（水平或垂直信号）
-        :param bearing_name:轴承名
-        :return:带有原始数据、轴承名的轴承对象
-        """
-        bearing = Bearing(bearing_name)
-        bearing.raw_data = self.load(bearing_name, column)
-        return bearing
-
-    def load(self, item_name, column=None):
+    def _load(self, item_name, columns=None):
         """
         加载轴承的原始振动信号，返回包含raw_data的Bearing对象
-        :param column: 只取指定列数据（水平或垂直信号）
+        :param columns: 只取指定列数据（水平或垂直信号）
         :param item_name:
         :return: Bearing对象（包含raw_data)
         """
         bearing_raw_data = pd.DataFrame()
-        bearing_dir = self.item_dict[item_name]
+        bearing_dir = self._item_dict[item_name]
 
         files = sorted(os.listdir(bearing_dir), key=self.__extract_number)
         for file_name in files:
@@ -53,10 +38,11 @@ class XJTUDataLoader(ABCDataLoader):
                                          'Vertical_vibration_signals': 'Vertical Vibration'},
                                 inplace=True)
 
-        if column is not None:
+        # 如果有column参数则仅取该列数据
+        if columns is not None:
             columns_names = bearing_raw_data.columns.tolist()
             for name in columns_names:
-                if name != column:
+                if name != columns:
                     bearing_raw_data.drop(name, axis=1, inplace=True)
 
         return bearing_raw_data

@@ -18,7 +18,7 @@ if __name__ == '__main__':
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
 
     # 获取原始数据、特征数据、阶段数据
-    bearing = data_loader.get_bearing("Bearing1_3", column='Horizontal Vibration')
+    bearing = data_loader.get_bearing("Bearing1_3", 'Horizontal Vibration')
     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
     stage_calculator.calculate_state(bearing)
     bearing.plot_feature()
@@ -29,13 +29,13 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PytorchModel(MLP_60_48_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 10000)
     model.plot_loss()
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[0:60]
     prediction = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
-    bearing.predict_history = PredictHistory(59, prediction)
+    bearing.predict_history = PredictHistory(60, prediction)
 
     bearing.plot_feature()
