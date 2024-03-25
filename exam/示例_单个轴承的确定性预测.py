@@ -1,13 +1,13 @@
-from rulframework.data_manager.feature.RMSFeatureExtractor import RMSFeatureExtractor
-from rulframework.data_manager.raw.XJTUDataLoader import XJTUDataLoader
-from rulframework.data_manager.train.SlideWindowDataGenerator import SlideWindowDataGenerator
+from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
+from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
+from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
-from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage_calculator.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
-from rulframework.stage_calculator.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.stage.BearingStageCalculator import BearingStageCalculator
+from rulframework.stage.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器

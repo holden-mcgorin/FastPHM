@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
-from rulframework.data_manager.feature.ABCFeatureExtractor import ABCFeatureExtractor
+from rulframework.data.feature.ABCFeatureExtractor import ABCFeatureExtractor
 
 
 class RMSFeatureExtractor(ABCFeatureExtractor):

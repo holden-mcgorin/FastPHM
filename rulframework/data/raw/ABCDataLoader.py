@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generator, Dict
+from typing import Dict
 
 from pandas import DataFrame
 

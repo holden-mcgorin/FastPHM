@@ -1,9 +1,9 @@
-from rulframework.data_manager.feature.RMSFeatureExtractor import RMSFeatureExtractor
-from rulframework.data_manager.raw.PHM2012DataLoader import PHM2012DataLoader
-from rulframework.data_manager.raw.XJTUDataLoader import XJTUDataLoader
-from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage_calculator.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
-from rulframework.stage_calculator.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
+from rulframework.data.raw.PHM2012DataLoader import PHM2012DataLoader
+from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
+from rulframework.stage.BearingStageCalculator import BearingStageCalculator
+from rulframework.stage.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')

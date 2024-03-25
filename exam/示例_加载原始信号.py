@@ -1,5 +1,5 @@
-from rulframework.data_manager.raw.PHM2012DataLoader import PHM2012DataLoader
-from rulframework.data_manager.raw.XJTUDataLoader import XJTUDataLoader
+from rulframework.data.raw.PHM2012DataLoader import PHM2012DataLoader
+from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 
 if __name__ == '__main__':
     data_loader_phm = PHM2012DataLoader('D:\\data\\dataset\\phm-ieee-2012-data-challenge-dataset-master')

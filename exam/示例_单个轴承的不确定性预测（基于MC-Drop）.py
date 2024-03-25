@@ -1,6 +1,6 @@
-from rulframework.data_manager.feature.RMSFeatureExtractor import RMSFeatureExtractor
-from rulframework.data_manager.raw.XJTUDataLoader import XJTUDataLoader
-from rulframework.data_manager.train.SlideWindowDataGenerator import SlideWindowDataGenerator
+from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
+from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
+from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.evaluator.Evaluator import Evaluator
 from rulframework.evaluator.metric.CI import CI
@@ -14,9 +14,9 @@ from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
 from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
-from rulframework.stage_calculator.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage_calculator.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
-from rulframework.stage_calculator.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.stage.BearingStageCalculator import BearingStageCalculator
+from rulframework.stage.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.utils.MovingAverageFilter import MovingAverageFilter
 from rulframework.utils.ThresholdTrimmer import ThresholdTrimmer
 

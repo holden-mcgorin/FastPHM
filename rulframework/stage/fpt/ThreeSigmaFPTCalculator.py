@@ -1,7 +1,7 @@
 import numpy as np
 from pandas import DataFrame
 
-from rulframework.stage_calculator.fpt.ABCFPTCalculator import ABCFPTCalculator
+from rulframework.stage.fpt.ABCFPTCalculator import ABCFPTCalculator
 
 
 class ThreeSigmaFPTCalculator(ABCFPTCalculator):

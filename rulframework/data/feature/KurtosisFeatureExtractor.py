@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from rulframework.data_manager.feature.ABCFeatureExtractor import ABCFeatureExtractor
+from rulframework.data.feature.ABCFeatureExtractor import ABCFeatureExtractor
 
 
 class KurtosisFeatureExtractor(ABCFeatureExtractor):

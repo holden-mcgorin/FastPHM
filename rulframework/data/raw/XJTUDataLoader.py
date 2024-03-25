@@ -3,7 +3,7 @@ import re
 from typing import Dict
 
 import pandas as pd
-from rulframework.data_manager.raw.ABCDataLoader import ABCDataLoader
+from rulframework.data.raw.ABCDataLoader import ABCDataLoader
 
 
 class XJTUDataLoader(ABCDataLoader):
