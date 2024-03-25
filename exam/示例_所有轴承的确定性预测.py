@@ -6,7 +6,7 @@ from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
 from rulframework.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
     feature_extractor = RMSFeatureExtractor(32768)
     fpt_calculator = ThreeSigmaFPTCalculator()
-    eol_calculator = NinetyFivePercentRMSEoLCalculator()
+    eol_calculator = NinetyThreePercentRMSEoLCalculator()
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
 
     # 划分训练集与测试集（全部是外圈故障轴承）（外圈退化较怕平稳，内圈退化较急促）

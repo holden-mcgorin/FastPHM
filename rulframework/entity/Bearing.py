@@ -43,15 +43,16 @@ class Bearing:
     COLOR_FAILURE_STAGE = 'red'
     COLOR_FAILURE_THRESHOLD = 'darkred'
 
-    def __init__(self, name: str,
+    def __init__(self, name: str, span: int = None,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: DataFrame = None,
                  stage_data: BearingStage = None, predict_history: PredictHistory = None):
-        self.name = name
-        self.raw_data = raw_data
-        self.feature_data = feature_data
-        self.train_data = train_data
-        self.stage_data = stage_data
-        self.predict_history = predict_history
+        self.name = name  # 此轴承名称
+        self.span = span  # 此轴承连续采样的区间大小
+        self.raw_data = raw_data  # 此轴承的原始数据
+        self.feature_data = feature_data  # 此轴承的特征数据
+        self.train_data = train_data  # 此轴承用于训练模型的数据
+        self.stage_data = stage_data  # 此轴承的全寿命阶段划分数据
+        self.predict_history = predict_history  # 此轴承的RUL预测数据
 
     def __str__(self) -> str:
         return self.name

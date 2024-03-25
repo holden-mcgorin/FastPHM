@@ -1,4 +1,5 @@
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
+from rulframework.data.raw.PHM2012DataLoader import PHM2012DataLoader
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
@@ -8,30 +9,32 @@ from rulframework.evaluator.metric.Error import Error
 from rulframework.evaluator.metric.ErrorPercentage import ErrorPercentage
 from rulframework.evaluator.metric.MAPE import MAPE
 from rulframework.evaluator.metric.MSE import MSE
-from rulframework.evaluator.metric.Median import Median
+from rulframework.evaluator.metric.Mean import Mean
 from rulframework.evaluator.metric.RUL import RUL
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
 from rulframework.predictor.RollingPredictor import RollingPredictor
 from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
 from rulframework.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
-from rulframework.utils.MovingAverageFilter import MovingAverageFilter
-from rulframework.utils.ThresholdTrimmer import ThresholdTrimmer
+from rulframework.util.MovingAverageFilter import MovingAverageFilter
+from rulframework.util.ThresholdTrimmer import ThresholdTrimmer
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
-    feature_extractor = RMSFeatureExtractor(32768)
+    # data_loader = PHM2012DataLoader('D:\\data\\dataset\\phm-ieee-2012-data-challenge-dataset-master')
+    feature_extractor = RMSFeatureExtractor(data_loader.span )
     fpt_calculator = ThreeSigmaFPTCalculator()
-    eol_calculator = NinetyFivePercentRMSEoLCalculator()
-    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
+    eol_calculator = NinetyThreePercentRMSEoLCalculator()
+    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, data_loader.span)
 
     # 获取原始数据、特征数据、阶段数据
     bearing = data_loader.get_bearing("Bearing1_3", 'Horizontal Vibration')
     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
     stage_calculator.calculate_state(bearing)
+    bearing.plot_feature()
 
     # 生成训练数据
     data_generator = SlideWindowDataGenerator(92)  # 输入大小60+输出大小32=92
@@ -46,7 +49,7 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     ci_calculator = MeanPlusStdCICalculator(1.5)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
-    min_list, mean_list, max_list = predictor.predict_till_epoch_uncertainty(input_data, 5, ci_calculator)
+    min_list, mean_list, max_list = predictor.predict_till_epoch_uncertainty(input_data, 4, ci_calculator)
 
     # 使用移动平均滤波器平滑预测结果
     average_filter = MovingAverageFilter(5)
@@ -63,5 +66,5 @@ if __name__ == '__main__':
 
     # 计算评价指标
     evaluator = Evaluator()
-    evaluator.add_metric(RUL(), Median(), CI(), Error(), ErrorPercentage(), MSE(), MAPE())
+    evaluator.add_metric(RUL(), Mean(), CI(), Error(), ErrorPercentage(), MSE(), MAPE())
     evaluator.evaluate(bearing)

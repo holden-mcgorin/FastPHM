@@ -3,7 +3,7 @@ from pandas import DataFrame
 from rulframework.stage.eol.ABCEoLCalculator import ABCEoLCalculator
 
 
-class NinetyFivePercentRMSEoLCalculator(ABCEoLCalculator):
+class NinetyThreePercentRMSEoLCalculator(ABCEoLCalculator):
 
     def get_eol(self, raw_data: DataFrame, feature_data: DataFrame, scale: int, fpt_raw: int, fpt_feature: int) -> (
             int, int, int, int):
@@ -11,8 +11,8 @@ class NinetyFivePercentRMSEoLCalculator(ABCEoLCalculator):
         raw_data = raw_data.iloc[:, 0]
         feature_data = feature_data.iloc[:, 0]
 
-        eol_feature = round(len(feature_data) * 0.95)
-        eol_raw = round(len(raw_data) * 0.95)
+        eol_feature = round(len(feature_data) * 0.93)
+        eol_raw = round(len(raw_data) * 0.93)
         failure_threshold_raw = raw_data.iloc[eol_raw]
 
         # 二次修正eol，因为有可能eol前已经有数据超过失效阈值，需要将eol提前

@@ -10,7 +10,7 @@ from rulframework.predictor.RollingPredictor import RollingPredictor
 from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
 from rulframework.predictor.confidence_interval.MiddleSampleCICalculator import MiddleSampleCICalculator
 from rulframework.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage.eol.NinetyFivePercentRMSEoLCalculator import NinetyFivePercentRMSEoLCalculator
+from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
     feature_extractor = RMSFeatureExtractor(32768)
     fpt_calculator = ThreeSigmaFPTCalculator()
-    eol_calculator = NinetyFivePercentRMSEoLCalculator()
+    eol_calculator = NinetyThreePercentRMSEoLCalculator()
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
 
     # 获取原始数据、特征数据、阶段数据
