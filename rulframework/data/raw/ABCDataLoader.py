@@ -33,7 +33,7 @@ class ABCDataLoader(ABC):
     @abstractmethod
     def span(self) -> int:
         """
-        :return: 该数据集连续采样的样本区间大小
+        :return: 该数据集连续采样的样本区间大小(每分钟采样的样本数)
         """
         pass
 

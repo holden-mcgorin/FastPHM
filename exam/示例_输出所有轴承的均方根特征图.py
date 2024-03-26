@@ -4,6 +4,7 @@ from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.util.Timer import Timer
 
 if __name__ == '__main__':
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
@@ -13,8 +14,11 @@ if __name__ == '__main__':
     eol_calculator = NinetyThreePercentRMSEoLCalculator()
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, data_loader.span)
 
+    timer = Timer()
     for bearing_name in data_loader.all:
+        timer.start()
         bearing = data_loader.get_bearing(bearing_name, columns='Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
         bearing.plot_feature()
+        timer.stop()
