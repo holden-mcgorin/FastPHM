@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
-from rulframework.entity.PredictHistory import PredictHistory
+from rulframework.predictor.PredictHistory import PredictHistory
 
 
 class BearingStage:
@@ -139,22 +139,16 @@ class Bearing:
 
         # 当轴承包含预测数据时将绘画轴承的预期曲线
         if self.predict_history is not None:
-            # 确定性预测
-            if self.predict_history.prediction is not None:
-                plt.plot(np.arange(len(self.predict_history.prediction) + 1) + self.predict_history.begin_index - 1,
-                         [(float(self.feature_data.iloc[
-                                     self.predict_history.begin_index - 1, 0]))] + self.predict_history.prediction,
-                         label='prediction')
             # 画置信区间（不确定性预测）
-            if self.predict_history.min_list is not None and self.predict_history.max_list is not None:
-                plt.fill_between(np.arange(len(self.predict_history.min_list)) + self.predict_history.begin_index,
-                                 self.predict_history.min_list, self.predict_history.max_list, alpha=0.25,
+            if self.predict_history.lower is not None and self.predict_history.upper is not None:
+                plt.fill_between(np.arange(len(self.predict_history.lower)) + self.predict_history.begin_index,
+                                 self.predict_history.lower, self.predict_history.upper, alpha=0.25,
                                  label='confidence_interval')
-            # 画均值曲线（不确定性预测）
-            if self.predict_history.mean_list is not None:
-                plt.plot(np.arange(len(self.predict_history.mean_list)) + self.predict_history.begin_index,
-                         self.predict_history.mean_list,
-                         label='mean prediction')
+            # 画预测值（确定性预测和不确定性预测）
+            if self.predict_history.prediction is not None:
+                plt.plot(np.arange(len(self.predict_history.prediction)) + self.predict_history.begin_index,
+                         self.predict_history.prediction,
+                         label='prediction')
 
         legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
         plt.gca().add_artist(legend)

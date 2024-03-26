@@ -8,7 +8,7 @@ class ErrorPercentage(ABCMetric):
         return 'Error percentage'
 
     def measure(self, bearing: Bearing) -> str:
-        median = len(bearing.predict_history.mean_list)
+        median = len(bearing.predict_history.prediction)
         total_life = bearing.stage_data.eol_feature
         predict_beginning = bearing.predict_history.begin_index
         rul = total_life - predict_beginning

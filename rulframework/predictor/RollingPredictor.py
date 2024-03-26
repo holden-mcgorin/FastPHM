@@ -56,7 +56,7 @@ class RollingPredictor(ABCPredictor):
         :param epoch_num: 滚动次数
         :param sampling_num: 采样次数
         :param ci_calculator: 置信区间计算算法
-        :return: 预测结果  min_list, mean_list, max_list
+        :return: 预测结果  lower, prediction, upper
         """
         original_input = input_data
         max_list, min_list, mean_list, all_history = [], [], [], []
@@ -109,11 +109,11 @@ class RollingPredictor(ABCPredictor):
             threshold: Union[int, float]) -> (list, list, list):
         """
         修正区间数据，为了生成图片时预测图像不超过失效阈值
-        :param raw_min_list: 修正前的 min_list
-        :param raw_mean_list: 修正前的 mean_list
-        :param raw_max_list: 修正前的 max_list
+        :param raw_min_list: 修正前的 lower
+        :param raw_mean_list: 修正前的 prediction
+        :param raw_max_list: 修正前的 upper
         :param threshold:
-        :return: min_list, mean_list, max_list
+        :return: lower, prediction, upper
         """
         # 复制列表
         min_list = raw_min_list.copy()

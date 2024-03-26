@@ -36,6 +36,6 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[0:60]
     prediction = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
-    bearing.predict_history = PredictHistory(60, prediction)
+    bearing.predict_history = PredictHistory(60, prediction=prediction)
 
     bearing.plot_feature()

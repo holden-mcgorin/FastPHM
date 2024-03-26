@@ -25,7 +25,7 @@ if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
     # data_loader = PHM2012DataLoader('D:\\data\\dataset\\phm-ieee-2012-data-challenge-dataset-master')
-    feature_extractor = RMSFeatureExtractor(data_loader.span )
+    feature_extractor = RMSFeatureExtractor(data_loader.span)
     fpt_calculator = ThreeSigmaFPTCalculator()
     eol_calculator = NinetyThreePercentRMSEoLCalculator()
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, data_loader.span)
@@ -49,16 +49,16 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     ci_calculator = MeanPlusStdCICalculator(1.5)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
-    min_list, mean_list, max_list = predictor.predict_till_epoch_uncertainty(input_data, 4, ci_calculator)
+    lower, prediction, upper = predictor.predict_till_epoch_uncertainty(input_data, 4, ci_calculator)
 
     # 使用移动平均滤波器平滑预测结果
     average_filter = MovingAverageFilter(5)
-    min_list = average_filter.moving_average(min_list)
-    mean_list = average_filter.moving_average(mean_list)
-    max_list = average_filter.moving_average(max_list)
+    lower = average_filter.moving_average(lower)
+    prediction = average_filter.moving_average(prediction)
+    upper = average_filter.moving_average(upper)
 
     # 裁剪超过阈值部分曲线
-    predict_history = PredictHistory(58, min_list=min_list, mean_list=mean_list, max_list=max_list)
+    predict_history = PredictHistory(58, lower=lower, prediction=prediction, upper=upper)
     trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
     bearing.predict_history = trimmer.trim(predict_history)
 

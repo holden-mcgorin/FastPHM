@@ -1,4 +1,4 @@
-from rulframework.entity.PredictHistory import PredictHistory
+from rulframework.predictor.PredictHistory import PredictHistory
 
 
 class ThresholdTrimmer:
@@ -25,12 +25,12 @@ class ThresholdTrimmer:
         :param predict_history:
         :return:
         """
-        if (predict_history.min_list is not None
-                and predict_history.mean_list is not None
-                and predict_history.max_list is not None):
-            min_list = predict_history.min_list.copy()
-            mean_list = predict_history.mean_list.copy()
-            max_list = predict_history.max_list.copy()
+        if (predict_history.lower is not None
+                and predict_history.prediction is not None
+                and predict_history.upper is not None):
+            min_list = predict_history.lower.copy()
+            mean_list = predict_history.prediction.copy()
+            max_list = predict_history.upper.copy()
 
             # 检查超过开始阈值的下标
             threshold_index_min, threshold_index_mean, threshold_index_max = 0, 0, 0
@@ -61,9 +61,9 @@ class ThresholdTrimmer:
                     del mean_list[threshold_index_mean + 1]
                 mean_list[-1] = self.threshold
 
-            fixed_predict_history.min_list = min_list
-            fixed_predict_history.mean_list = mean_list
-            fixed_predict_history.max_list = max_list
+            fixed_predict_history.lower = min_list
+            fixed_predict_history.prediction = mean_list
+            fixed_predict_history.upper = max_list
 
     def __trim_certainty(self, fixed_predict_history, predict_history):
         """

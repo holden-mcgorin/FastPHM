@@ -43,5 +43,5 @@ if __name__ == '__main__':
         predictor.predict_till_epoch_uncertainty_flat(input_data, 4, bearing.stage_data.failure_threshold_feature,
                                                       ci_calculator)
 
-    bearing.predict_history = PredictHistory(59, min_list=min_list, mean_list=mean_list, max_list=max_list)
+    bearing.predict_history = PredictHistory(59, lower=min_list, upper=max_list)
     bearing.plot_feature()
