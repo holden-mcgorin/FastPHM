@@ -103,7 +103,7 @@ class Bearing:
             for key in self.feature_data:
                 plt.plot(self.feature_data[key], label=key)
 
-        else:
+        if self.stage_data is not None:
             plt.plot(np.arange(self.stage_data.fpt_feature + 1), self.feature_data[:self.stage_data.fpt_feature + 1],
                      label='normal stage', color=self.COLOR_NORMAL_STAGE)
             plt.plot(
@@ -123,11 +123,18 @@ class Bearing:
             plt.axvline(x=self.stage_data.fpt_feature, color='skyblue', linestyle='--')
             plt.axvline(x=self.stage_data.eol_feature, color='skyblue', linestyle='--')
 
+            # 获取当前坐标轴对象
+            ax = plt.gca()
+
+            # 获取坐标轴的上限和下限
+            x_lim = ax.get_xlim()
+            y_lim = ax.get_ylim()  # 获取 y 轴的上限和下限
+
             # 添加标注
             # todo 这里默认特征值为一维的数据
-            plt.text(self.stage_data.fpt_feature + 2, self.feature_data.iloc[self.stage_data.fpt_feature, 0] + 0.5,
+            plt.text(self.stage_data.fpt_feature + x_lim[1] / 75, y_lim[0] + 0.018 * (y_lim[1] - y_lim[0]),
                      'FPT', color='black', fontsize=12)
-            plt.text(self.stage_data.eol_feature + 2, self.feature_data.iloc[self.stage_data.fpt_feature, 0] + 0.5,
+            plt.text(self.stage_data.eol_feature + x_lim[1] / 75, y_lim[0] + 0.018 * (y_lim[1] - y_lim[0]),
                      'EoL', color='black', fontsize=12)
 
         # 当轴承包含预测数据时将绘画轴承的预期曲线

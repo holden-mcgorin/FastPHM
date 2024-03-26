@@ -8,25 +8,30 @@ class Timer:
     start()开始计时
     stop()结束计时
     """
-    def __init__(self, keep_result: bool = True):
-        self.keep_result = keep_result  # 保留计时结果
-        self.__start_time = None
-        self.__running = False
-        self.__timer_thread = None
+    keep_result = True
+    __start_time = None
+    __timer_thread = None
+    __running = False
 
-    def start(self):
-        self.__start_time = time.time()
-        self.__running = True
-        self.__timer_thread = threading.Thread(target=self.__count)
-        self.__timer_thread.start()
+    def __init__(self):
+        raise NotImplementedError("不需要实例，直接Timer.start()开始计时，Timer.stop()结束计时")
 
-    def stop(self):
-        self.__running = False
-        self.__timer_thread.join()
+    @staticmethod
+    def start():
+        Timer.__start_time = time.time()
+        Timer.__running = True
+        Timer.__timer_thread = threading.Thread(target=Timer.__count)
+        Timer.__timer_thread.start()
 
-    def __count(self):
-        while self.__running:
+    @staticmethod
+    def stop():
+        Timer.__running = False
+        Timer.__timer_thread.join()
+
+    @staticmethod
+    def __count():
+        while Timer.__running:
             time.sleep(0.1)
-            print(f'计时中：{round(time.time() - self.__start_time, 2)} s', end='\r')
-        if self.keep_result:
-            print(f'计时时长：{round(time.time() - self.__start_time, 2)} s')
+            print(f'计时中：{round(time.time() - Timer.__start_time, 2)} s', end='\r')
+        if Timer.keep_result:
+            print(f'计时时长：{round(time.time() - Timer.__start_time, 2)} s')
