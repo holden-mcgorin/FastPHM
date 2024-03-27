@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
-from rulframework.predictor.PredictHistory import PredictHistory
+from rulframework.predict.PredictHistory import PredictHistory
 
 
 class BearingStage:
@@ -141,12 +141,17 @@ class Bearing:
         if self.predict_history is not None:
             # 画置信区间（不确定性预测）
             if self.predict_history.lower is not None and self.predict_history.upper is not None:
-                plt.fill_between(np.arange(len(self.predict_history.lower)) + self.predict_history.begin_index,
-                                 self.predict_history.lower, self.predict_history.upper, alpha=0.25,
+                plt.fill_between(np.arange(len(self.predict_history.lower) + 1) + self.predict_history.begin_index - 1,
+                                 [float(self.feature_data.iloc[
+                                            self.predict_history.begin_index, 0])] + self.predict_history.lower,
+                                 [float(self.feature_data.iloc[
+                                            self.predict_history.begin_index, 0])] + self.predict_history.upper,
+                                 alpha=0.25,
                                  label='confidence_interval')
             # 画预测值（确定性预测和不确定性预测）
             if self.predict_history.prediction is not None:
-                plt.plot(np.arange(len(self.predict_history.prediction)) + self.predict_history.begin_index,
+                plt.plot(np.arange(len(self.predict_history.prediction) + 1) + self.predict_history.begin_index - 1,
+                         [float(self.feature_data.iloc[self.predict_history.begin_index, 0])] +
                          self.predict_history.prediction,
                          label='prediction')
 

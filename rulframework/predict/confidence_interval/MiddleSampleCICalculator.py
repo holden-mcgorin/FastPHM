@@ -1,6 +1,6 @@
 from typing import Union
 
-from rulframework.predictor.confidence_interval.ABCCICalculator import ABCCICalculator
+from rulframework.predict.confidence_interval.ABCCICalculator import ABCCICalculator
 
 
 class MiddleSampleCICalculator(ABCCICalculator):

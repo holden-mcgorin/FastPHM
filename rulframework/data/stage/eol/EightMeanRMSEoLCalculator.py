@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from rulframework.stage.eol.ABCEoLCalculator import ABCEoLCalculator
+from rulframework.data.stage.eol.ABCEoLCalculator import ABCEoLCalculator
 
 
 class EightMeanRMSEoLCalculator(ABCEoLCalculator):

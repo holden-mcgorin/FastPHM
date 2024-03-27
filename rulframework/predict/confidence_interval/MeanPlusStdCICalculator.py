@@ -1,7 +1,7 @@
 from typing import Union
 import statistics
 
-from rulframework.predictor.confidence_interval.ABCCICalculator import ABCCICalculator
+from rulframework.predict.confidence_interval.ABCCICalculator import ABCCICalculator
 
 
 class MeanPlusStdCICalculator(ABCCICalculator):

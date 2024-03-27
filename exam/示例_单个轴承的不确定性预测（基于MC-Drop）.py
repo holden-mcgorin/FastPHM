@@ -1,25 +1,24 @@
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
-from rulframework.data.raw.PHM2012DataLoader import PHM2012DataLoader
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
-from rulframework.evaluator.Evaluator import Evaluator
-from rulframework.evaluator.metric.CI import CI
-from rulframework.evaluator.metric.Error import Error
-from rulframework.evaluator.metric.ErrorPercentage import ErrorPercentage
-from rulframework.evaluator.metric.MAPE import MAPE
-from rulframework.evaluator.metric.MSE import MSE
-from rulframework.evaluator.metric.Mean import Mean
-from rulframework.evaluator.metric.RUL import RUL
+from rulframework.predict.evaluator.Evaluator import Evaluator
+from rulframework.predict.evaluator.metric.CI import CI
+from rulframework.predict.evaluator.metric.Error import Error
+from rulframework.predict.evaluator.metric.ErrorPercentage import ErrorPercentage
+from rulframework.predict.evaluator.metric.MAPE import MAPE
+from rulframework.predict.evaluator.metric.MSE import MSE
+from rulframework.predict.evaluator.metric.Mean import Mean
+from rulframework.predict.evaluator.metric.RUL import RUL
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
-from rulframework.predictor.RollingPredictor import RollingPredictor
-from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
-from rulframework.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
-from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.predict.predictor.RollingPredictor import RollingPredictor
+from rulframework.predict.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
+from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
+from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
+from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.util.MovingAverageFilter import MovingAverageFilter
-from rulframework.util.ThresholdTrimmer import ThresholdTrimmer
+from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -58,7 +57,7 @@ if __name__ == '__main__':
     upper = average_filter.moving_average(upper)
 
     # 裁剪超过阈值部分曲线
-    predict_history = PredictHistory(58, lower=lower, prediction=prediction, upper=upper)
+    predict_history = PredictHistory(59, lower=lower, prediction=prediction, upper=upper)
     trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
     bearing.predict_history = trimmer.trim(predict_history)
 

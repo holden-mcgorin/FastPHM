@@ -1,5 +1,5 @@
 from rulframework.entity.Bearing import Bearing
-from rulframework.evaluator.metric.ABCMetric import ABCMetric
+from rulframework.predict.evaluator.metric.ABCMetric import ABCMetric
 
 
 class CI(ABCMetric):

@@ -1,8 +1,8 @@
 from typing import Union
 
 from rulframework.model.ABCModel import ABCModel
-from rulframework.predictor.ABCPredictor import ABCPredictor
-from rulframework.predictor.confidence_interval.ABCCICalculator import ABCCICalculator
+from rulframework.predict.predictor.ABCPredictor import ABCPredictor
+from rulframework.predict.confidence_interval.ABCCICalculator import ABCCICalculator
 
 
 class RollingPredictor(ABCPredictor):

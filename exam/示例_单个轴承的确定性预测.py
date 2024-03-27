@@ -4,10 +4,11 @@ from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGene
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
-from rulframework.predictor.RollingPredictor import RollingPredictor
-from rulframework.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
-from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
+from rulframework.predict.predictor.RollingPredictor import RollingPredictor
+from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
+from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
+from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -36,6 +37,10 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[0:60]
     prediction = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
-    bearing.predict_history = PredictHistory(60, prediction=prediction)
+
+    # 裁剪超过阈值部分曲线
+    predict_history = PredictHistory(59, prediction=prediction)
+    trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
+    bearing.predict_history = trimmer.trim(predict_history)
 
     bearing.plot_feature()

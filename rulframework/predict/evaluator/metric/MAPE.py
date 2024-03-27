@@ -1,11 +1,11 @@
 from rulframework.entity.Bearing import Bearing
-from rulframework.evaluator.metric.ABCMetric import ABCMetric
+from rulframework.predict.evaluator.metric.ABCMetric import ABCMetric
 
 
-class MSE(ABCMetric):
+class MAPE(ABCMetric):
     @property
     def name(self) -> str:
-        return 'MSE'
+        return 'MAPE'
 
     def measure(self, bearing: Bearing) -> str:
         predicted_values = bearing.predict_history.prediction
@@ -13,9 +13,15 @@ class MSE(ABCMetric):
         predicted_values, actual_values = self.trim_lists(predicted_values, actual_values)
 
         n = len(actual_values)
-        squared_errors = [(actual_values[i] - predicted_values[i]) ** 2 for i in range(n)]
-        mse = sum(squared_errors) / n
-        return f"{mse:.4f}"
+        total_percentage_error = 0
+        for i in range(n):
+            if actual_values[i] != 0:
+                total_percentage_error += abs((actual_values[i] - predicted_values[i]) / actual_values[i])
+            else:
+                total_percentage_error += 0
+
+        mape = (total_percentage_error / n) * 100
+        return f"{mape:.1f}%"
 
     @staticmethod
     def trim_lists(list1, list2):

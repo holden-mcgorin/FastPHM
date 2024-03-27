@@ -1,10 +1,8 @@
-from rulframework.data.feature.KurtosisFeatureExtractor import KurtosisFeatureExtractor
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
-from rulframework.data.raw.PHM2012DataLoader import PHM2012DataLoader
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
-from rulframework.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
-from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
+from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
+from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.util.Timer import Timer
 
 if __name__ == '__main__':

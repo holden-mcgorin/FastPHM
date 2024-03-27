@@ -1,6 +1,6 @@
 from rulframework.entity.Bearing import Bearing, BearingStage
-from rulframework.stage.eol.ABCEoLCalculator import ABCEoLCalculator
-from rulframework.stage.fpt.ABCFPTCalculator import ABCFPTCalculator
+from rulframework.data.stage.eol.ABCEoLCalculator import ABCEoLCalculator
+from rulframework.data.stage.fpt.ABCFPTCalculator import ABCFPTCalculator
 
 
 class BearingStageCalculator:

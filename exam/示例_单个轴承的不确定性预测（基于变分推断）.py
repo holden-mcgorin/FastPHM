@@ -4,11 +4,11 @@ from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGene
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.BnnModel import BnnModel
 from rulframework.model.uncertainty.BNN_60_48_32 import BNN_60_48_32
-from rulframework.predictor.RollingPredictor import RollingPredictor
-from rulframework.predictor.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
-from rulframework.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
-from rulframework.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.predict.predictor.RollingPredictor import RollingPredictor
+from rulframework.predict.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
+from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
+from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
+from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
