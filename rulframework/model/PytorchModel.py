@@ -21,12 +21,14 @@ class PytorchModel(ABCModel):
         :param optimizer:默认Adam优化器，学习率0.001
         """
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = model.to(self.device).double()
+        self.model = model.to(device=self.device, dtype=torch.float64)
+
         # 初始化评价指标
         if criterion is None:
             self.criterion = nn.MSELoss()
         else:
             self.criterion = criterion
+
         # 初始化优化器
         if optimizer is None:
             self.optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -44,16 +46,14 @@ class PytorchModel(ABCModel):
         :param num_epochs: 迭代次数
         :return:无返回值
         """
-        x = torch.tensor(train_data_x.values, dtype=torch.float64)
-        y = torch.tensor(train_data_y.values, dtype=torch.float64)
+        x = torch.tensor(train_data_x.values, dtype=torch.float64, device=self.device)
+        y = torch.tensor(train_data_y.values, dtype=torch.float64, device=self.device)
         train_loader = DataLoader(TensorDataset(x, y), batch_size=32, shuffle=True)
 
         for epoch in range(num_epochs):
             self.model.train()  # 设置模型为训练模式
             total_loss = 0.0
-
             for inputs, labels in train_loader:
-                inputs, labels = inputs.to(self.device), labels.to(self.device)
                 self.optimizer.zero_grad()  # 梯度清零
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels)
@@ -85,7 +85,7 @@ class PytorchModel(ABCModel):
         :param input_data: 输入数据
         :return: 一次预测结果
         """
-        input_data = torch.tensor(input_data, dtype=torch.float64).to(self.device)
+        input_data = torch.tensor(input_data, dtype=torch.float64, device=self.device)
         with torch.no_grad():
             output = self.model(input_data).tolist()
         return output

@@ -97,14 +97,14 @@ class BNN_60_48_32(nn.Module):
         # 负证据下界作为损失函数
         # we calculate the negative elbo, which will be our loss function
         # initialize tensors
-        outputs = torch.zeros(samples, target.shape[0],target.shape[1]).to(self.device)
+        outputs = torch.zeros(samples, target.shape[0], target.shape[1]).to(self.device)
         log_priors = torch.zeros(samples).to(self.device)
         log_posts = torch.zeros(samples).to(self.device)
         log_likes = torch.zeros(samples).to(self.device)
         # make predictions and calculate prior, posterior, and likelihood for a given number of samples
         for i in range(samples):
             t = self(input_value)
-            outputs[i] = self(input_value).reshape(target.shape[0],target.shape[1])  # make predictions
+            outputs[i] = self(input_value).reshape(target.shape[0], target.shape[1])  # make predictions
             log_priors[i] = self.log_prior()  # get log prior
             log_posts[i] = self.log_post()  # get log variational posterior
             log_likes[i] = Normal(outputs[i], self.noise_tol).log_prob(

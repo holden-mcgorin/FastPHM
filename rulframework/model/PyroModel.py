@@ -13,7 +13,7 @@ class PyroModel(ABCModel):
 
     def __init__(self, model: nn.Module) -> None:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.torch_model = model.to(self.device).double()  # 确定性模型
+        self.torch_model = model.to(device=self.device, dtype=torch.float64)  # 确定性模型
         self.samples = None  # 模型参数的样本（由训练时MCMC生成）
 
     def pyro_model(self, x, y):
@@ -38,8 +38,8 @@ class PyroModel(ABCModel):
         # 使用 HMC 进行 MCMC 推断
         hmc_kernel = HMC(self.pyro_model)
         mcmc = MCMC(hmc_kernel, num_samples=num_epochs, warmup_steps=200)
-        x = torch.tensor(train_data_x.values, dtype=torch.float64).to(self.device)
-        y = torch.tensor(train_data_y.values, dtype=torch.float64).to(self.device)
+        x = torch.tensor(train_data_x.values, dtype=torch.float64, device=self.device)
+        y = torch.tensor(train_data_y.values, dtype=torch.float64, device=self.device)
         mcmc.run(x, y)
         self.samples = mcmc.get_samples()
 
@@ -67,7 +67,7 @@ class PyroModel(ABCModel):
         self.torch_model.fc2.bias = torch.nn.Parameter(bias2_sample)
 
         # 进行一次神经网络的前向传播
-        x = torch.tensor(input_data, dtype=torch.float64).to(self.device)
+        x = torch.tensor(input_data, dtype=torch.float64, device=self.device)
         return self.torch_model(x).tolist()
 
     def plot_loss(self):

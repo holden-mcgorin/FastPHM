@@ -9,6 +9,7 @@ from rulframework.predict.confidence_interval.MeanPlusStdCICalculator import Mea
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.util.MovingAverageFilter import MovingAverageFilter
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -30,16 +31,22 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = BnnModel(BNN_60_48_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 3000)
     model.plot_loss()
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
-    ci_calculator = MeanPlusStdCICalculator(2)
+    ci_calculator = MeanPlusStdCICalculator(1)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
     min_list, mean_list, max_list = \
         predictor.predict_till_epoch_uncertainty_flat(input_data, 3, bearing.stage_data.failure_threshold_feature,
                                                       ci_calculator)
 
-    bearing.predict_history = PredictHistory(59, lower=min_list, upper=max_list)
+    # 使用移动平均滤波器平滑预测结果
+    average_filter = MovingAverageFilter(5)
+    lower = average_filter.moving_average(min_list)
+    prediction = average_filter.moving_average(mean_list)
+    upper = average_filter.moving_average(max_list)
+
+    bearing.predict_history = PredictHistory(59, lower=lower, upper=upper, prediction=prediction)
     bearing.plot_feature()
