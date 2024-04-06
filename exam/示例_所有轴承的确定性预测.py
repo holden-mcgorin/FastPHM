@@ -1,13 +1,24 @@
+from pandas import DataFrame
+
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
+from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
+from rulframework.predict.evaluator.Evaluator import Evaluator
+from rulframework.predict.evaluator.metric.Error import Error
+from rulframework.predict.evaluator.metric.ErrorPercentage import ErrorPercentage
+from rulframework.predict.evaluator.metric.MAPE import MAPE
+from rulframework.predict.evaluator.metric.MSE import MSE
+from rulframework.predict.evaluator.metric.Mean import Mean
+from rulframework.predict.evaluator.metric.RUL import RUL
 from rulframework.predict.predictor.RollingPredictor import RollingPredictor
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.util.MovingAverageFilter import MovingAverageFilter
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -24,14 +35,20 @@ if __name__ == '__main__':
     # 定义模型
     model = PytorchModel(MLP_60_48_32())
 
-    # 使用训练集训练模型
+    # 合并训练数据
     data_generator = SlideWindowDataGenerator(92)
+    train_data_x, train_data_y = DataFrame(), DataFrame()
     for train_bearing in train_set:
-        print(f'正在使用{train_bearing}训练模型...')
+        print(f'正在使用{train_bearing}构造训练数据...')
         bearing = data_loader.get_bearing(train_bearing, 'Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         bearing.train_data = data_generator.generate_data(bearing.feature_data)
-        model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 200)
+        train_data_x = train_data_x.append(bearing.train_data.iloc[:, :-32], ignore_index=True)
+        train_data_y = train_data_y.append(bearing.train_data.iloc[:, -32:], ignore_index=True)
+
+    # 训练模型
+    print('开始训练模型...')
+    model.train(train_data_x, train_data_y, 1000, weight_decay=0.01)
     model.plot_loss()
 
     # 使用测试集预测
@@ -43,6 +60,21 @@ if __name__ == '__main__':
         stage_calculator.calculate_state(bearing)
         fpt = bearing.stage_data.fpt_feature
         input_data = bearing.feature_data.iloc[:, 0].tolist()[fpt - 60:fpt]
-        prediction = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
+        prediction = predictor.predict_till_epoch(input_data, 8)
+
+        # 使用移动平均滤波器平滑预测结果
+        average_filter = MovingAverageFilter(10)
+        prediction = average_filter.moving_average(prediction)
+
+        # 裁剪超过阈值部分曲线
         bearing.predict_history = PredictHistory(fpt, prediction=prediction)
+        trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
+        bearing.predict_history = trimmer.trim(bearing.predict_history)
+
         bearing.plot_feature()
+
+        # 计算评价指标
+        evaluator = Evaluator()
+        evaluator.add_metric(RUL(), Mean(), Error(), ErrorPercentage(), MSE(), MAPE())
+        evaluator.evaluate(bearing)
+

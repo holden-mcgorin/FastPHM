@@ -38,15 +38,13 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     ci_calculator = MeanPlusStdCICalculator(1)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
-    min_list, mean_list, max_list = \
+    lower, prediction, upper = \
         predictor.predict_till_epoch_uncertainty_flat(input_data, 3, bearing.stage_data.failure_threshold_feature,
                                                       ci_calculator)
 
     # 使用移动平均滤波器平滑预测结果
     average_filter = MovingAverageFilter(5)
-    lower = average_filter.moving_average(min_list)
-    prediction = average_filter.moving_average(mean_list)
-    upper = average_filter.moving_average(max_list)
+    lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
 
     bearing.predict_history = PredictHistory(59, lower=lower, upper=upper, prediction=prediction)
     bearing.plot_feature()

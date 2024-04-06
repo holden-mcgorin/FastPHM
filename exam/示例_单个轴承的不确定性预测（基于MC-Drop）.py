@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PytorchModel(MLP_60_48_drop_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100, weight_decay=0)
     model.plot_loss()
 
     # 使用预测器进行预测
@@ -52,9 +52,7 @@ if __name__ == '__main__':
 
     # 使用移动平均滤波器平滑预测结果
     average_filter = MovingAverageFilter(5)
-    lower = average_filter.moving_average(lower)
-    prediction = average_filter.moving_average(prediction)
-    upper = average_filter.moving_average(upper)
+    lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
 
     # 裁剪超过阈值部分曲线
     predict_history = PredictHistory(59, lower=lower, prediction=prediction, upper=upper)

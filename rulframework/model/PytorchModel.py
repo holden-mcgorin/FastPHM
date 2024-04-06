@@ -13,34 +13,29 @@ class PytorchModel(ABCModel):
     对pytorch神经网络的封装
     """
 
-    def __init__(self, model: nn.Module, criterion=None, optimizer=None) -> None:
+    def __init__(self, model: nn.Module, criterion=None) -> None:
         """
         初始化： 模型、评价指标、优化器
         :param model:定义模型结构的类
         :param criterion:默认均方误差
-        :param optimizer:默认Adam优化器，学习率0.001
         """
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = model.to(device=self.device, dtype=torch.float64)
-
         # 初始化评价指标
         if criterion is None:
             self.criterion = nn.MSELoss()
         else:
             self.criterion = criterion
 
-        # 初始化优化器
-        if optimizer is None:
-            self.optimizer = optim.Adam(model.parameters(), lr=0.001)
-        else:
-            self.optimizer = optimizer
-
         # 用于保存每次epoch的训练损失
         self.train_losses = []
 
-    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000):
+    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000,
+              optimizer=None, weight_decay=0):
         """
         训练模型
+        :param optimizer: 优化器，默认Adam优化器，学习率0.001
+        :param weight_decay: 正则化系数
         :param train_data_x: 训练数据
         :param train_data_y: 训练数据的标签
         :param num_epochs: 迭代次数
@@ -50,15 +45,21 @@ class PytorchModel(ABCModel):
         y = torch.tensor(train_data_y.values, dtype=torch.float64, device=self.device)
         train_loader = DataLoader(TensorDataset(x, y), batch_size=32, shuffle=True)
 
+        # 初始化优化器
+        if optimizer is None:
+            optimizer = optim.Adam(self.model.parameters(), lr=0.001, weight_decay=weight_decay)  # 添加正则化项
+        else:
+            optimizer = optimizer
+
         for epoch in range(num_epochs):
             self.model.train()  # 设置模型为训练模式
             total_loss = 0.0
             for inputs, labels in train_loader:
-                self.optimizer.zero_grad()  # 梯度清零
+                optimizer.zero_grad()  # 梯度清零
                 outputs = self.model(inputs)
                 loss = self.criterion(outputs, labels)
                 loss.backward()  # 反向传播
-                self.optimizer.step()  # 更新权重
+                optimizer.step()  # 更新权重
 
                 total_loss += loss.item()
 

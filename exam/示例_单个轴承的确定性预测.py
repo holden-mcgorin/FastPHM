@@ -5,6 +5,13 @@ from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
+from rulframework.predict.evaluator.Evaluator import Evaluator
+from rulframework.predict.evaluator.metric.Error import Error
+from rulframework.predict.evaluator.metric.ErrorPercentage import ErrorPercentage
+from rulframework.predict.evaluator.metric.MAPE import MAPE
+from rulframework.predict.evaluator.metric.MSE import MSE
+from rulframework.predict.evaluator.metric.Mean import Mean
+from rulframework.predict.evaluator.metric.RUL import RUL
 from rulframework.predict.predictor.RollingPredictor import RollingPredictor
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
@@ -30,13 +37,14 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PytorchModel(MLP_60_48_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 10000)
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 1000, weight_decay=0.01)
     model.plot_loss()
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[0:60]
     prediction = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
+    # prediction = predictor.predict_till_epoch(input_data, 1000)
 
     # 裁剪超过阈值部分曲线
     predict_history = PredictHistory(59, prediction=prediction)
@@ -44,3 +52,8 @@ if __name__ == '__main__':
     bearing.predict_history = trimmer.trim(predict_history)
 
     bearing.plot_feature()
+
+    # 计算评价指标
+    evaluator = Evaluator()
+    evaluator.add_metric(RUL(), Mean(), Error(), ErrorPercentage(), MSE(), MAPE())
+    evaluator.evaluate(bearing)

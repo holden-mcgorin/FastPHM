@@ -1,3 +1,5 @@
+from pandas import DataFrame
+
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
@@ -35,14 +37,20 @@ if __name__ == '__main__':
     # 定义模型
     model = PytorchModel(MLP_60_48_drop_32())
 
-    # 使用训练集训练模型
+    # 合并训练数据
     data_generator = SlideWindowDataGenerator(92)
+    train_data_x, train_data_y = DataFrame(), DataFrame()
     for train_bearing in train_set:
-        print(f'正在使用{train_bearing}训练模型...')
+        print(f'正在使用{train_bearing}构造训练数据...')
         bearing = data_loader.get_bearing(train_bearing, 'Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         bearing.train_data = data_generator.generate_data(bearing.feature_data)
-        model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 400)
+        train_data_x = train_data_x.append(bearing.train_data.iloc[:, :-32], ignore_index=True)
+        train_data_y = train_data_y.append(bearing.train_data.iloc[:, -32:], ignore_index=True)
+
+    # 训练模型
+    print('开始训练模型...')
+    model.train(train_data_x, train_data_y, 1000, weight_decay=0.1)
     model.plot_loss()
 
     # 使用测试集预测
@@ -55,13 +63,11 @@ if __name__ == '__main__':
         stage_calculator.calculate_state(bearing)
         fpt = bearing.stage_data.fpt_feature
         input_data = bearing.feature_data.iloc[:, 0].tolist()[fpt - 60:fpt]
-        lower, prediction, upper = predictor.predict_till_epoch_uncertainty(input_data, 7, ci_calculator)
+        lower, prediction, upper = predictor.predict_till_epoch_uncertainty(input_data, 8, ci_calculator)
 
         # 使用移动平均滤波器平滑预测结果
-        average_filter = MovingAverageFilter(100)
-        lower = average_filter.moving_average(lower)
-        prediction = average_filter.moving_average(prediction)
-        upper = average_filter.moving_average(upper)
+        average_filter = MovingAverageFilter(10)
+        lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
 
         # 裁剪超过阈值部分曲线
         predict_history = PredictHistory(fpt, lower=lower, prediction=prediction, upper=upper)
