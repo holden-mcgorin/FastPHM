@@ -36,8 +36,8 @@ class Bearing:
     轴承对象
     """
 
-    # 常量，生成的图片大小
-    FIG_SIZE = (10, 6)
+    FIG_SIZE = (10, 6)  # 图片大小
+    DPI = 200  # 分辨率，默认100
     COLOR_NORMAL_STAGE = 'green'
     COLOR_DEGENERATION_STAGE = 'orange'
     COLOR_FAILURE_STAGE = 'red'
@@ -66,7 +66,7 @@ class Bearing:
         if self.raw_data is None:
             raise Exception("此轴承原始振动信号变量raw_data为None，请先使用数据加载器加载原始数据赋值给此轴承对象！")
 
-        plt.figure(figsize=self.FIG_SIZE)
+        plt.figure(figsize=self.FIG_SIZE, dpi=self.DPI)
 
         if self.stage_data is None:
             for key in self.raw_data.keys():
@@ -96,7 +96,7 @@ class Bearing:
         当轴承包含预测数据时将绘画轴承的预期曲线
         :return:
         """
-        plt.figure(figsize=self.FIG_SIZE)
+        plt.figure(figsize=self.FIG_SIZE, dpi=self.DPI)
 
         # 当轴承包含阶段数据时将绘画轴承的阶段特征图
         if self.stage_data is None:

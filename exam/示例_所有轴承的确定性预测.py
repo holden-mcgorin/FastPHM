@@ -29,7 +29,7 @@ if __name__ == '__main__':
     stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, 32768)
 
     # 划分训练集与测试集（全部是外圈故障轴承）（外圈退化较怕平稳，内圈退化较急促）
-    train_set = ['Bearing1_1', 'Bearing1_2', 'Bearing1_3', 'Bearing2_2']
+    train_set = ['Bearing1_1', 'Bearing1_2', 'Bearing1_3', 'Bearing2_2', 'Bearing2_4']
     test_set = ['Bearing2_5']
 
     # 定义模型
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     # 训练模型
     print('开始训练模型...')
-    model.train(train_data_x, train_data_y, 1000, weight_decay=0.01)
+    model.train(train_data_x, train_data_y, 100, weight_decay=0.01)
     model.plot_loss()
 
     # 使用测试集预测
@@ -77,4 +77,3 @@ if __name__ == '__main__':
         evaluator = Evaluator()
         evaluator.add_metric(RUL(), Mean(), Error(), ErrorPercentage(), MSE(), MAPE())
         evaluator.evaluate(bearing)
-

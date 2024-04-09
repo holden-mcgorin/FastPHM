@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     # 训练模型
     print('开始训练模型...')
-    model.train(train_data_x, train_data_y, 1000, weight_decay=0.1)
+    model.train(train_data_x, train_data_y, 100, weight_decay=0.1)
     model.plot_loss()
 
     # 使用测试集预测
@@ -62,11 +62,13 @@ if __name__ == '__main__':
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
         fpt = bearing.stage_data.fpt_feature
+        bearing.stage_data.eol_feature = 307
+        bearing.stage_data.failure_threshold_feature = bearing.feature_data.iloc[:, 0][bearing.stage_data.eol_feature]
         input_data = bearing.feature_data.iloc[:, 0].tolist()[fpt - 60:fpt]
         lower, prediction, upper = predictor.predict_till_epoch_uncertainty(input_data, 8, ci_calculator)
 
         # 使用移动平均滤波器平滑预测结果
-        average_filter = MovingAverageFilter(10)
+        average_filter = MovingAverageFilter(5)
         lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
 
         # 裁剪超过阈值部分曲线
