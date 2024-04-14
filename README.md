@@ -17,10 +17,13 @@
 - 支持自定义组件（轻松扩展新的算法）
 
 
-## 💡    使用方法
-1. 安装依赖 pip install -r requirements.txt
-2. 使用jupyter notebook 运行示例代码
-3. 模仿示例，编写您的实验代码，开启自由探索之旅
+## 💡    安装方法
+1. 进入此项目根目录
+2. pip install .
+
+## 🤖    示例
+- 运行jupyter notebook 示例代码 
+- 进入exam文件夹 运行原生python示例
 
 ## 📂    文件结构说明
 - rulframework —— 框架代码
