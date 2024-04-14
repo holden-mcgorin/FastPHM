@@ -21,7 +21,7 @@
 1. 进入此项目根目录
 2. pip install .
 
-## 🤖    示例
+## 💻    示例
 - 运行jupyter notebook 示例代码 
 - 进入exam文件夹 运行原生python示例
 
