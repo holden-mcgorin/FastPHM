@@ -18,12 +18,16 @@
 
 
 ## 💡    安装方法
-1. 进入此项目根目录
-2. pip install .
+### 使用git库远程安装
+1. pip install git+https://gitee.com/holdenmcgorin/RULFramework
+### 使用源代码安装
+1. 下载源代码 或 git clone https://gitee.com/holdenmcgorin/RULFramework.git
+2. 进入此项目根目录
+3. pip install .
 
-## 💻    示例
+## 💻    代码示例
 - 运行jupyter notebook 示例代码 
-- 进入exam文件夹 运行原生python示例
+- 进入exam文件夹运行原生python示例
 
 ## 📂    文件结构说明
 - rulframework —— 框架代码
