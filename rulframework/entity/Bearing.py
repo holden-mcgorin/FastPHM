@@ -128,7 +128,7 @@ class Bearing:
 
             # 获取坐标轴的上限和下限
             x_lim = ax.get_xlim()
-            y_lim = ax.get_ylim()  # 获取 y 轴的上限和下限
+            y_lim = ax.get_ylim()  # 获取 y_test 轴的上限和下限
 
             # 添加标注
             # todo 这里默认特征值为一维的数据

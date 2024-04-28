@@ -17,8 +17,8 @@ class ABCCICalculator(ABC):
     def calculate(self, input_data: list) -> (
             Union[int, float], Union[int, float], Union[int, float]):
         """
-        计算每个 x 对应置信区间的 y 的最小值、均值、最大值
-        :param input_data: x 对应的 y 的采样列表
+        计算每个 x_test 对应置信区间的 y_test 的最小值、均值、最大值
+        :param input_data: x_test 对应的 y_test 的采样列表
         :return: min_value, mean_value, max_value
         """
         pass

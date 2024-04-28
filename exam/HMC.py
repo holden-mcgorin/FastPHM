@@ -6,6 +6,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def synthetic_data(w, b, num_examples):
+    # x_test = torch.normal(0, 1, (num_examples, len(w)))
+    x = torch.linspace(0, 10, num_examples)
+    y = x * w + b
+    y += torch.normal(0, 1, y.shape)
+    return x, y.reshape((-1, 1))
+
+
 # 生成示例时序数据
 def generate_data(num_points=50):
     x = torch.linspace(0, 10, num_points)
@@ -13,7 +21,7 @@ def generate_data(num_points=50):
     return x, y
 
 
-x_train, y_train = generate_data()
+x_train, y_train = synthetic_data(torch.tensor([2.]), 10, 50)
 
 
 # 构建贝叶斯神经网络模型
@@ -31,7 +39,7 @@ def model(x, y):
 
 # 使用 NUTS 进行 MCMC 推断
 nuts_kernel = NUTS(model)
-mcmc = MCMC(nuts_kernel, num_samples=1000, warmup_steps=200)
+mcmc = MCMC(nuts_kernel, num_samples=100, warmup_steps=200)
 mcmc.run(x_train, y_train)
 
 # 从后验分布中抽取样本
@@ -42,8 +50,9 @@ posterior_samples = mcmc.get_samples()
 def predict(x, posterior_samples):
     w_samples = posterior_samples['w']
     b_samples = posterior_samples['b']
-    y_preds = torch.stack([w * x + b for w, b in zip(w_samples, b_samples)])
-    return y_preds.mean(0), y_preds.std(0)
+    # y_preds = torch.stack([w * x + b for w, b in zip(w_samples, b_samples)])
+    print(w_samples.mean(0), b_samples.std(0))
+    return w_samples.mean(0), b_samples.std(0)
 
 
 x_test = torch.linspace(0, 10, 100)
@@ -55,8 +64,8 @@ plt.scatter(x_train.numpy(), y_train.numpy(), label='Training Data')
 plt.plot(x_test.numpy(), y_pred_mean.numpy(), color='red', label='Mean Prediction')
 plt.fill_between(x_test.numpy(), y_pred_mean.numpy() - 2 * y_pred_std.numpy(),
                  y_pred_mean.numpy() + 2 * y_pred_std.numpy(), color='red', alpha=0.2, label='Uncertainty')
-plt.xlabel('x')
-plt.ylabel('y')
+plt.xlabel('x_test')
+plt.ylabel('y_test')
 plt.title('Bayesian Neural Network Prediction with Uncertainty')
 plt.legend()
 plt.show()
