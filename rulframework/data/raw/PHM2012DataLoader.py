@@ -23,7 +23,7 @@ class PHM2012DataLoader(ABCDataLoader):
                 item_dict[bearing_name] = os.path.join(root, folder, bearing_name)
         return item_dict
 
-    def _load(self, item_name) -> DataFrame:
+    def _load_raw_data(self, item_name) -> DataFrame:
         bearing_dir = self._item_dict[item_name]
 
         # 仅获取加速度文件并排序（PHM2012还有温度传感器数据）

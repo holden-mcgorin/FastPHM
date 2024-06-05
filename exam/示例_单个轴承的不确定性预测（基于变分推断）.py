@@ -30,17 +30,15 @@ if __name__ == '__main__':
     bearing.train_data = data_generator.generate_data(bearing.feature_data)
 
     # 定义模型并训练
-    model = BnnModel(BNN_60_48_32())
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 10000)
+    model = BnnModel(BNN_60_48_32(prior_var=1))
+    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 5000)
     model.plot_loss()
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
-    ci_calculator = MeanPlusStdCICalculator(1)
+    ci_calculator = MeanPlusStdCICalculator(1.5)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
-    lower, prediction, upper = \
-        predictor.predict_till_epoch_uncertainty_flat(input_data, 3, bearing.stage_data.failure_threshold_feature,
-                                                      ci_calculator)
+    lower, prediction, upper = predictor.predict_till_epoch_uncertainty(input_data, 3, ci_calculator, sampling_num=100)
 
     # 使用移动平均滤波器平滑预测结果
     average_filter = MovingAverageFilter(5)

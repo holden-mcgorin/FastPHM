@@ -2,6 +2,8 @@
 顶级类：Bearing
 辅助类：BearingStage
 """
+from enum import Enum
+
 import numpy as np
 from matplotlib import pyplot as plt
 from pandas import DataFrame
@@ -31,6 +33,13 @@ class BearingStage:
                f"failure_threshold_feature = {self.failure_threshold_feature}"
 
 
+class FaultType(Enum):
+    OUTER = 'Outer Race'
+    INNER = 'Inner Race'
+    CAGE = 'Cage'
+    BALL = 'Ball'
+
+
 class Bearing:
     """
     轴承对象
@@ -43,11 +52,12 @@ class Bearing:
     COLOR_FAILURE_STAGE = 'red'
     COLOR_FAILURE_THRESHOLD = 'darkred'
 
-    def __init__(self, name: str, span: int = None,
+    def __init__(self, name: str, span: int = None, fault_type: list = None,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: DataFrame = None,
                  stage_data: BearingStage = None, predict_history: PredictHistory = None):
         self.name = name  # 此轴承名称
         self.span = span  # 此轴承连续采样的区间大小
+        self.fault_type = fault_type  # 故障类型
         self.raw_data = raw_data  # 此轴承的原始数据
         self.feature_data = feature_data  # 此轴承的特征数据
         self.train_data = train_data  # 此轴承用于训练模型的数据

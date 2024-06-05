@@ -1,5 +1,6 @@
 from rulframework.data.feature.KurtosisFeatureExtractor import KurtosisFeatureExtractor
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
+from rulframework.data.raw.PHM2012DataLoader import PHM2012DataLoader
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
@@ -21,4 +22,5 @@ if __name__ == '__main__':
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
         bearing.plot_feature()
+        print(bearing_name, ' fault_type: ', bearing.fault_type)
         Timer.stop()

@@ -4,6 +4,7 @@ from typing import Dict
 
 import pandas as pd
 from rulframework.data.raw.ABCDataLoader import ABCDataLoader
+from rulframework.entity.Bearing import FaultType
 
 
 class XJTUDataLoader(ABCDataLoader):
@@ -11,6 +12,27 @@ class XJTUDataLoader(ABCDataLoader):
     @property
     def span(self) -> int:
         return 32768
+
+    @property
+    def fault_type_dict(self) -> dict:
+        fault_type_dict = {
+            'Bearing1_1': [FaultType.OUTER],
+            'Bearing1_2': [FaultType.OUTER],
+            'Bearing1_3': [FaultType.OUTER],
+            'Bearing1_4': [FaultType.CAGE],
+            'Bearing1_5': [FaultType.INNER, FaultType.OUTER],
+            'Bearing2_1': [FaultType.INNER],
+            'Bearing2_2': [FaultType.OUTER],
+            'Bearing2_3': [FaultType.CAGE],
+            'Bearing2_4': [FaultType.OUTER],
+            'Bearing2_5': [FaultType.OUTER],
+            'Bearing3_1': [FaultType.OUTER],
+            'Bearing3_2': [FaultType.INNER, FaultType.OUTER, FaultType.CAGE, FaultType.BALL],
+            'Bearing3_3': [FaultType.INNER],
+            'Bearing3_4': [FaultType.INNER],
+            'Bearing3_5': [FaultType.OUTER],
+        }
+        return fault_type_dict
 
     def _build_item_dict(self, root) -> Dict[str, str]:
         item_dict = {}
@@ -20,7 +42,7 @@ class XJTUDataLoader(ABCDataLoader):
                 item_dict[bearing_name] = os.path.join(root, condition, bearing_name)
         return item_dict
 
-    def _load(self, item_name):
+    def _load_raw_data(self, item_name):
         """
         加载轴承的原始振动信号，返回包含raw_data的Bearing对象
         :param item_name:

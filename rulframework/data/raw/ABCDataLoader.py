@@ -30,16 +30,25 @@ class ABCDataLoader(ABC):
                f'{items}'
 
     @property
+    def all(self) -> list:
+        return list(self._item_dict.keys())
+
+    @property
+    def fault_type_dict(self) -> dict:
+        """
+        可选重写
+        如果需要加入故障类型需要重写此方法，反之不需要重写
+        :return:
+        """
+        return dict()
+
+    @property
     @abstractmethod
     def span(self) -> int:
         """
         :return: 该数据集连续采样的样本区间大小(每分钟采样的样本数)
         """
         pass
-
-    @property
-    def all(self) -> list:
-        return list(self._item_dict.keys())
 
     @abstractmethod
     def _build_item_dict(self, root) -> Dict[str, str]:
@@ -52,7 +61,7 @@ class ABCDataLoader(ABC):
         pass
 
     @abstractmethod
-    def _load(self, item_name) -> DataFrame:
+    def _load_raw_data(self, item_name) -> DataFrame:
         """
         根据数据项名称从数据集中获取数据
         :param item_name:数据项名称
@@ -67,17 +76,24 @@ class ABCDataLoader(ABC):
         :param columns: 只取指定列数据（水平或垂直信号）
         :return:
         """
-        # 从数据文件中加载数据（该方法需要在子类中重写）
-        raw_data = self._load(bearing_name)
+        # 生成轴承对象
+        bearing = Bearing(bearing_name)
 
+        # 赋予原始数据
+        # 从数据文件中加载数据（该方法需要在子类中重写）
+        raw_data = self._load_raw_data(bearing_name)
         # 如果有column参数则仅取该列数据
         if columns is not None:
             columns_names = raw_data.columns.tolist()
             for name in columns_names:
                 if name != columns:
                     raw_data.drop(name, axis=1, inplace=True)
-
-        # 生成轴承对象并返回
-        bearing = Bearing(bearing_name)
         bearing.raw_data = raw_data
+
+        # 赋予故障类型
+        try:
+            bearing.fault_type = self.fault_type_dict[bearing_name]
+        except KeyError:
+            pass
+
         return bearing

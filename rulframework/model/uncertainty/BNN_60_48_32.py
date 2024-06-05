@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Normal
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class Linear_BBB(nn.Module):
     """
@@ -19,7 +20,6 @@ class Linear_BBB(nn.Module):
         """
         # initialize layers
         super().__init__()
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         # set input and output dimensions
         self.input_features = input_features
         self.output_features = output_features
@@ -37,23 +37,23 @@ class Linear_BBB(nn.Module):
         self.b = None
 
         # initialize prior distribution for all of the weights and biases
-        self.prior = Normal(0, prior_var)
+        self.prior = Normal(2, prior_var)
 
     def forward(self, input):
         """
           Optimization process
         """
         # sample weights
-        w_epsilon = Normal(0, 1).sample(self.w_mu.shape).to(self.device)
+        w_epsilon = Normal(0, 1).sample(self.w_mu.shape).to(device)
         self.w = self.w_mu + torch.log(1 + torch.exp(self.w_rho)) * w_epsilon
 
         # sample bias
-        b_epsilon = Normal(0, 1).sample(self.b_mu.shape).to(self.device)
+        b_epsilon = Normal(0, 1).sample(self.b_mu.shape).to(device)
         self.b = self.b_mu + torch.log(1 + torch.exp(self.b_rho)) * b_epsilon
 
         # record log prior by evaluating log pdf of prior at sampled weight and bias
-        w_log_prior = self.prior.log_prob(self.w).to(self.device)
-        b_log_prior = self.prior.log_prob(self.b).to(self.device)
+        w_log_prior = self.prior.log_prob(self.w).to(device)
+        b_log_prior = self.prior.log_prob(self.b).to(device)
         self.log_prior = torch.sum(w_log_prior) + torch.sum(b_log_prior)
 
         # record log variational posterior by evaluating log pdf of normal distribution defined by parameters with
@@ -73,7 +73,6 @@ class BNN_60_48_32(nn.Module):
     def __init__(self, noise_tol=.1, prior_var=1.):
         # initialize the network like you would with a standard multilayer perceptron, but using the BBB layer
         super().__init__()
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.hidden = Linear_BBB(60, 48, prior_var=prior_var)
         self.out = Linear_BBB(48, 32, prior_var=prior_var)
         self.noise_tol = noise_tol  # we will use the noise tolerance to calculate our likelihood
@@ -97,18 +96,16 @@ class BNN_60_48_32(nn.Module):
         # 负证据下界作为损失函数
         # we calculate the negative elbo, which will be our loss function
         # initialize tensors
-        outputs = torch.zeros(samples, target.shape[0], target.shape[1]).to(self.device)
-        log_priors = torch.zeros(samples).to(self.device)
-        log_posts = torch.zeros(samples).to(self.device)
-        log_likes = torch.zeros(samples).to(self.device)
+        outputs = torch.zeros(samples, target.shape[0], target.shape[1]).to(device)
+        log_priors = torch.zeros(samples).to(device)
+        log_posts = torch.zeros(samples).to(device)
+        log_likes = torch.zeros(samples).to(device)
         # make predictions and calculate prior, posterior, and likelihood for a given number of samples
         for i in range(samples):
-            t = self(input_value)
             outputs[i] = self(input_value).reshape(target.shape[0], target.shape[1])  # make predictions
             log_priors[i] = self.log_prior()  # get log prior
             log_posts[i] = self.log_post()  # get log variational posterior
-            log_likes[i] = Normal(outputs[i], self.noise_tol).log_prob(
-                target).sum()  # calculate the log likelihood
+            log_likes[i] = Normal(outputs[i], self.noise_tol).log_prob(target).sum()  # calculate the log likelihood
         # calculate monte carlo estimate of prior posterior and likelihood
         log_prior = log_priors.mean()
         log_post = log_posts.mean()
