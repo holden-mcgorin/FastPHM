@@ -5,7 +5,7 @@ from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PytorchModel import PytorchModel
-from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
+from rulframework.model.mlp.MLP_fc_relu_fc import MLP_fc_relu_fc
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
 from rulframework.predict.evaluator.Evaluator import Evaluator
 from rulframework.predict.evaluator.metric.Error import Error
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     test_set = ['Bearing2_5']
 
     # 定义模型
-    model = PytorchModel(MLP_60_48_32())
+    model = PytorchModel(MLP_fc_relu_fc([60, 48, 32]))
 
     # 合并训练数据
     data_generator = SlideWindowDataGenerator(92)

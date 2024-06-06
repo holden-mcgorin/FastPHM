@@ -13,7 +13,7 @@ from rulframework.predict.evaluator.metric.MSE import MSE
 from rulframework.predict.evaluator.metric.Mean import Mean
 from rulframework.predict.evaluator.metric.RUL import RUL
 from rulframework.model.PytorchModel import PytorchModel
-from rulframework.model.uncertainty.MLP_60_48_drop_32 import MLP_60_48_drop_32
+from rulframework.model.uncertainty.MLP_fc_drop_fc_relu import MLP_fc_drop_fc_relu
 from rulframework.predict.predictor.RollingPredictor import RollingPredictor
 from rulframework.predict.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     test_set = ['Bearing2_5']
 
     # 定义模型
-    model = PytorchModel(MLP_60_48_drop_32())
+    model = PytorchModel(MLP_fc_drop_fc_relu())
 
     # 合并训练数据
     data_generator = SlideWindowDataGenerator(92)

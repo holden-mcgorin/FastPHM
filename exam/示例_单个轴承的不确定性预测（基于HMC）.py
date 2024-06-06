@@ -3,7 +3,7 @@ from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PyroModel import PyroModel
-from rulframework.model.mlp.MLP_60_48_32 import MLP_60_48_32
+from rulframework.model.mlp.MLP_fc_relu_fc import MLP_fc_relu_fc
 from rulframework.predict.predictor.RollingPredictor import RollingPredictor
 from rulframework.predict.confidence_interval.MeanPlusStdCICalculator import MeanPlusStdCICalculator
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     bearing.train_data = data_generator.generate_data(bearing.feature_data)
 
     # 定义模型并训练
-    model = PyroModel(MLP_60_48_32())
+    model = PyroModel(MLP_fc_relu_fc([60, 48, 32]))
     model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
 
     # 使用预测器进行预测
