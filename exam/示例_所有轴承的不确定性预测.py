@@ -35,7 +35,7 @@ if __name__ == '__main__':
     test_set = ['Bearing2_5']
 
     # 定义模型
-    model = PytorchModel(MLP_fc_drop_fc_relu())
+    model = PytorchModel(MLP_fc_drop_fc_relu([60, 48, 32]))
 
     # 合并训练数据
     data_generator = SlideWindowDataGenerator(92)
@@ -45,12 +45,12 @@ if __name__ == '__main__':
         bearing = data_loader.get_bearing(train_bearing, 'Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         bearing.train_data = data_generator.generate_data(bearing.feature_data)
-        train_data_x = train_data_x.append(bearing.train_data.iloc[:, :-32], ignore_index=True)
-        train_data_y = train_data_y.append(bearing.train_data.iloc[:, -32:], ignore_index=True)
+        train_data_x = train_data_x.append(DataFrame(bearing.train_data[:, :-32]), ignore_index=True)
+        train_data_y = train_data_y.append(DataFrame(bearing.train_data[:, -32:]), ignore_index=True)
 
     # 训练模型
     print('开始训练模型...')
-    model.train(train_data_x, train_data_y, 100, weight_decay=0.1)
+    model.train(train_data_x.values, train_data_y.values, 100, weight_decay=0.1)
     model.plot_loss()
 
     # 使用测试集预测

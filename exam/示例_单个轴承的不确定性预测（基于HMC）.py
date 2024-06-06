@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PyroModel(MLP_fc_relu_fc([60, 48, 32]))
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 100)
+    model.train(bearing.train_data[:, :-32], bearing.train_data[:, -32:], 100)
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)

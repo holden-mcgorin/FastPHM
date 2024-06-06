@@ -2,6 +2,7 @@ import os
 import shutil
 
 import pandas as pd
+from numpy import ndarray
 from pandas import DataFrame
 
 from rulframework.data.train.ABCDataGenerator import ABCDataGenerator
@@ -21,7 +22,7 @@ class SlideWindowDataGenerator(ABCDataGenerator):
         self.window_step = window_step
         self.temp_dir = temp_dir
 
-    def generate_data(self, source_data: DataFrame) -> DataFrame:
+    def generate_data(self, source_data: DataFrame) -> ndarray:
         # 计算切片分片结构(索引列表，例：0,8,16)
         index_list = []
         for i in range(0, self.window_size, 8):
@@ -46,7 +47,7 @@ class SlideWindowDataGenerator(ABCDataGenerator):
         new_columns = list(range(len(train_data.columns)))
         train_data.columns = new_columns
 
-        return train_data
+        return train_data.values
 
     @staticmethod
     def __create_partial_window_data(source_data: DataFrame, begin: int, end: int):

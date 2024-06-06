@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
-from pandas import DataFrame
+from numpy import ndarray
 from torch import optim, nn
 
 from rulframework.model.ABCModel import ABCModel
@@ -15,9 +15,9 @@ class BnnModel(ABCModel):
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
         self.train_losses = None
 
-    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000):
-        x = torch.tensor(train_data_x.values, dtype=torch.float64, device=self.device)
-        y = torch.tensor(train_data_y.values, dtype=torch.float64, device=self.device)
+    def train(self, train_data_x: ndarray, train_data_y: ndarray, num_epochs: int = 1000):
+        x = torch.tensor(train_data_x, dtype=torch.float64, device=self.device)
+        y = torch.tensor(train_data_y, dtype=torch.float64, device=self.device)
         hist_epochs = np.zeros((int(num_epochs / 10), 1))
         self.train_losses = np.zeros((int(num_epochs / 10), 1))
         for epoch in range(num_epochs):  # loop over the dataset multiple times

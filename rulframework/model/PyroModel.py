@@ -1,5 +1,6 @@
 import pyro.distributions as dist
 import torch
+from numpy import ndarray
 from pandas import DataFrame
 from pyro.infer import MCMC, NUTS, HMC
 import pyro
@@ -27,7 +28,7 @@ class PyroModel(ABCModel):
         # 观测数据
         pyro.sample('obs', dist.Normal(y_pred, 0.1), obs=y)
 
-    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000):
+    def train(self, train_data_x: ndarray, train_data_y: ndarray, num_epochs: int = 1000):
         """
         贝叶斯推断
         :param train_data_x:
@@ -38,8 +39,8 @@ class PyroModel(ABCModel):
         # 使用 HMC 进行 MCMC 推断
         hmc_kernel = HMC(self.pyro_model)
         mcmc = MCMC(hmc_kernel, num_samples=num_epochs, warmup_steps=200)
-        x = torch.tensor(train_data_x.values, dtype=torch.float64, device=self.device)
-        y = torch.tensor(train_data_y.values, dtype=torch.float64, device=self.device)
+        x = torch.tensor(train_data_x, dtype=torch.float64, device=self.device)
+        y = torch.tensor(train_data_y, dtype=torch.float64, device=self.device)
         mcmc.run(x, y)
         self.samples = mcmc.get_samples()
 

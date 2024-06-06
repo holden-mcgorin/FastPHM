@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = PytorchModel(MLP_fc_relu_fc([60, 48, 32]))
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 1000, weight_decay=0.01)
+    model.train(bearing.train_data[:, :-32], bearing.train_data[:, -32:], 1000, weight_decay=0.01)
     model.plot_loss()
 
     # 使用预测器进行预测

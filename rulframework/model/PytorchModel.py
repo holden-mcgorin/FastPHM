@@ -1,5 +1,6 @@
 import torch
 from matplotlib import pyplot as plt
+from numpy import ndarray
 from pandas import DataFrame
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
@@ -30,7 +31,7 @@ class PytorchModel(ABCModel):
         # 用于保存每次epoch的训练损失
         self.train_losses = []
 
-    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000,
+    def train(self, train_data_x: ndarray, train_data_y: ndarray, num_epochs: int = 1000,
               optimizer=None, weight_decay=0):
         """
         训练模型
@@ -41,8 +42,8 @@ class PytorchModel(ABCModel):
         :param num_epochs: 迭代次数
         :return:无返回值
         """
-        x = torch.tensor(train_data_x.values, dtype=torch.float64, device=self.device)
-        y = torch.tensor(train_data_y.values, dtype=torch.float64, device=self.device)
+        x = torch.tensor(train_data_x, dtype=torch.float64, device=self.device)
+        y = torch.tensor(train_data_y, dtype=torch.float64, device=self.device)
         train_loader = DataLoader(TensorDataset(x, y), batch_size=32, shuffle=True)
 
         # 初始化优化器

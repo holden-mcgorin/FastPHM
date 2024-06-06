@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # 定义模型并训练
     model = BnnModel(BNN_60_48_32(prior_var=1))
-    model.train(bearing.train_data.iloc[:, :-32], bearing.train_data.iloc[:, -32:], 5000)
+    model.train(bearing.train_data[:, :-32], bearing.train_data[:, -32:], 5000)
     model.plot_loss()
 
     # 使用预测器进行预测
