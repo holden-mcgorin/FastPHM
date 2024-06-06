@@ -1,9 +1,9 @@
 from torch import nn
 
 
-class MLP_fc_relu_fc(nn.Module):
+class FcReluFc(nn.Module):
     def __init__(self, size_list: list):
-        super(MLP_fc_relu_fc, self).__init__()
+        super(FcReluFc, self).__init__()
         self.fc1 = nn.Linear(size_list[0], size_list[1])
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(size_list[1], size_list[2])

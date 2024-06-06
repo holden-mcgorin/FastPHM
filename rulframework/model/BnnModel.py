@@ -15,6 +15,13 @@ class BnnModel(ABCModel):
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
         self.train_losses = None
 
+    def __call__(self, x: list) -> list:
+        pass
+
+    @property
+    def loss(self):
+        return self.train_losses
+
     def train(self, train_data_x: ndarray, train_data_y: ndarray, num_epochs: int = 1000):
         x = torch.tensor(train_data_x, dtype=torch.float64, device=self.device)
         y = torch.tensor(train_data_y, dtype=torch.float64, device=self.device)
@@ -38,11 +45,3 @@ class BnnModel(ABCModel):
         with torch.no_grad():
             output = self.model(x).tolist()
         return output
-
-    def plot_loss(self):
-        plt.plot(range(0, len(self.train_losses)), self.train_losses, label='Training Loss')
-        plt.xlabel('Epoch')
-        plt.ylabel('Loss')
-        plt.title('Training Loss Over Epochs')
-        plt.legend()
-        plt.show()

@@ -10,6 +10,7 @@ from rulframework.data.stage.BearingStageCalculator import BearingStageCalculato
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.util.MovingAverageFilter import MovingAverageFilter
+from rulframework.util.Plotter import Plotter
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     bearing = data_loader.get_bearing("Bearing1_3", 'Horizontal Vibration')
     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
     stage_calculator.calculate_state(bearing)
-    bearing.plot_feature()
+    Plotter.feature(bearing)
 
     # 生成训练数据
     data_generator = SlideWindowDataGenerator(92)  # 输入大小60+输出大小32=92
@@ -32,7 +33,7 @@ if __name__ == '__main__':
     # 定义模型并训练
     model = BnnModel(BNN_60_48_32(prior_var=1))
     model.train(bearing.train_data[:, :-32], bearing.train_data[:, -32:], 5000)
-    model.plot_loss()
+    Plotter.loss(model)
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
@@ -45,4 +46,5 @@ if __name__ == '__main__':
     lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
 
     bearing.predict_history = PredictHistory(59, lower=lower, upper=upper, prediction=prediction)
-    bearing.plot_feature()
+    Plotter.feature(bearing)
+

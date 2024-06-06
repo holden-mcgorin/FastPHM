@@ -19,6 +19,7 @@ from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import Ninet
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.util.MovingAverageFilter import MovingAverageFilter
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
+from rulframework.util.Plotter import Plotter
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     bearing = data_loader.get_bearing("Bearing1_3", 'Horizontal Vibration')
     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
     stage_calculator.calculate_state(bearing)
-    bearing.plot_feature()
+    Plotter.feature(bearing)
 
     # 生成训练数据
     data_generator = SlideWindowDataGenerator(92)  # 输入大小60+输出大小32=92
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     # 定义模型并训练
     model = PytorchModel(MLP_fc_drop_fc_relu([60, 48, 32]))
     model.train(bearing.train_data[:, :-32], bearing.train_data[:, -32:], 100, weight_decay=0)
-    model.plot_loss()
+    Plotter.loss(model)
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
     bearing.predict_history = trimmer.trim(predict_history)
 
-    bearing.plot_feature()
+    Plotter.feature(bearing)
 
     # 计算评价指标
     evaluator = Evaluator()

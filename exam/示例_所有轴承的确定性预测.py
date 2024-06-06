@@ -5,7 +5,7 @@ from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PytorchModel import PytorchModel
-from rulframework.model.mlp.MLP_fc_relu_fc import MLP_fc_relu_fc
+from rulframework.model.mlp.FcReluFc import FcReluFc
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
 from rulframework.predict.evaluator.Evaluator import Evaluator
 from rulframework.predict.evaluator.metric.Error import Error
@@ -19,6 +19,7 @@ from rulframework.data.stage.BearingStageCalculator import BearingStageCalculato
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.util.MovingAverageFilter import MovingAverageFilter
+from rulframework.util.Plotter import Plotter
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     test_set = ['Bearing2_5']
 
     # 定义模型
-    model = PytorchModel(MLP_fc_relu_fc([60, 48, 32]))
+    model = PytorchModel(FcReluFc([60, 48, 32]))
 
     # 合并训练数据
     data_generator = SlideWindowDataGenerator(92)
@@ -49,7 +50,7 @@ if __name__ == '__main__':
     # 训练模型
     print('开始训练模型...')
     model.train(train_data_x.values, train_data_y.values, 100, weight_decay=0.01)
-    model.plot_loss()
+    Plotter.loss(model)
 
     # 使用测试集预测
     predictor = RollingPredictor(model)
@@ -71,7 +72,7 @@ if __name__ == '__main__':
         trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
         bearing.predict_history = trimmer.trim(bearing.predict_history)
 
-        bearing.plot_feature()
+        Plotter.feature(bearing)
 
         # 计算评价指标
         evaluator = Evaluator()

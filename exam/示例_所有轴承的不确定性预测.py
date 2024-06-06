@@ -21,6 +21,7 @@ from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import Ninet
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.util.MovingAverageFilter import MovingAverageFilter
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
+from rulframework.util.Plotter import Plotter
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -81,4 +82,5 @@ if __name__ == '__main__':
         evaluator.add_metric(RUL(), Mean(), CI(), Error(), ErrorPercentage(), MSE(), MAPE())
         evaluator.evaluate(bearing)
 
-        bearing.plot_feature()
+        Plotter.feature(bearing)
+

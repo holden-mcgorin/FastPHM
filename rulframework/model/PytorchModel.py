@@ -14,6 +14,10 @@ class PytorchModel(ABCModel):
     对pytorch神经网络的封装
     """
 
+    @property
+    def loss(self) -> list:
+        return self.train_losses
+
     def __init__(self, model: nn.Module, criterion=None) -> None:
         """
         初始化： 模型、评价指标、优化器
@@ -44,7 +48,7 @@ class PytorchModel(ABCModel):
         """
         x = torch.tensor(train_data_x, dtype=torch.float64, device=self.device)
         y = torch.tensor(train_data_y, dtype=torch.float64, device=self.device)
-        train_loader = DataLoader(TensorDataset(x, y), batch_size=32, shuffle=True)
+        train_loader = DataLoader(TensorDataset(x, y), batch_size=64, shuffle=True)
 
         # 初始化优化器
         if optimizer is None:
@@ -69,18 +73,6 @@ class PytorchModel(ABCModel):
 
             print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.10f}", end="\r")
 
-    def plot_loss(self):
-        """
-        绘制训练损失曲线
-        :return: 无返回值
-        """
-        plt.plot(range(0, len(self.train_losses)), self.train_losses, label='Training Loss')
-        plt.xlabel('Epoch')
-        plt.ylabel('Loss')
-        plt.title('Training Loss Over Epochs')
-        plt.legend()
-        plt.show()
-
     def predict(self, input_data: list) -> list:
         """
         输出一次预测结果
@@ -91,3 +83,9 @@ class PytorchModel(ABCModel):
         with torch.no_grad():
             output = self.model(input_data).tolist()
         return output
+
+    def __call__(self, x: ndarray) -> ndarray:
+        input_data = torch.from_numpy(x).to(dtype=torch.float64, device=self.device)
+        with torch.no_grad():
+            output = self.model(input_data)
+        return output.cpu().numpy()

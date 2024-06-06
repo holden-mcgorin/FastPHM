@@ -44,7 +44,6 @@ class PyroModel(ABCModel):
         mcmc.run(x, y)
         self.samples = mcmc.get_samples()
 
-    # 构建贝叶斯神经网络模型
     def predict(self, input_data: list) -> list:
         """
         预测一次
@@ -71,5 +70,12 @@ class PyroModel(ABCModel):
         x = torch.tensor(input_data, dtype=torch.float64, device=self.device)
         return self.torch_model(x).tolist()
 
-    def plot_loss(self):
+    # 构建贝叶斯神经网络模型
+    def __call__(self, x: ndarray) -> ndarray:
+        # todo 空实现
         pass
+
+    @property
+    def loss(self) -> list:
+        # todo 空实现
+        return list()

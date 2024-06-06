@@ -3,7 +3,7 @@ from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
 from rulframework.entity.Bearing import PredictHistory
 from rulframework.model.PytorchModel import PytorchModel
-from rulframework.model.mlp.MLP_fc_relu_fc import MLP_fc_relu_fc
+from rulframework.model.mlp.FcReluFcRelu import FcReluFcRelu
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
 from rulframework.predict.evaluator.Evaluator import Evaluator
 from rulframework.predict.evaluator.metric.Error import Error
@@ -16,6 +16,7 @@ from rulframework.predict.predictor.RollingPredictor import RollingPredictor
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.util.Plotter import Plotter
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -29,16 +30,16 @@ if __name__ == '__main__':
     bearing = data_loader.get_bearing("Bearing1_3", 'Horizontal Vibration')
     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
     stage_calculator.calculate_state(bearing)
-    bearing.plot_feature()
+    Plotter.feature(bearing)
 
     # 生成训练数据
     data_generator = SlideWindowDataGenerator(92)
     bearing.train_data = data_generator.generate_data(bearing.feature_data)
 
     # 定义模型并训练
-    model = PytorchModel(MLP_fc_relu_fc([60, 48, 32]))
+    model = PytorchModel(FcReluFcRelu([60, 48, 32]))
     model.train(bearing.train_data[:, :-32], bearing.train_data[:, -32:], 1000, weight_decay=0.01)
-    model.plot_loss()
+    Plotter.loss(model)
 
     # 使用预测器进行预测
     predictor = RollingPredictor(model)
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
     bearing.predict_history = trimmer.trim(predict_history)
 
-    bearing.plot_feature()
+    Plotter.feature(bearing)
 
     # 计算评价指标
     evaluator = Evaluator()

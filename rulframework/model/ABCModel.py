@@ -10,8 +10,14 @@ class ABCModel(ABC):
     模型必须实现ABCPredictable中的predict抽象方法
     使预测器与模型能够规范接口联合使用
     """
+
     @abstractmethod
     def __init__(self, model):
+        pass
+
+    @property
+    @abstractmethod
+    def loss(self) -> list:
         pass
 
     @abstractmethod
@@ -23,5 +29,5 @@ class ABCModel(ABC):
         pass
 
     @abstractmethod
-    def plot_loss(self):
+    def __call__(self, x: list) -> list:
         pass

@@ -5,6 +5,7 @@ from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.util.Plotter import Plotter
 from rulframework.util.Timer import Timer
 
 if __name__ == '__main__':
@@ -21,6 +22,6 @@ if __name__ == '__main__':
         bearing = data_loader.get_bearing(bearing_name, columns='Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
-        bearing.plot_feature()
+        Plotter.feature(bearing)
         print(bearing_name, ' fault_type: ', bearing.fault_type)
         Timer.stop()
