@@ -96,4 +96,7 @@ class ABCDataLoader(ABC):
         except KeyError:
             pass
 
+        # 赋予连续采样区间
+        bearing.span = self.span
+
         return bearing

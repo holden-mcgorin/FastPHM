@@ -12,8 +12,8 @@ class PHM2012DataLoader(ABCDataLoader):
 
     @property
     def span(self) -> int:
-        # 连续采样数为2560，时长为0.1min，为了方便因此乘10倍
-        return 25600
+        # 连续采样数为2560，时长为0.1min
+        return 2560
 
     def _build_item_dict(self, root) -> Dict[str, str]:
         item_dict = {}

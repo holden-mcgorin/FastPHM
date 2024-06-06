@@ -2,10 +2,13 @@
 顶级类：Bearing
 辅助类：BearingStage
 """
+import enum
 from enum import Enum
+from typing import List
 
 import numpy as np
 from matplotlib import pyplot as plt
+from numpy import ndarray
 from pandas import DataFrame
 
 from rulframework.predict.PredictHistory import PredictHistory
@@ -52,8 +55,8 @@ class Bearing:
     COLOR_FAILURE_STAGE = 'red'
     COLOR_FAILURE_THRESHOLD = 'darkred'
 
-    def __init__(self, name: str, span: int = None, fault_type: list = None,
-                 raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: DataFrame = None,
+    def __init__(self, name: str, span: int = None, fault_type: List[FaultType] = None,
+                 raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: ndarray = None,
                  stage_data: BearingStage = None, predict_history: PredictHistory = None):
         self.name = name  # 此轴承名称
         self.span = span  # 此轴承连续采样的区间大小
@@ -65,7 +68,18 @@ class Bearing:
         self.predict_history = predict_history  # 此轴承的RUL预测数据
 
     def __str__(self) -> str:
-        return self.name
+        # 生成故障描述
+        fault_str = 'fault: "'
+        if self.fault_type is not None:
+            for fault in self.fault_type:
+                fault_str += fault.value + '; '
+        else:
+            fault_str += 'unknown'
+        fault_str += '"'
+
+        span_str = 'span: "' + str(self.span) + '"'
+
+        return self.name + ',  ' + fault_str + '  ' + span_str
 
     def plot_raw(self, is_save=False):
         """
