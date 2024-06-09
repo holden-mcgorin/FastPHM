@@ -25,10 +25,10 @@ if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
     # data_loader = PHM2012DataLoader('D:\\data\\dataset\\phm-ieee-2012-data-challenge-dataset-master')
-    feature_extractor = RMSFeatureExtractor(data_loader.span)
+    feature_extractor = RMSFeatureExtractor(data_loader.continuum)
     fpt_calculator = ThreeSigmaFPTCalculator()
     eol_calculator = NinetyThreePercentRMSEoLCalculator()
-    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, data_loader.span)
+    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, data_loader.continuum)
 
     # 获取原始数据、特征数据、阶段数据
     bearing = data_loader.get_bearing("Bearing1_3", 'Horizontal Vibration')

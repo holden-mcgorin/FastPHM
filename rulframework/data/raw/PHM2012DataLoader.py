@@ -11,9 +11,16 @@ from rulframework.data.raw.ABCDataLoader import ABCDataLoader
 class PHM2012DataLoader(ABCDataLoader):
 
     @property
-    def span(self) -> int:
-        # 连续采样数为2560，时长为0.1min
+    def frequency(self) -> int:
+        return 25600
+
+    @property
+    def continuum(self) -> int:
         return 2560
+
+    @property
+    def span(self) -> int:
+        return 10
 
     def _build_item_dict(self, root) -> Dict[str, str]:
         item_dict = {}

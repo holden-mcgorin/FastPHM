@@ -6,6 +6,23 @@ from pandas import DataFrame
 from rulframework.entity.Bearing import Bearing
 
 
+class NameIterator:
+    def __init__(self, name_list: list):
+        self.name_list = name_list
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index < len(self.name_list):
+            result = self.name_list[self.index]
+            self.index += 1
+            return result
+        else:
+            raise StopIteration
+
+
 class ABCDataLoader(ABC):
     """
     所有数据读取器的抽象基类、
@@ -23,15 +40,14 @@ class ABCDataLoader(ABC):
         self._item_dict = self._build_item_dict(root)  # 单个数据文件夹位置字典
         print(self)
 
+    def __iter__(self):
+        return NameIterator(list(self._item_dict.keys()))
+
     def __str__(self) -> str:
         items = '\n'.join([f"  {key}，位置: {value}" for key, value in self._item_dict.items()])
         return f'<<<< 数据集位置：{self._root} >>>>\n' \
                f'>> 已成功登记以下数据项：\n' \
                f'{items}'
-
-    @property
-    def all(self) -> list:
-        return list(self._item_dict.keys())
 
     @property
     def fault_type_dict(self) -> dict:
@@ -44,9 +60,25 @@ class ABCDataLoader(ABC):
 
     @property
     @abstractmethod
+    def frequency(self) -> int:
+        """
+        :return: 采样频率（单位：Hz）
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def continuum(self) -> int:
+        """
+        :return: 该数据集每次连续采样的样本数量（单位：个）
+        """
+        pass
+
+    @property
+    @abstractmethod
     def span(self) -> int:
         """
-        :return: 该数据集连续采样的样本区间大小(每分钟采样的样本数)
+        :return: 每次采样代表的时长=每次采样的时长+每次未采样的时长（单位：秒）
         """
         pass
 
@@ -96,7 +128,9 @@ class ABCDataLoader(ABC):
         except KeyError:
             pass
 
-        # 赋予连续采样区间
+        # 赋予连续采样区间、代表时长、采样频率
+        bearing.frequency = self.frequency
+        bearing.continuum = self.continuum
         bearing.span = self.span
 
         return bearing

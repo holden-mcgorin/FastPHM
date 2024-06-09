@@ -8,9 +8,16 @@ from rulframework.entity.Bearing import FaultType
 
 
 class XJTUDataLoader(ABCDataLoader):
+    @property
+    def frequency(self) -> int:
+        return 25600
 
     @property
     def span(self) -> int:
+        return 60
+
+    @property
+    def continuum(self) -> int:
         return 32768
 
     @property

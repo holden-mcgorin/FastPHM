@@ -11,17 +11,17 @@ from rulframework.util.Timer import Timer
 if __name__ == '__main__':
     data_loader = XJTUDataLoader('D:\\data\\dataset\\XJTU-SY_Bearing_Datasets')
     # data_loader = PHM2012DataLoader('D:\\data\\dataset\\phm-ieee-2012-data-challenge-dataset-master')
-    feature_extractor = RMSFeatureExtractor(data_loader.span)
-    # feature_extractor = KurtosisFeatureExtractor(data_loader.span)
+    feature_extractor = RMSFeatureExtractor(data_loader.continuum)
+    # feature_extractor = KurtosisFeatureExtractor(data_loader.continuum)
     fpt_calculator = ThreeSigmaFPTCalculator()
     eol_calculator = NinetyThreePercentRMSEoLCalculator()
-    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, data_loader.span)
+    stage_calculator = BearingStageCalculator(fpt_calculator, eol_calculator, data_loader.continuum)
 
-    for bearing_name in data_loader.all:
+    for bearing_name in data_loader:
         Timer.start()
         bearing = data_loader.get_bearing(bearing_name, columns='Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
         Plotter.feature(bearing)
-        print(bearing_name, ' fault_type: ', bearing.fault_type)
+        print(bearing)
         Timer.stop()

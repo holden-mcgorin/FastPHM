@@ -47,11 +47,14 @@ class Bearing:
     轴承对象
     """
 
-    def __init__(self, name: str, span: int = None, fault_type: List[FaultType] = None,
+    def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
+                 fault_type: List[FaultType] = None,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: ndarray = None,
                  stage_data: BearingStage = None, predict_history: PredictHistory = None):
         self.name = name  # 此轴承名称
-        self.span = span  # 此轴承连续采样的区间大小
+        self.frequency = frequency  # 此轴承的采样频率
+        self.continuum = continuum  # 此轴承的连续采样区间大小
+        self.span = span  # 此轴承连续采样代表的时间
         self.fault_type = fault_type  # 故障类型
         self.raw_data = raw_data  # 此轴承的原始数据
         self.feature_data = feature_data  # 此轴承的特征数据
@@ -69,6 +72,8 @@ class Bearing:
             fault_str += 'unknown'
         fault_str += '"'
 
-        span_str = 'span: "' + str(self.span) + '"'
+        frequency_str = 'frequency: "' + str(self.frequency) + 'Hz"'
+        continuum = 'continuum: ' + str(self.continuum) + '"'
+        span_str = 'span: "' + str(self.span) + 's"'
 
-        return self.name + ',  ' + fault_str + '  ' + span_str
+        return self.name + ',  ' + ", ".join([frequency_str, continuum, span_str]) + '  ' + fault_str
