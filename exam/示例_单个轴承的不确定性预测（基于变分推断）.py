@@ -46,5 +46,5 @@ if __name__ == '__main__':
     lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
 
     bearing.result = Result(59, upper=upper, mean=prediction, lower=lower)
-    Plotter.degeneration(bearing)
+    Plotter.degeneration_rul(bearing)
 

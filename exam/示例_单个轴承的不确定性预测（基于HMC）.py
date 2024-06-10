@@ -42,4 +42,4 @@ if __name__ == '__main__':
                                                       ci_calculator)
 
     bearing.result = Result(59, upper=max_list, lower=min_list)
-    Plotter.degeneration(bearing)
+    Plotter.degeneration_rul(bearing)

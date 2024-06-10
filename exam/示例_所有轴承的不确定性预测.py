@@ -77,5 +77,5 @@ if __name__ == '__main__':
         evaluator.add_metric(RUL(), Mean(), CI(), Error(), ErrorPercentage(), MSE(), MAPE())
         evaluator.evaluate(bearing)
 
-        Plotter.degeneration(bearing)
+        Plotter.degeneration_rul(bearing)
 

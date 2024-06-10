@@ -33,25 +33,7 @@ if __name__ == '__main__':
     model.train(x, y, 100, weight_decay=0.01)
     Plotter.loss(model)
 
-
     h_index = np.linspace(0, x.shape[0], x.shape[0])
     v_index = model(x).reshape(-1)
 
-    Plotter.relative_rul(h_index, v_index)
-    # # 使用预测器进行预测
-    # predictor = RollingPredictor(model)
-    # input_data = bearing.feature_data.iloc[:, 0].tolist()[0:60]
-    # mean = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
-    # # mean = predictor.predict_till_epoch(input_data, 1000)
-    #
-    # # 裁剪超过阈值部分曲线
-    # result = Result(59, mean=mean)
-    # trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
-    # bearing.result = trimmer.trim(result)
-    #
-    # bearing.plot_feature()
-    #
-    # # 计算评价指标
-    # evaluator = Evaluator()
-    # evaluator.add_metric(RUL(), Mean(), Error(), ErrorPercentage(), MSE(), MAPE())
-    # evaluator.evaluate(bearing)
+    Plotter.end2end_rul(h_index, v_index)

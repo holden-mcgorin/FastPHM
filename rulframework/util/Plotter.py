@@ -30,7 +30,7 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def relative_rul(x, y):
+    def end2end_rul(x, y):
         plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
         plt.plot([0, len(x)], [1, 0], color='red')
         plt.scatter(x, y, label='Our proposed model', s=1)
@@ -133,7 +133,7 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def __degeneration(bearing: Bearing, is_trim: bool = True):
+    def __degeneration_rul(bearing: Bearing, is_trim: bool = True):
         if is_trim:
             trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
             bearing.result = trimmer.trim(bearing.result)
@@ -156,11 +156,11 @@ class Plotter:
                 label='mean')
 
     @staticmethod
-    def degeneration(bearing: Bearing, is_trim: bool = True, is_staged: bool = True):
+    def degeneration_rul(bearing: Bearing, is_trim: bool = True, is_staged: bool = True):
         plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
 
         Plotter.__feature(bearing)
-        Plotter.__degeneration(bearing, is_trim=is_trim)
+        Plotter.__degeneration_rul(bearing, is_trim=is_trim)
 
         legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
         plt.gca().add_artist(legend)

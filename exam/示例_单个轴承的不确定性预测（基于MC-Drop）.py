@@ -55,7 +55,7 @@ if __name__ == '__main__':
     lower, mean, upper = average_filter.moving_average(lower, mean, upper)
     bearing.result = Result(59, upper=upper, mean=mean, lower=lower)
 
-    Plotter.degeneration(bearing, is_trim=True)
+    Plotter.degeneration_rul(bearing, is_trim=True)
 
     # 计算评价指标
     evaluator = Evaluator()

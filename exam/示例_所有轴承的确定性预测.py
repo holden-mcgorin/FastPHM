@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
         bearing.result = Result(fpt, mean=prediction)
 
-        Plotter.degeneration(bearing)
+        Plotter.degeneration_rul(bearing)
 
         # 计算评价指标
         evaluator = Evaluator()

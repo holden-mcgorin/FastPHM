@@ -47,7 +47,7 @@ if __name__ == '__main__':
     # mean = predictor.predict_till_epoch(input_data, 1000)
 
     bearing.result = Result(59, mean=prediction)
-    Plotter.degeneration(bearing)
+    Plotter.degeneration_rul(bearing)
 
     # 计算评价指标
     evaluator = Evaluator()
