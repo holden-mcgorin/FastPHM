@@ -4,7 +4,6 @@ from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGene
 from rulframework.entity.Bearing import Result
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.FcReluFcRelu import FcReluFcRelu
-from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
 from rulframework.predict.evaluator.Evaluator import Evaluator
 from rulframework.predict.evaluator.metric.Error import Error
 from rulframework.predict.evaluator.metric.ErrorPercentage import ErrorPercentage

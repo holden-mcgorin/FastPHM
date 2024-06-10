@@ -18,7 +18,6 @@ from rulframework.data.stage.BearingStageCalculator import BearingStageCalculato
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
 from rulframework.util.MovingAverageFilter import MovingAverageFilter
-from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
 from rulframework.util.Plotter import Plotter
 
 if __name__ == '__main__':

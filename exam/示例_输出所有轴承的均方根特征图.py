@@ -22,6 +22,6 @@ if __name__ == '__main__':
         bearing = data_loader.get_bearing(bearing_name, columns='Horizontal Vibration')
         bearing.feature_data = feature_extractor.extract(bearing.raw_data)
         stage_calculator.calculate_state(bearing)
-        Plotter.feature(bearing)
+        Plotter.feature(bearing, is_staged=True)
         print(bearing)
         Timer.stop()
