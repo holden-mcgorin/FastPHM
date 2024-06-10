@@ -1,5 +1,6 @@
 import numpy as np
 
+from rulframework.data.dataset.Dataset import Dataset
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.RelativeRUL import RelativeRUL
@@ -27,13 +28,15 @@ if __name__ == '__main__':
     # 生成训练数据
     data_generator = RelativeRUL()
     x, y = data_generator.generate(bearing, 128)
+    data_set = Dataset(x, y)
+    train_set, test_set = data_set.split(0.7)
 
     # 定义模型并训练
     model = PytorchModel(FcReluFcRelu([128, 64, 1]))
-    model.train(x, y, 100, weight_decay=0.01)
+    model.train(train_set.x, train_set.y, 100, weight_decay=0.01)
     Plotter.loss(model)
 
-    h_index = np.linspace(0, x.shape[0], x.shape[0])
-    v_index = model(x).reshape(-1)
+    h_index = np.abs(test_set.y.reshape(-1) - 1) * bearing.rul / 60
+    v_index = model(test_set.x).reshape(-1)
 
-    Plotter.end2end_rul(h_index, v_index)
+    Plotter.end2end_rul(h_index, v_index, bearing.name)

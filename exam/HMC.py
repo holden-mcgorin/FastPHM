@@ -50,7 +50,7 @@ posterior_samples = mcmc.get_samples()
 def predict(x, posterior_samples):
     w_samples = posterior_samples['w']
     b_samples = posterior_samples['b']
-    # y_preds = torch.stack([w * x + b for w, b in zip(w_samples, b_samples)])
+    # y_preds = torch.stack([w * __x + b for w, b in zip(w_samples, b_samples)])
     print(w_samples.mean(0), b_samples.std(0))
     return w_samples.mean(0), b_samples.std(0)
 

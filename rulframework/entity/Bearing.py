@@ -77,3 +77,19 @@ class Bearing:
         span_str = 'span: "' + str(self.span) + 's"'
 
         return self.name + ',  ' + ", ".join([frequency_str, continuum, span_str]) + '  ' + fault_str
+
+    @property
+    def total_life(self):
+        """
+        轴承的全寿命时长（单位：秒）
+        :return:
+        """
+        return self.raw_data.shape[0] / self.continuum * self.span
+
+    @property
+    def rul(self):
+        """
+        根据FPT计算的轴承的RUL（单位：秒）
+        :return:
+        """
+        return (self.raw_data.shape[0] - self.stage_data.fpt_raw) / self.continuum * self.span

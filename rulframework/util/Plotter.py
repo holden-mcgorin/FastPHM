@@ -30,12 +30,12 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def end2end_rul(x, y):
+    def end2end_rul(x, y, name):
         plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
-        plt.plot([0, len(x)], [1, 0], color='red')
+        plt.plot([0, max(x)], [1, 0], color='red')
         plt.scatter(x, y, label='Our proposed model', s=1)
-        plt.title('result')
-        plt.xlabel('Time (Sample Index)')
+        plt.title(f'RUL prediction result of {name}')
+        plt.xlabel('Time (min)')
         plt.ylabel('Relative RUL')
         plt.legend()
         plt.show()

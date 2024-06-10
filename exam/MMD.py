@@ -51,7 +51,7 @@ def mmd(X, Y, kernel_func):
 # Y = np.random.randn(100, 2)  # 第二个数组
 X = np.random.normal(100, 10, 100)
 Y = np.random.normal(100, 10, 500)
-print(f'x = {X}')
-print(f'y = {Y}')
+print(f'__x = {X}')
+print(f'__y = {Y}')
 mmd_value = mmd(X, Y, gaussian_kernel)
 print("MMD:", mmd_value)
