@@ -8,8 +8,8 @@ class Error(ABCMetric):
         return 'Error'
 
     def measure(self, bearing: Bearing) -> str:
-        median = len(bearing.predict_history.prediction)
+        median = len(bearing.result.mean)
         total_life = bearing.stage_data.eol_feature
-        predict_beginning = bearing.predict_history.begin_index
+        predict_beginning = bearing.result.begin_index
         rul = total_life - predict_beginning
         return str(median - rul)

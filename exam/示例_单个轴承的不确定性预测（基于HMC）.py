@@ -1,7 +1,7 @@
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
-from rulframework.entity.Bearing import PredictHistory
+from rulframework.entity.Bearing import Result
 from rulframework.model.PyroModel import PyroModel
 from rulframework.model.mlp.FcReluFcRelu import FcReluFcRelu
 from rulframework.predict.predictor.RollingPredictor import RollingPredictor
@@ -41,5 +41,5 @@ if __name__ == '__main__':
         predictor.predict_till_epoch_uncertainty_flat(input_data, 4, bearing.stage_data.failure_threshold_feature,
                                                       ci_calculator)
 
-    bearing.predict_history = PredictHistory(59, lower=min_list, upper=max_list)
-    Plotter.feature(bearing)
+    bearing.result = Result(59, upper=max_list, lower=min_list)
+    Plotter.degeneration(bearing)

@@ -3,7 +3,7 @@ from pandas import DataFrame
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
-from rulframework.entity.Bearing import PredictHistory
+from rulframework.entity.Bearing import Result
 from rulframework.predict.evaluator.Evaluator import Evaluator
 from rulframework.predict.evaluator.metric.CI import CI
 from rulframework.predict.evaluator.metric.Error import Error
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # 训练模型
     print('开始训练模型...')
     model.train(train_data_x.values, train_data_y.values, 100, weight_decay=0.1)
-    model.plot_loss()
+    Plotter.loss(model)
 
     # 使用测试集预测
     ci_calculator = MeanPlusStdCICalculator(1.5)
@@ -71,16 +71,12 @@ if __name__ == '__main__':
         # 使用移动平均滤波器平滑预测结果
         average_filter = MovingAverageFilter(5)
         lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
-
-        # 裁剪超过阈值部分曲线
-        predict_history = PredictHistory(fpt, lower=lower, prediction=prediction, upper=upper)
-        trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
-        bearing.predict_history = trimmer.trim(predict_history)
+        bearing.result = Result(fpt, upper=upper, mean=prediction, lower=lower)
 
         # 计算评价指标
         evaluator = Evaluator()
         evaluator.add_metric(RUL(), Mean(), CI(), Error(), ErrorPercentage(), MSE(), MAPE())
         evaluator.evaluate(bearing)
 
-        Plotter.feature(bearing)
+        Plotter.degeneration(bearing)
 

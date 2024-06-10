@@ -1,7 +1,7 @@
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
-from rulframework.entity.Bearing import PredictHistory
+from rulframework.entity.Bearing import Result
 from rulframework.predict.evaluator.Evaluator import Evaluator
 from rulframework.predict.evaluator.metric.CI import CI
 from rulframework.predict.evaluator.metric.Error import Error
@@ -49,18 +49,14 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     ci_calculator = MeanPlusStdCICalculator(1.5)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[:60]
-    lower, prediction, upper = predictor.predict_till_epoch_uncertainty(input_data, 4, ci_calculator)
+    lower, mean, upper = predictor.predict_till_epoch_uncertainty(input_data, 4, ci_calculator)
 
     # 使用移动平均滤波器平滑预测结果
     average_filter = MovingAverageFilter(5)
-    lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
+    lower, mean, upper = average_filter.moving_average(lower, mean, upper)
+    bearing.result = Result(59, upper=upper, mean=mean, lower=lower)
 
-    # 裁剪超过阈值部分曲线
-    predict_history = PredictHistory(59, lower=lower, prediction=prediction, upper=upper)
-    trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
-    bearing.predict_history = trimmer.trim(predict_history)
-
-    Plotter.feature(bearing)
+    Plotter.degeneration(bearing, is_trim=True)
 
     # 计算评价指标
     evaluator = Evaluator()

@@ -1,4 +1,4 @@
-from rulframework.predict.PredictHistory import PredictHistory
+from rulframework.predict.Result import Result
 
 
 class ThresholdTrimmer:
@@ -11,12 +11,12 @@ class ThresholdTrimmer:
     def __init__(self, threshold: float) -> None:
         self.threshold = threshold
 
-    def trim(self, predict_history: PredictHistory) -> PredictHistory:
-        rectified_predict_history = PredictHistory(predict_history.begin_index)
+    def trim(self, result: Result) -> Result:
+        rectified_predict_history = Result(result.begin_index)
 
         # 修正预测值
-        if predict_history.prediction is not None:
-            prediction = predict_history.prediction.copy()
+        if result.mean is not None:
+            prediction = result.mean.copy()
             threshold_index_mean = 0
             mean_flag = False
             length = len(prediction)
@@ -29,13 +29,13 @@ class ThresholdTrimmer:
                 for i in range(threshold_index_mean + 1, length):
                     del prediction[threshold_index_mean + 1]
                 prediction[-1] = self.threshold
-            rectified_predict_history.prediction = prediction
+            rectified_predict_history.mean = prediction
 
         # 修正不确定性区间
-        if (predict_history.lower is not None
-                and predict_history.upper is not None):
-            lower = predict_history.lower.copy()
-            upper = predict_history.upper.copy()
+        if (result.lower is not None
+                and result.upper is not None):
+            lower = result.lower.copy()
+            upper = result.upper.copy()
 
             # 检查超过开始阈值的下标
             threshold_index_min, threshold_index_max = 0, 0

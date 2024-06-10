@@ -1,7 +1,7 @@
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
-from rulframework.entity.Bearing import PredictHistory
+from rulframework.entity.Bearing import Result
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.FcReluFcRelu import FcReluFcRelu
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
@@ -45,14 +45,10 @@ if __name__ == '__main__':
     predictor = RollingPredictor(model)
     input_data = bearing.feature_data.iloc[:, 0].tolist()[0:60]
     prediction = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
-    # prediction = predictor.predict_till_epoch(input_data, 1000)
+    # mean = predictor.predict_till_epoch(input_data, 1000)
 
-    # 裁剪超过阈值部分曲线
-    predict_history = PredictHistory(59, prediction=prediction)
-    trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
-    bearing.predict_history = trimmer.trim(predict_history)
-
-    Plotter.feature(bearing)
+    bearing.result = Result(59, mean=prediction)
+    Plotter.degeneration(bearing)
 
     # 计算评价指标
     evaluator = Evaluator()

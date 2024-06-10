@@ -32,7 +32,7 @@ class Linear_BBB(nn.Module):
         self.b_mu = nn.Parameter(torch.zeros(output_features))
         self.b_rho = nn.Parameter(torch.zeros(output_features))
 
-        # initialize weight samples (these will be calculated whenever the layer makes a prediction)
+        # initialize weight samples (these will be calculated whenever the layer makes a mean)
         self.w = None
         self.b = None
 

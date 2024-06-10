@@ -41,13 +41,13 @@ if __name__ == '__main__':
     # # 使用预测器进行预测
     # predictor = RollingPredictor(model)
     # input_data = bearing.feature_data.iloc[:, 0].tolist()[0:60]
-    # prediction = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
-    # # prediction = predictor.predict_till_epoch(input_data, 1000)
+    # mean = predictor.predict_till_threshold(input_data, bearing.stage_data.failure_threshold_feature)
+    # # mean = predictor.predict_till_epoch(input_data, 1000)
     #
     # # 裁剪超过阈值部分曲线
-    # predict_history = PredictHistory(59, prediction=prediction)
+    # result = Result(59, mean=mean)
     # trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
-    # bearing.predict_history = trimmer.trim(predict_history)
+    # bearing.result = trimmer.trim(result)
     #
     # bearing.plot_feature()
     #

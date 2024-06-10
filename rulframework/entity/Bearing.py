@@ -7,7 +7,7 @@ from typing import List
 from numpy import ndarray
 from pandas import DataFrame
 
-from rulframework.predict.PredictHistory import PredictHistory
+from rulframework.predict.Result import Result
 
 
 class BearingStage:
@@ -50,7 +50,7 @@ class Bearing:
     def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
                  fault_type: List[FaultType] = None,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: ndarray = None,
-                 stage_data: BearingStage = None, predict_history: PredictHistory = None):
+                 stage_data: BearingStage = None, result: Result = None):
         self.name = name  # 此轴承名称
         self.frequency = frequency  # 此轴承的采样频率
         self.continuum = continuum  # 此轴承的连续采样区间大小
@@ -60,7 +60,7 @@ class Bearing:
         self.feature_data = feature_data  # 此轴承的特征数据
         self.train_data = train_data  # 此轴承用于训练模型的数据
         self.stage_data = stage_data  # 此轴承的全寿命阶段划分数据
-        self.predict_history = predict_history  # 此轴承的RUL预测数据
+        self.result = result  # 此轴承的RUL预测数据
 
     def __str__(self) -> str:
         # 生成故障描述

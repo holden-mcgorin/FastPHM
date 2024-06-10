@@ -8,5 +8,5 @@ class Mean(ABCMetric):
         return 'Mean'
 
     def measure(self, bearing: Bearing) -> str:
-        return str(len(bearing.predict_history.prediction))
+        return str(len(bearing.result.mean))
     

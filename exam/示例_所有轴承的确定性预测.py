@@ -3,7 +3,7 @@ from pandas import DataFrame
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
-from rulframework.entity.Bearing import PredictHistory
+from rulframework.entity.Bearing import Result
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.FcReluFc import FcReluFc
 from rulframework.predict.ThresholdTrimmer import ThresholdTrimmer
@@ -67,12 +67,9 @@ if __name__ == '__main__':
         average_filter = MovingAverageFilter(10)
         prediction = average_filter.moving_average(prediction)
 
-        # 裁剪超过阈值部分曲线
-        bearing.predict_history = PredictHistory(fpt, prediction=prediction)
-        trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
-        bearing.predict_history = trimmer.trim(bearing.predict_history)
+        bearing.result = Result(fpt, mean=prediction)
 
-        Plotter.feature(bearing)
+        Plotter.degeneration(bearing)
 
         # 计算评价指标
         evaluator = Evaluator()

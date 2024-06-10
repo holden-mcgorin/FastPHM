@@ -1,7 +1,7 @@
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
 from rulframework.data.train.SlideWindowDataGenerator import SlideWindowDataGenerator
-from rulframework.entity.Bearing import PredictHistory
+from rulframework.entity.Bearing import Result
 from rulframework.model.BnnModel import BnnModel
 from rulframework.model.uncertainty.BNN_60_48_32 import BNN_60_48_32
 from rulframework.predict.predictor.RollingPredictor import RollingPredictor
@@ -45,6 +45,6 @@ if __name__ == '__main__':
     average_filter = MovingAverageFilter(5)
     lower, prediction, upper = average_filter.moving_average(lower, prediction, upper)
 
-    bearing.predict_history = PredictHistory(59, lower=lower, upper=upper, prediction=prediction)
-    Plotter.feature(bearing)
+    bearing.result = Result(59, upper=upper, mean=prediction, lower=lower)
+    Plotter.degeneration(bearing)
 

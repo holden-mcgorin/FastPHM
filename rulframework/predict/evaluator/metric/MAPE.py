@@ -8,7 +8,7 @@ class MAPE(ABCMetric):
         return 'MAPE'
 
     def measure(self, bearing: Bearing) -> str:
-        predicted_values = bearing.predict_history.prediction
+        predicted_values = bearing.result.mean
         actual_values = bearing.feature_data.iloc[:, 0].tolist()[bearing.stage_data.fpt_feature:bearing.stage_data.eol_feature]
         predicted_values, actual_values = self.trim_lists(predicted_values, actual_values)
 
