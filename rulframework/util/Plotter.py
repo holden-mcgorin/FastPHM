@@ -83,7 +83,7 @@ class Plotter:
         plt.ylabel('vibration')
         plt.legend()
         if is_save:
-            plt.savefig(bearing.name + '.png', dpi=300)
+            plt.savefig(bearing.name + ' Raw Vibration Signals')
         plt.show()
 
     @staticmethod
@@ -116,7 +116,7 @@ class Plotter:
             plt.text(eol + x_lim[1] / 75, y_lim[0] + 0.018 * (y_lim[1] - y_lim[0]), 'EoL', color='black', fontsize=12)
 
     @staticmethod
-    def feature(bearing: Bearing, is_staged=True):
+    def feature(bearing: Bearing, is_staged=True, is_save=False):
         """
         绘画轴承特征图，当存在阶段数据且设为True时画阶段特征图
         :return:
@@ -130,6 +130,8 @@ class Plotter:
         plt.title(bearing.name + ' Feature Graph')
         plt.xlabel('Time (Sample Index)')
         plt.ylabel('feature value')
+        if is_save:
+            plt.savefig(bearing.name + ' Feature Graph')
         plt.show()
 
     @staticmethod
