@@ -9,6 +9,10 @@ from rulframework.model.mlp.FcReluFcRelu import FcReluFcRelu
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from rulframework.predict.Result import Result
+from rulframework.predict.evaluator.End2EndEvaluator import End2EndEvaluator
+from rulframework.predict.evaluator.end2end_metric.End2EndMSE import End2EndMSE
+from rulframework.predict.evaluator.end2end_metric.End2EndRMSE import End2EndRMSE
 from rulframework.util.Plotter import Plotter
 
 if __name__ == '__main__':
@@ -28,15 +32,18 @@ if __name__ == '__main__':
     # 生成训练数据
     data_generator = RelativeRUL()
     x, y = data_generator.generate(bearing, 128)
-    data_set = Dataset(x, y)
+    data_set = Dataset(x, y, bearing.name)
     train_set, test_set = data_set.split(0.7)
 
     # 定义模型并训练
     model = PytorchModel(FcReluFcRelu([128, 64, 1]))
-    model.train(train_set.x, train_set.y, 100, weight_decay=0.01)
+    model.train(train_set.x, train_set.y, 10, weight_decay=0.01)
     Plotter.loss(model)
 
-    h_index = np.abs(test_set.y.reshape(-1) - 1) * bearing.rul / 60
-    v_index = model(test_set.x).reshape(-1)
+    result = model.end2end_predict(test_set)
+    Plotter.end2end_rul(test_set, result, bearing)
 
-    Plotter.end2end_rul(h_index, v_index, bearing.name)
+    # 预测结果评价
+    evaluator = End2EndEvaluator()
+    evaluator.add_metric(End2EndRMSE(), End2EndMSE())
+    evaluator.evaluate(test_set, result)

@@ -5,7 +5,9 @@ from pandas import DataFrame
 from torch import nn, optim
 from torch.utils.data import TensorDataset, DataLoader
 
+from rulframework.data.dataset.Dataset import Dataset
 from rulframework.model.ABCModel import ABCModel
+from rulframework.predict.Result import Result
 
 
 class PytorchModel(ABCModel):
@@ -83,6 +85,9 @@ class PytorchModel(ABCModel):
         with torch.no_grad():
             output = self.model(input_data).tolist()
         return output
+
+    def end2end_predict(self, test_set: Dataset) -> Result:
+        return Result(mean=self(test_set.x))
 
     def __call__(self, x: ndarray) -> ndarray:
         input_data = torch.from_numpy(x).to(dtype=torch.float64, device=self.device)

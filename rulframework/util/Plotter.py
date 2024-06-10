@@ -1,8 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
+from rulframework.data.dataset.Dataset import Dataset
 from rulframework.entity.Bearing import Bearing
 from rulframework.model.ABCModel import ABCModel
+from rulframework.predict.Result import Result
 from rulframework.util.ThresholdTrimmer import ThresholdTrimmer
 
 
@@ -30,11 +32,14 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def end2end_rul(x, y, name):
+    def end2end_rul(test_set: Dataset, result: Result, bearing: Bearing):
+        x = np.abs(test_set.y.reshape(-1) - 1) * bearing.rul / 60
+        y = result.mean.reshape(-1)
+
         plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
         plt.plot([0, max(x)], [1, 0], color='red')
         plt.scatter(x, y, label='Our proposed model', s=1)
-        plt.title(f'RUL prediction result of {name}')
+        plt.title(f'RUL prediction result of {test_set.name}')
         plt.xlabel('Time (min)')
         plt.ylabel('Relative RUL')
         plt.legend()
