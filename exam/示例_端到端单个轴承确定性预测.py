@@ -27,17 +27,22 @@ if __name__ == '__main__':
     bearing = data_loader.get_bearing("Bearing1_3", 'Horizontal Vibration')
     bearing.feature_data = feature_extractor.extract(bearing.raw_data)
     stage_calculator.calculate_state(bearing)
-    Plotter.feature(bearing)
 
     # 生成训练数据
     data_generator = RelativeRUL()
-    x, y = data_generator.generate(bearing, 128)
-    data_set = Dataset(x, y, bearing.name)
+    data_set = data_generator.generate(bearing, 128)
     train_set, test_set = data_set.split(0.7)
+
+    # 通过其他轴承增加训练数据
+    # bearing1_1 = data_loader.get_bearing('Bearing1_1')
+    # bearing1_1.feature_data = feature_extractor.extract(bearing1_1.raw_data)
+    # stage_calculator.calculate_state(bearing1_1)
+    # train_set_1_1 = data_generator.generate(bearing1_1, 128)
+    # train_set.append(train_set_1_1.x, train_set_1_1.y)
 
     # 定义模型并训练
     model = PytorchModel(FcReluFcRelu([128, 64, 1]))
-    model.train(train_set.x, train_set.y, 10, weight_decay=0.01)
+    model.end2end_train(train_set, 10, weight_decay=0.01)
     Plotter.loss(model)
 
     result = model.end2end_predict(test_set)

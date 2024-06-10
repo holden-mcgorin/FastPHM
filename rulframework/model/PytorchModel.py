@@ -86,6 +86,9 @@ class PytorchModel(ABCModel):
             output = self.model(input_data).tolist()
         return output
 
+    def end2end_train(self, train_set: Dataset, num_epochs=1000, optimizer=None, weight_decay=0):
+        self.train(train_set.x, train_set.y, num_epochs, optimizer, weight_decay)
+
     def end2end_predict(self, test_set: Dataset) -> Result:
         return Result(mean=self(test_set.x))
 
