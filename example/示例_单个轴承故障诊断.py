@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     result = model.end2end_predict(test_set)
     # result.mean = F.softmax(torch.from_numpy(result.mean), dim=1).numpy()
-    Plotter.fault_during_time(test_set, result, bearing)
+    Plotter.fault_during_time(test_set, result, interval=4)
     # Plotter.end2end_rul(test_set, result, bearing)
 
     #

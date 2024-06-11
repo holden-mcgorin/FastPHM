@@ -42,7 +42,7 @@ if __name__ == '__main__':
     Plotter.loss(model)
 
     result = model.end2end_predict(test_set)
-    Plotter.end2end_rul(test_set, result, bearing)
+    Plotter.end2end_rul(test_set, result)
 
     # 预测结果评价
     evaluator = End2EndEvaluator()

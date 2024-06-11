@@ -1,3 +1,5 @@
+from scipy.stats import mode
+
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -28,20 +30,6 @@ class Plotter:
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
         plt.title('Training Loss Over Epochs')
-        plt.legend()
-        plt.show()
-
-    @staticmethod
-    def end2end_rul(test_set: Dataset, result: Result, bearing: Bearing):
-        x = np.abs(test_set.y.reshape(-1) - 1) * bearing.rul / 60
-        y = result.mean.reshape(-1)
-
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
-        plt.plot([0, max(x)], [1, 0], color='red')
-        plt.scatter(x, y, label='Our proposed model', s=1)
-        plt.title(f'RUL prediction result of {test_set.name}')
-        plt.xlabel('Time (min)')
-        plt.ylabel('Relative RUL')
         plt.legend()
         plt.show()
 
@@ -177,16 +165,35 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def fault_during_time(test_set, result, bearing):
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+    def end2end_rul(test_set: Dataset, result: Result):
+        x = test_set.z.reshape(-1) / 60
+        y = result.mean.reshape(-1)
 
-        x = np.arange(len(test_set.x))
-        y = np.argmax(result.mean, axis=1).reshape(-1)
+        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+        plt.plot([0, max(x)], [1, 0], color='red')
+        plt.scatter(x, y, label='Our proposed model', s=1)
+        plt.title(f'RUL prediction result of {test_set.name}')
+        plt.xlabel('Time (min)')
+        plt.ylabel('Relative RUL')
+        plt.legend()
+        plt.show()
+
+    @staticmethod
+    def fault_during_time(test_set, result, interval):
+        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+        plt.ylim(0, test_set.y.shape[1] + 1)
+
+        # x = np.arange(len(test_set.x))
+        # y = np.argmax(result.mean, axis=1).reshape(-1) + 1
+
+        x = np.arange(len(test_set.x) // interval)
+        y = np.argmax(result.mean, axis=1).reshape(-1, interval) + 1
+        y = np.apply_along_axis(lambda l: mode(l)[0], axis=1, arr=y).reshape(-1)
 
         plt.scatter(x, y, label='Our proposed model', s=1)
 
         plt.title(f'Fault Type Prediction Result of {test_set.name}')
-        plt.xlabel('Time (min)')
+        plt.xlabel('Time (sample)')
         plt.ylabel('Predicted Fault Label')
         # plt.legend()
         plt.show()

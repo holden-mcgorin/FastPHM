@@ -29,4 +29,7 @@ class FaultLabelGenerator(ABCGenerator):
         y_fault = np.zeros(((bearing.raw_data.shape[0] - bearing.stage_data.fpt_raw) // self.interval, cols))
         y_fault[:, fault_indices] = 1
         y = np.vstack((y_normal, y_fault))
-        return Dataset(x, y, name=bearing.name)
+
+        z = np.linspace(0, bearing.total_life, x.shape[0]).reshape(-1, 1)
+
+        return Dataset(x, y, z, name=bearing.name)

@@ -15,4 +15,6 @@ class RelativeRULGenerator(ABCGenerator):
         raw_data: ndarray = bearing.raw_data.iloc[bearing.stage_data.fpt_raw:, 0].values
         x = raw_data.reshape(-1, self.interval)
         y = np.linspace(1, 0, x.shape[0]).reshape(-1, 1)
-        return Dataset(x, y, name=bearing.name)
+        z = np.linspace(0, bearing.rul, x.shape[0]).reshape(-1, 1)
+
+        return Dataset(x, y, z, name=bearing.name)
