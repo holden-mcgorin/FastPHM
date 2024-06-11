@@ -23,25 +23,27 @@ class PytorchModel(ABCModel):
     def __init__(self, model: nn.Module, criterion=None) -> None:
         """
         初始化： 模型、评价指标、优化器
+        :param criterion: 损失函数（默认：MSE）
         :param model:定义模型结构的类
         :param criterion:默认均方误差
         """
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = model.to(device=self.device, dtype=torch.float64)
-        # 初始化评价指标
+        # 用于保存每次epoch的训练损失
+        self.train_losses = []
+
+        # 初始化损失函数
         if criterion is None:
             self.criterion = nn.MSELoss()
         else:
             self.criterion = criterion
 
-        # 用于保存每次epoch的训练损失
-        self.train_losses = []
-
-    def train(self, train_data_x: ndarray, train_data_y: ndarray, num_epochs: int = 1000,
+    def train(self, train_data_x: ndarray, train_data_y: ndarray,
+              num_epochs: int = 1000,
               optimizer=None, weight_decay=0):
         """
         训练模型
-        :param optimizer: 优化器，默认Adam优化器，学习率0.001
+        :param optimizer: 优化器（默认：Adam，学习率0.001）
         :param weight_decay: 正则化系数
         :param train_data_x: 训练数据
         :param train_data_y: 训练数据的标签

@@ -32,20 +32,20 @@ class BearingStage:
                f"failure_threshold_feature = {self.failure_threshold_feature}"
 
 
-class FaultType(Enum):
-    """
-    轴承故障类型枚举
-    """
-    OUTER = 'Outer Race'
-    INNER = 'Inner Race'
-    CAGE = 'Cage'
-    BALL = 'Ball'
-
-
 class Bearing:
     """
     轴承对象
     """
+
+    class FaultType(Enum):
+        """
+        轴承故障类型枚举
+        """
+        NORMAL = 'Normal'
+        OUTER = 'Outer Race'
+        INNER = 'Inner Race'
+        CAGE = 'Cage'
+        BALL = 'Ball'
 
     def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
                  fault_type: List[FaultType] = None,

@@ -175,3 +175,27 @@ class Plotter:
         plt.xlabel('Time (Sample Index)')
         plt.ylabel('feature value')
         plt.show()
+
+    @staticmethod
+    def fault_during_time(test_set, result, bearing):
+        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+
+        x = np.arange(len(test_set.x))
+        y = np.argmax(result.mean, axis=1).reshape(-1)
+
+        plt.scatter(x, y, label='Our proposed model', s=1)
+
+        plt.title(f'Fault Type Prediction Result of {test_set.name}')
+        plt.xlabel('Time (min)')
+        plt.ylabel('Predicted Fault Label')
+        # plt.legend()
+        plt.show()
+
+    @staticmethod
+    def fault_prediction_heatmap(self):
+        """
+        故障诊断热图（混淆矩阵图）
+        :param self:
+        :return:
+        """
+        pass

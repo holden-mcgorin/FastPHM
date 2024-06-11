@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 from numpy import ndarray
 
@@ -11,7 +12,7 @@ class Dataset:
             if x.shape[0] != y.shape[0]:
                 raise Exception('x的行数：', x.shape[0], '与y的行数：', y.shape[0], ' 不相等')
 
-    def append(self, x: ndarray, y: ndarray):
+    def add(self, x: ndarray, y: ndarray):
         if x.shape[0] != y.shape[0]:
             raise Exception('x的行数：', x.shape[0], '与y的行数：', y.shape[0], ' 不相等')
         if self.__x is None:
@@ -20,6 +21,13 @@ class Dataset:
         else:
             self.__x = np.vstack((self.__x, x))
             self.__y = np.vstack((self.__y, y))
+
+    def append(self, another_dataset: Dataset):
+        if another_dataset.x is not None and another_dataset.y is not None:
+            self.add(another_dataset.x, another_dataset.y)
+
+        if self.name is not None and another_dataset.name is not None:
+            self.name = self.name + ';' + another_dataset.name
 
     def split(self, ratio):
         num_samples = self.__x.shape[0]

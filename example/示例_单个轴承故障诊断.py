@@ -1,19 +1,22 @@
-import numpy as np
+import torch
+from torch import nn
 
-from rulframework.data.dataset.Dataset import Dataset
+from rulframework.data.dataset.FaultLabelGenerator import FaultLabelGenerator
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
-from rulframework.data.train.RelativeRUL import RelativeRUL
+from rulframework.data.dataset.RelativeRULGenerator import RelativeRULGenerator
+from rulframework.entity.Bearing import Bearing
 from rulframework.model.PytorchModel import PytorchModel
 from rulframework.model.mlp.FcReluFcRelu import FcReluFcRelu
 from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
 from rulframework.data.stage.eol.NinetyThreePercentRMSEoLCalculator import NinetyThreePercentRMSEoLCalculator
 from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
-from rulframework.predict.Result import Result
+from rulframework.model.mlp.FcReluFcSoftmax import FcReluFcSoftmax
 from rulframework.predict.evaluator.End2EndEvaluator import End2EndEvaluator
 from rulframework.predict.evaluator.end2end_metric.End2EndMSE import End2EndMSE
 from rulframework.predict.evaluator.end2end_metric.End2EndRMSE import End2EndRMSE
 from rulframework.util.Plotter import Plotter
+import torch.nn.functional as F
 
 if __name__ == '__main__':
     # 定义 数据加载器、特征提取器、fpt计算器、eol计算器
@@ -29,9 +32,9 @@ if __name__ == '__main__':
     stage_calculator.calculate_state(bearing)
 
     # 生成训练数据
-    data_generator = RelativeRUL()
-    data_set = data_generator.generate(bearing, 128)
-    train_set, test_set = data_set.split(0.7)
+    generator = FaultLabelGenerator(128, list(Bearing.FaultType.__members__.values()))
+    dataset = generator.generate(bearing)
+    # train_set, test_set = dataset.split(0.7)
 
     # 通过其他轴承增加训练数据
     # bearing1_1 = data_loader.get_bearing('Bearing1_1')
@@ -41,14 +44,20 @@ if __name__ == '__main__':
     # train_set.append(train_set_1_1.x, train_set_1_1.y)
 
     # 定义模型并训练
-    model = PytorchModel(FcReluFcRelu([128, 64, 1]))
-    model.end2end_train(train_set, 10, weight_decay=0.01)
+    model = PytorchModel(FcReluFcSoftmax([128, 64, 5]), criterion=nn.MSELoss())
+    # model = PytorchModel(FcReluFcSoftmax([128, 64, 5]), criterion=nn.CrossEntropyLoss())
+
+    model.end2end_train(dataset, 10, weight_decay=0.01)
     Plotter.loss(model)
+    test_set = dataset
 
     result = model.end2end_predict(test_set)
-    Plotter.end2end_rul(test_set, result, bearing)
+    # result.mean = F.softmax(torch.from_numpy(result.mean), dim=1).numpy()
+    Plotter.fault_during_time(test_set, result, bearing)
+    # Plotter.end2end_rul(test_set, result, bearing)
 
-    # 预测结果评价
-    evaluator = End2EndEvaluator()
-    evaluator.add_metric(End2EndRMSE(), End2EndMSE())
-    evaluator.evaluate(test_set, result)
+    #
+    # # 预测结果评价
+    # evaluator = End2EndEvaluator()
+    # evaluator.add_metric(End2EndRMSE(), End2EndMSE())
+    # evaluator.evaluate(test_set, result)

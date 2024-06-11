@@ -4,7 +4,7 @@ from typing import Dict
 
 import pandas as pd
 from rulframework.data.raw.ABCDataLoader import ABCDataLoader
-from rulframework.entity.Bearing import FaultType
+from rulframework.entity.Bearing import Bearing
 
 
 class XJTUDataLoader(ABCDataLoader):
@@ -23,21 +23,21 @@ class XJTUDataLoader(ABCDataLoader):
     @property
     def fault_type_dict(self) -> dict:
         fault_type_dict = {
-            'Bearing1_1': [FaultType.OUTER],
-            'Bearing1_2': [FaultType.OUTER],
-            'Bearing1_3': [FaultType.OUTER],
-            'Bearing1_4': [FaultType.CAGE],
-            'Bearing1_5': [FaultType.INNER, FaultType.OUTER],
-            'Bearing2_1': [FaultType.INNER],
-            'Bearing2_2': [FaultType.OUTER],
-            'Bearing2_3': [FaultType.CAGE],
-            'Bearing2_4': [FaultType.OUTER],
-            'Bearing2_5': [FaultType.OUTER],
-            'Bearing3_1': [FaultType.OUTER],
-            'Bearing3_2': [FaultType.INNER, FaultType.OUTER, FaultType.CAGE, FaultType.BALL],
-            'Bearing3_3': [FaultType.INNER],
-            'Bearing3_4': [FaultType.INNER],
-            'Bearing3_5': [FaultType.OUTER],
+            'Bearing1_1': [Bearing.FaultType.OUTER],
+            'Bearing1_2': [Bearing.FaultType.OUTER],
+            'Bearing1_3': [Bearing.FaultType.OUTER],
+            'Bearing1_4': [Bearing.FaultType.CAGE],
+            'Bearing1_5': [Bearing.FaultType.INNER, Bearing.FaultType.OUTER],
+            'Bearing2_1': [Bearing.FaultType.INNER],
+            'Bearing2_2': [Bearing.FaultType.OUTER],
+            'Bearing2_3': [Bearing.FaultType.CAGE],
+            'Bearing2_4': [Bearing.FaultType.OUTER],
+            'Bearing2_5': [Bearing.FaultType.OUTER],
+            'Bearing3_1': [Bearing.FaultType.OUTER],
+            'Bearing3_2': [Bearing.FaultType.INNER, Bearing.FaultType.OUTER, Bearing.FaultType.CAGE, Bearing.FaultType.BALL],
+            'Bearing3_3': [Bearing.FaultType.INNER],
+            'Bearing3_4': [Bearing.FaultType.INNER],
+            'Bearing3_5': [Bearing.FaultType.OUTER],
         }
         return fault_type_dict
 
