@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 
+from rulframework.data.dataset.Dataset import Dataset
 from rulframework.data.dataset.FaultLabelGenerator import FaultLabelGenerator
 from rulframework.data.feature.RMSFeatureExtractor import RMSFeatureExtractor
 from rulframework.data.raw.XJTUDataLoader import XJTUDataLoader
@@ -35,26 +36,30 @@ if __name__ == '__main__':
     generator = FaultLabelGenerator(128, list(Bearing.FaultType.__members__.values()))
     dataset = generator.generate(bearing)
     # train_set, test_set = dataset.split(0.7)
+    # train_set = Dataset()
 
     # 通过其他轴承增加训练数据
-    # bearing1_1 = data_loader.get_bearing('Bearing1_1')
-    # bearing1_1.feature_data = feature_extractor.extract(bearing1_1.raw_data)
-    # stage_calculator.calculate_state(bearing1_1)
-    # train_set_1_1 = data_generator.generate(bearing1_1, 128)
-    # train_set.append(train_set_1_1.x, train_set_1_1.y)
+    for bearing_name in ['Bearing1_1', 'Bearing1_4', 'Bearing2_1', 'Bearing1_2']:
+        print(f'正在使用{bearing_name}构造训练数据')
+        bearing_train = data_loader.get_bearing(bearing_name)
+        bearing_train.feature_data = feature_extractor.extract(bearing_train.raw_data)
+        stage_calculator.calculate_state(bearing_train)
+        dataset.append(generator.generate(bearing_train))
+
+    train_set, test_set = dataset.split(0.7)
 
     # 定义模型并训练
     model = PytorchModel(FcReluFcSoftmax([128, 64, 5]), criterion=nn.MSELoss())
     # model = PytorchModel(FcReluFcSoftmax([128, 64, 5]), criterion=nn.CrossEntropyLoss())
 
-    model.end2end_train(dataset, 10, weight_decay=0.01)
+    model.end2end_train(train_set, 10, weight_decay=0.01)
     Plotter.loss(model)
-    test_set = dataset
 
     result = model.end2end_predict(test_set)
     # result.mean = F.softmax(torch.from_numpy(result.mean), dim=1).numpy()
-    Plotter.fault_during_time(test_set, result, interval=4)
-    # Plotter.end2end_rul(test_set, result, bearing)
+
+    # Plotter.fault_during_time(test_set, result, interval=1)
+    Plotter.fault_prediction_heatmap(test_set, result)
 
     #
     # # 预测结果评价

@@ -23,21 +23,21 @@ class XJTUDataLoader(ABCDataLoader):
     @property
     def fault_type_dict(self) -> dict:
         fault_type_dict = {
-            'Bearing1_1': [Bearing.FaultType.OUTER],
-            'Bearing1_2': [Bearing.FaultType.OUTER],
-            'Bearing1_3': [Bearing.FaultType.OUTER],
-            'Bearing1_4': [Bearing.FaultType.CAGE],
-            'Bearing1_5': [Bearing.FaultType.INNER, Bearing.FaultType.OUTER],
-            'Bearing2_1': [Bearing.FaultType.INNER],
-            'Bearing2_2': [Bearing.FaultType.OUTER],
-            'Bearing2_3': [Bearing.FaultType.CAGE],
-            'Bearing2_4': [Bearing.FaultType.OUTER],
-            'Bearing2_5': [Bearing.FaultType.OUTER],
-            'Bearing3_1': [Bearing.FaultType.OUTER],
-            'Bearing3_2': [Bearing.FaultType.INNER, Bearing.FaultType.OUTER, Bearing.FaultType.CAGE, Bearing.FaultType.BALL],
-            'Bearing3_3': [Bearing.FaultType.INNER],
-            'Bearing3_4': [Bearing.FaultType.INNER],
-            'Bearing3_5': [Bearing.FaultType.OUTER],
+            'Bearing1_1': [Bearing.FaultType.OF],
+            'Bearing1_2': [Bearing.FaultType.OF],
+            'Bearing1_3': [Bearing.FaultType.OF],
+            'Bearing1_4': [Bearing.FaultType.CF],
+            'Bearing1_5': [Bearing.FaultType.IF, Bearing.FaultType.OF],
+            'Bearing2_1': [Bearing.FaultType.IF],
+            'Bearing2_2': [Bearing.FaultType.OF],
+            'Bearing2_3': [Bearing.FaultType.CF],
+            'Bearing2_4': [Bearing.FaultType.OF],
+            'Bearing2_5': [Bearing.FaultType.OF],
+            'Bearing3_1': [Bearing.FaultType.OF],
+            'Bearing3_2': [Bearing.FaultType.IF, Bearing.FaultType.OF, Bearing.FaultType.CF, Bearing.FaultType.BF],
+            'Bearing3_3': [Bearing.FaultType.IF],
+            'Bearing3_4': [Bearing.FaultType.IF],
+            'Bearing3_5': [Bearing.FaultType.OF],
         }
         return fault_type_dict
 

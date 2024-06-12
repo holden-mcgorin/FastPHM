@@ -1,6 +1,7 @@
 from scipy.stats import mode
 
 import numpy as np
+import seaborn as sns
 from matplotlib import pyplot as plt
 
 from rulframework.data.dataset.Dataset import Dataset
@@ -179,30 +180,86 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def fault_during_time(test_set, result, interval):
+    def fault_during_time(test_set, result, interval=1):
+        # todo 存在bug，当interval不能被行数整除时会报错
         plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
-        plt.ylim(0, test_set.y.shape[1] + 1)
+        plt.ylim(-0.4, test_set.y.shape[1] - 0.6)
 
-        # x = np.arange(len(test_set.x))
-        # y = np.argmax(result.mean, axis=1).reshape(-1) + 1
+        x = test_set.z / 60
+        y = np.argmax(result.mean, axis=1)  # 找出每行最大值的下标
+        y = y.reshape(-1, 1)
 
-        x = np.arange(len(test_set.x) // interval)
-        y = np.argmax(result.mean, axis=1).reshape(-1, interval) + 1
+        # 将数据按时间排序
+        xy = np.hstack((x, y))
+        last_column_index = xy[:, 0]
+        sorted_indices = np.argsort(last_column_index)
+        # 重新排列矩阵的行
+        xy = xy[sorted_indices]
+
+        x = xy[:, 0]
+        y = xy[:, 1]
+
+        x = x.reshape(-1, interval)
+        x = np.mean(x, axis=1).reshape(-1)
+        y = y.reshape(-1, interval)
+        # 找出每行出现最多次的元素构成新的列向量
         y = np.apply_along_axis(lambda l: mode(l)[0], axis=1, arr=y).reshape(-1)
 
         plt.scatter(x, y, label='Our proposed model', s=1)
 
         plt.title(f'Fault Type Prediction Result of {test_set.name}')
-        plt.xlabel('Time (sample)')
+        plt.xlabel('Time (min)')
         plt.ylabel('Predicted Fault Label')
         # plt.legend()
         plt.show()
 
     @staticmethod
-    def fault_prediction_heatmap(self):
+    def fault_prediction_heatmap(test_set, result):
         """
         故障诊断热图（混淆矩阵图）
-        :param self:
         :return:
         """
-        pass
+        y_true = np.argmax(test_set.y, axis=1)
+        y_pred = np.argmax(result.mean, axis=1)  # 找出每行最大值的下标
+
+        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+        # 数据
+        labels = list(Bearing.FaultType.__members__)
+
+        # 获取类别的数量
+        num_classes = len(labels)
+        classes = np.arange(num_classes)
+
+        # 构建混淆矩阵
+        conf_matrix = np.zeros((num_classes, num_classes), dtype=int)
+
+        # 遍历每个样本，增加对应位置的计数值
+        for i in range(len(y_true)):
+            true_class_index = np.where(classes == y_true[i])[0][0]
+            pred_class_index = np.where(classes == y_pred[i])[0][0]
+            conf_matrix[true_class_index][pred_class_index] += 1
+
+        # 计算每一行的总和
+        row_sums = conf_matrix.sum(axis=1, keepdims=True)
+
+        # 将每个元素除以相应行的总和，并乘以 100
+        conf_matrix_percent = np.zeros_like(conf_matrix, dtype=float)
+        for i in range(num_classes):
+            if row_sums[i] != 0:
+                conf_matrix_percent[i] = conf_matrix[i] / row_sums[i] * 100
+
+        conf_matrix_percent = conf_matrix_percent.astype(np.int).T
+
+        # 绘制热图
+        heatmap = sns.heatmap(conf_matrix_percent, annot=True, fmt="d", cmap="Blues", cbar=True, xticklabels=labels,
+                              yticklabels=labels)
+
+        # 设置标签
+        plt.xlabel('True label')
+        plt.ylabel('Predicted label')
+
+        # 将y轴文字恢复正常角度
+        heatmap.set_yticklabels(labels, rotation=0)
+
+        # 显示图形
+        plt.show()

@@ -41,11 +41,11 @@ class Bearing:
         """
         轴承故障类型枚举
         """
-        NORMAL = 'Normal'
-        OUTER = 'Outer Race'
-        INNER = 'Inner Race'
-        CAGE = 'Cage'
-        BALL = 'Ball'
+        NC = 'Normal Condition'
+        OF = 'Outer Race Fault'
+        IF = 'Inner Race Fault'
+        CF = 'Cage Fault'
+        BF = 'Ball Fault'
 
     def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
                  fault_type: List[FaultType] = None,

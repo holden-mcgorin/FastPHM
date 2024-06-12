@@ -16,7 +16,7 @@ class FaultLabelGenerator(ABCGenerator):
     def generate(self, bearing: Bearing) -> Dataset:
         # 只取了第一列 todo
         raw_data: ndarray = bearing.raw_data.iloc[:, 0].values
-        normal_index = self.fault_types.index(Bearing.FaultType.NORMAL)
+        normal_index = self.fault_types.index(Bearing.FaultType.NC)
         fault_indices = []
         for i, e in enumerate(self.fault_types):
             if e in bearing.fault_type:
