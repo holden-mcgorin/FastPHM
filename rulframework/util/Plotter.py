@@ -26,6 +26,10 @@ class Plotter:
     def __init__(self):
         raise NotImplementedError("不需要实例化,可以直接调用静态方法！")
 
+    @classmethod
+    def set_dpi(cls, dpi: int):
+        cls.__DPI = dpi
+
     @staticmethod
     def loss(model: ABCModel):
         plt.plot(range(0, len(model.loss)), model.loss, label='Training Loss')
