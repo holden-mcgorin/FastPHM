@@ -83,7 +83,7 @@ class Logger(logging.Formatter):
 
         self.__logger = logger
         Logger.__instance = self
-        self.info(self.__banner_author)
+        # self.info(self.__banner_author)
 
     def format(self, record):
         color = self.__COLORS.get(record.levelname, self.__COLORS['RESET'])

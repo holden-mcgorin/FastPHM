@@ -83,14 +83,14 @@ class Plotter:
 
     @staticmethod
     def __feature(bearing: Bearing, is_staged=True):
-        fpt = bearing.stage_data.fpt_feature
-        eol = bearing.stage_data.eol_feature
         data = bearing.feature_data
 
         if bearing.stage_data is None or not is_staged:
             for key in bearing.feature_data:
                 plt.plot(bearing.feature_data[key], label=key)
         else:
+            fpt = bearing.stage_data.fpt_feature
+            eol = bearing.stage_data.eol_feature
             Plotter.__staged(data, fpt, eol)
             # 画失效阈值
             plt.axhline(y=bearing.stage_data.failure_threshold_feature, color=Plotter.__COLOR_FAILURE_THRESHOLD,
