@@ -16,4 +16,4 @@ class ABCEoLCalculator(ABC):
         :param fpt_feature:
         :return: eol_raw, eol_feature, failure_threshold_raw, failure_threshold_feature
         """
-        pass
+        raise NotImplementedError

@@ -4,7 +4,7 @@ from typing import Dict
 
 import pandas as pd
 from rulframework.data.raw.ABCDataLoader import ABCDataLoader
-from rulframework.entity.Bearing import Bearing
+from rulframework.entity.Bearing import Bearing, BearingFault
 
 
 class XJTUDataLoader(ABCDataLoader):
@@ -23,21 +23,21 @@ class XJTUDataLoader(ABCDataLoader):
     @property
     def fault_type_dict(self) -> dict:
         fault_type_dict = {
-            'Bearing1_1': [Bearing.FaultType.OF],
-            'Bearing1_2': [Bearing.FaultType.OF],
-            'Bearing1_3': [Bearing.FaultType.OF],
-            'Bearing1_4': [Bearing.FaultType.CF],
-            'Bearing1_5': [Bearing.FaultType.IF, Bearing.FaultType.OF],
-            'Bearing2_1': [Bearing.FaultType.IF],
-            'Bearing2_2': [Bearing.FaultType.OF],
-            'Bearing2_3': [Bearing.FaultType.CF],
-            'Bearing2_4': [Bearing.FaultType.OF],
-            'Bearing2_5': [Bearing.FaultType.OF],
-            'Bearing3_1': [Bearing.FaultType.OF],
-            'Bearing3_2': [Bearing.FaultType.IF, Bearing.FaultType.OF, Bearing.FaultType.CF, Bearing.FaultType.BF],
-            'Bearing3_3': [Bearing.FaultType.IF],
-            'Bearing3_4': [Bearing.FaultType.IF],
-            'Bearing3_5': [Bearing.FaultType.OF],
+            'Bearing1_1': [BearingFault.OF],
+            'Bearing1_2': [BearingFault.OF],
+            'Bearing1_3': [BearingFault.OF],
+            'Bearing1_4': [BearingFault.CF],
+            'Bearing1_5': [BearingFault.IF, BearingFault.OF],
+            'Bearing2_1': [BearingFault.IF],
+            'Bearing2_2': [BearingFault.OF],
+            'Bearing2_3': [BearingFault.CF],
+            'Bearing2_4': [BearingFault.OF],
+            'Bearing2_5': [BearingFault.OF],
+            'Bearing3_1': [BearingFault.OF],
+            'Bearing3_2': [BearingFault.IF, BearingFault.OF, BearingFault.CF, BearingFault.BF],
+            'Bearing3_3': [BearingFault.IF],
+            'Bearing3_4': [BearingFault.IF],
+            'Bearing3_5': [BearingFault.OF],
         }
         return fault_type_dict
 

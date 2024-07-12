@@ -18,7 +18,7 @@ class ABCMetric(ABC):
         定义此评价指标的名称
         :return: 此评价指标的名称
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def measure(self, bearing: Bearing) -> str:
@@ -26,4 +26,4 @@ class ABCMetric(ABC):
         此评价指标的计算方法
         :return: 评价指标字符串（数字、区间、百分比...）
         """
-        pass
+        raise NotImplementedError

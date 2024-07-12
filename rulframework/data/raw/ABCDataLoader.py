@@ -4,6 +4,7 @@ from typing import Dict
 from pandas import DataFrame
 
 from rulframework.entity.Bearing import Bearing
+from rulframework.system.Logger import Logger
 
 
 class NameIterator:
@@ -38,7 +39,7 @@ class ABCDataLoader(ABC):
         """
         self._root = root  # 此数据集根目录
         self._item_dict = self._build_item_dict(root)  # 单个数据文件夹位置字典
-        print(self)
+        Logger.debug('\n' + str(self))
 
     def __iter__(self):
         return NameIterator(list(self._item_dict.keys()))
@@ -64,7 +65,7 @@ class ABCDataLoader(ABC):
         """
         :return: 采样频率（单位：Hz）
         """
-        pass
+        raise NotImplementedError
 
     @property
     @abstractmethod
@@ -72,7 +73,7 @@ class ABCDataLoader(ABC):
         """
         :return: 该数据集每次连续采样的样本数量（单位：个）
         """
-        pass
+        raise NotImplementedError
 
     @property
     @abstractmethod
@@ -80,7 +81,7 @@ class ABCDataLoader(ABC):
         """
         :return: 每次采样代表的时长=每次采样的时长+每次未采样的时长（单位：秒）
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _build_item_dict(self, root) -> Dict[str, str]:
@@ -90,7 +91,7 @@ class ABCDataLoader(ABC):
         值：数据项文件目录
         :return:
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def _load_raw_data(self, item_name) -> DataFrame:
@@ -99,7 +100,7 @@ class ABCDataLoader(ABC):
         :param item_name:数据项名称
         :return:
         """
-        pass
+        raise NotImplementedError
 
     def get_bearing(self, bearing_name, columns: str = None) -> Bearing:
         """

@@ -21,4 +21,4 @@ class ABCCICalculator(ABC):
         :param input_data: x_test 对应的 y_test 的采样列表
         :return: min_value, mean_value, max_value
         """
-        pass
+        raise NotImplementedError

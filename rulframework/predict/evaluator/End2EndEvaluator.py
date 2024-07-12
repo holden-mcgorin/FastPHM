@@ -3,6 +3,7 @@ from typing import List
 from rulframework.data.dataset.Dataset import Dataset
 from rulframework.predict.Result import Result
 from rulframework.predict.evaluator.end2end_metric.ABCEnd2EndMetric import ABCEnd2EndMetric
+from rulframework.system.Logger import Logger
 
 
 class End2EndEvaluator:
@@ -34,6 +35,7 @@ class End2EndEvaluator:
         :param test_set:
         :return:
         """
-        print(f'轴承{test_set.name}的预测结果评价：')
+        string = f'轴承{test_set.name}的预测结果评价：'
         for metric in self.metrics:
-            print(f'  {metric.name}： {metric.measure(test_set, result)}')
+            string = string + f'\n  {metric.name}： {metric.measure(test_set, result)}'
+        Logger.info('\n' + string)

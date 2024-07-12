@@ -32,23 +32,24 @@ class BearingStage:
                f"failure_threshold_feature = {self.failure_threshold_feature}"
 
 
+class BearingFault(Enum):
+    """
+    轴承故障类型枚举
+    """
+    NC = 'Normal Condition'
+    OF = 'Outer Race Fault'
+    IF = 'Inner Race Fault'
+    CF = 'Cage Fault'
+    BF = 'Ball Fault'
+
+
 class Bearing:
     """
     轴承对象
     """
 
-    class FaultType(Enum):
-        """
-        轴承故障类型枚举
-        """
-        NC = 'Normal Condition'
-        OF = 'Outer Race Fault'
-        IF = 'Inner Race Fault'
-        CF = 'Cage Fault'
-        BF = 'Ball Fault'
-
     def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
-                 fault_type: List[FaultType] = None,
+                 fault_type: List[BearingFault] = None,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: ndarray = None,
                  stage_data: BearingStage = None, result: Result = None):
         self.name = name  # 此轴承名称
@@ -79,7 +80,7 @@ class Bearing:
         return self.name + ',  ' + ", ".join([frequency_str, continuum, span_str]) + '  ' + fault_str
 
     @property
-    def total_life(self):
+    def life(self):
         """
         轴承的全寿命时长（单位：秒）
         :return:

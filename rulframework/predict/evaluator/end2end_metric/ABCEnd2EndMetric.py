@@ -19,12 +19,20 @@ class ABCEnd2EndMetric(ABC):
         定义此评价指标的名称
         :return: 此评价指标的名称
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def measure(self, test_set: Dataset, result: Result) -> str:
+    def _measure(self, test_set: Dataset, result: Result) -> str:
         """
         此评价指标的计算方法
         :return: 评价指标字符串（数字、区间、百分比...）
         """
-        pass
+        raise NotImplementedError
+
+    def measure(self, test_set: Dataset, result: Result) -> str:
+        # 验证输入的合法性
+        sample_num = test_set.x.shape[0]
+        if sample_num != result.mean.shape[0]:
+            raise Exception(f'测试样本量：{sample_num}与测试结果数量：{result.mean.shape[0]} 不匹配')
+
+        return self._measure(test_set, result)

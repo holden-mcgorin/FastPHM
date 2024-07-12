@@ -14,4 +14,4 @@ class ABCFeatureExtractor(ABC):
         从原始数据中提取特征
         :return:feature
         """
-        pass
+        raise NotImplementedError

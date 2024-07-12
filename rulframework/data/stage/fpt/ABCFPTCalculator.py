@@ -11,4 +11,4 @@ class ABCFPTCalculator(ABC):
         :param scale: 倍率，原始振动信号/特征信号
         :return: fpt_raw, fpt_feature
         """
-        pass
+        raise NotImplementedError

@@ -10,10 +10,7 @@ class End2EndRMSE(ABCEnd2EndMetric):
     def name(self) -> str:
         return 'RMSE'
 
-    def measure(self, test_set: Dataset, result: Result):
-        sample_num = test_set.x.shape[0]
-        if sample_num != result.mean.shape[0]:
-            raise Exception(f'测试样本量：{sample_num}与测试结果数量：{result.mean.shape[0]} 不匹配')
+    def _measure(self, test_set: Dataset, result: Result):
         r_hat = result.mean
         r = test_set.y
         return f"{float(np.sqrt(np.mean((r_hat - r) ** 2, axis=0))):.4f}"

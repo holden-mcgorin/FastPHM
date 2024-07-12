@@ -15,4 +15,4 @@ class ABCDataGenerator(ABC):
         @param source_data: 源数据，一般为特征数据feature_data
         @return generated_data: 返回生成的数据
         """
-        pass
+        raise NotImplementedError
