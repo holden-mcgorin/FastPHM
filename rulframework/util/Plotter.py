@@ -5,10 +5,10 @@ import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from rulframework.data.dataset.Dataset import Dataset
+from rulframework.data.Dataset import Dataset
 from rulframework.entity.Bearing import Bearing, BearingFault
 from rulframework.model.ABCModel import ABCModel
-from rulframework.predict.Result import Result
+from rulframework.model.Result import Result
 from rulframework.util.ThresholdTrimmer import ThresholdTrimmer
 
 
@@ -16,8 +16,8 @@ class Plotter:
     """
     画图器，所有的图片统一由画图器处理
     """
-    __FIG_SIZE = (10, 6)  # 图片大小
     __DPI = 200  # 分辨率，默认100
+    __SIZE = (10, 6)  # 图片大小
     __COLOR_NORMAL_STAGE = 'green'
     __COLOR_DEGENERATION_STAGE = 'orange'
     __COLOR_FAILURE_STAGE = 'red'
@@ -29,6 +29,10 @@ class Plotter:
     @classmethod
     def set_dpi(cls, dpi: int):
         cls.__DPI = dpi
+
+    @classmethod
+    def set_size(cls, size: (int, int)):
+        cls.__SIZE = size
 
     @staticmethod
     def loss(model: ABCModel):
@@ -58,15 +62,15 @@ class Plotter:
     def raw(bearing: Bearing, is_staged=True, is_save=False):
         """
         绘画原始振动信号图像
-        :param is_staged:
-        :param bearing:
+        :param bearing:需要画图的轴承对象
+        :param is_staged:是否划分轴承退化阶段
         :param is_save: 是否保存图片，默认不保存
         :return:
         """
         if bearing.raw_data is None:
             raise Exception("此轴承原始振动信号变量raw_data为None，请先使用数据加载器加载原始数据赋值给此轴承对象！")
 
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+        plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
         if bearing.stage_data is None or not is_staged:
             for key in bearing.raw_data.keys():
@@ -120,7 +124,7 @@ class Plotter:
         绘画轴承特征图，当存在阶段数据且设为True时画阶段特征图
         :return:
         """
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+        plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
         Plotter.__feature(bearing, is_staged)
 
@@ -128,65 +132,71 @@ class Plotter:
         plt.gca().add_artist(legend)
         plt.title(bearing.name + ' Feature Graph')
         plt.xlabel('Time (Sample Index)')
-        plt.ylabel('feature value')
+        plt.ylabel('processor value')
         if is_save:
             plt.savefig(bearing.name + ' Feature Graph')
         plt.show()
 
     @staticmethod
-    def __degeneration_rul(bearing: Bearing, is_trim: bool = True):
+    def rul_degeneration(bearing: Bearing, result: Result, is_trim: bool = True, is_staged: bool = True):
+        plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
+
+        Plotter.__feature(bearing, is_staged)
+
+        """
+        画退化曲线
+        """
+        if result.mean is None:
+            result.mean = result.outputs.squeeze()
+
         if is_trim:
             trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
-            bearing.result = trimmer.trim(bearing.result)
-        # 画置信区间（不确定性预测）
-        if bearing.result.lower is not None and bearing.result.upper is not None:
-            plt.fill_between(
-                np.arange(len(bearing.result.lower) + 1) + bearing.result.begin_index - 1,
-                [float(bearing.feature_data.iloc[
-                           bearing.result.begin_index, 0])] + bearing.result.lower,
-                [float(bearing.feature_data.iloc[
-                           bearing.result.begin_index, 0])] + bearing.result.upper,
-                alpha=0.25,
-                label='confidence_interval')
+            result = trimmer.trim(result)
+
         # 画预测值（确定性预测和不确定性预测）
-        if bearing.result.mean is not None:
-            plt.plot(
-                np.arange(len(bearing.result.mean) + 1) + bearing.result.begin_index - 1,
-                [float(bearing.feature_data.iloc[bearing.result.begin_index, 0])] +
-                bearing.result.mean,
-                label='mean')
+        x = np.arange(result.mean.shape[0] + 1) + result.begin_index
+        y = np.hstack((np.array([bearing.feature_data.values[result.begin_index, 0]]), result.mean))
+        plt.plot(x, y, label='mean')
 
-    @staticmethod
-    def degeneration_rul(bearing: Bearing, is_trim: bool = True, is_staged: bool = True):
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
-
-        Plotter.__feature(bearing)
-        Plotter.__degeneration_rul(bearing, is_trim=is_trim)
+        # 画置信区间（不确定性预测）
+        if result.lower is not None and result.upper is not None:
+            x = np.arange(len(result.lower) + 1) + result.begin_index
+            lower = np.hstack((bearing.feature_data.values[result.begin_index, 0], result.lower))
+            upper = np.hstack((bearing.feature_data.values[result.begin_index, 0], result.upper))
+            plt.fill_between(x, lower, upper, alpha=0.25, label='confidence interval')
 
         legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
         plt.gca().add_artist(legend)
         plt.title(bearing.name + ' Degeneration Trend')
         plt.xlabel('Time (Sample Index)')
-        plt.ylabel('feature value')
+        plt.ylabel('processor value')
         plt.show()
 
     @staticmethod
-    def end2end_rul(test_set: Dataset, result: Result):
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+    def rul_end2end(test_set: Dataset, result: Result, is_scatter=True):
+        plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
         x = test_set.z.reshape(-1) / 60
-        y = result.mean.reshape(-1)
+        y = result.outputs.reshape(-1)
 
         # 筛选出所有小于 1 的值
         filtered_array = test_set.y[test_set.y < 1]
         # 找到小于 1 的最大值
         max_value = filtered_array.max()
-        # 找到该最大值在原数组中的下标
+        # 找到该最大值在原数组中的下标（画标准线）
         max_index = np.where(test_set.y == max_value)[0][0]
-
         plt.plot([0, x[max_index], max(x)], [1, 1, 0], color='red')
 
-        plt.scatter(x, y, label='Our proposed model', s=1)
+        if is_scatter:
+            plt.scatter(x, y, label='Our proposed model', s=1)
+        else:
+            # 将数据按时间排序
+            sorted_indices = np.argsort(x)
+            # 重新排列矩阵的行
+            x = x[sorted_indices]
+            y = y[sorted_indices]
+            plt.plot(x, y, label='Our proposed model')
+
         plt.title(f'RUL prediction result of {test_set.name}')
         plt.xlabel('Time (min)')
         plt.ylabel('Relative RUL')
@@ -194,14 +204,14 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def fault_during_time(test_set: Dataset, result: Result, interval=1):
+    def fault_diagnosis_evolution(test_set: Dataset, result: Result, interval=1):
         # todo 存在bug，当interval不能被行数整除时会报错
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+        plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
-        plt.ylim(-0.4, result.mean.shape[1] - 0.6)
+        plt.ylim(-0.4, result.outputs.shape[1] - 0.6)
 
         x = test_set.z / 60
-        y = np.argmax(result.mean, axis=1)  # 找出每行最大值的下标
+        y = np.argmax(result.outputs, axis=1)  # 找出每行最大值的下标
         y = y.reshape(-1, 1)
 
         # 将数据按时间排序
@@ -218,7 +228,7 @@ class Plotter:
         x = np.mean(x, axis=1).reshape(-1)
         y = y.reshape(-1, interval)
         # 找出每行出现最多次的元素构成新的列向量
-        y = np.apply_along_axis(lambda l: mode(l)[0], axis=1, arr=y).reshape(-1)
+        y = np.apply_along_axis(lambda l: mode(l, keepdims=False)[0], axis=1, arr=y).reshape(-1)
 
         plt.scatter(x, y, label='Fault type', s=1)
 
@@ -229,13 +239,13 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def fault_prediction_heatmap(test_set: Dataset, result: Result):
+    def fault_diagnosis_heatmap(test_set: Dataset, result: Result):
         """
         故障诊断热图（混淆矩阵图）单标签预测
         多标签预测无法使用，会出现不正常的数据 todo 待增加多标签预测的表示法
         :return:
         """
-        plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
+        plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
         #  todo 没有考虑复合故障
 
         # 标签及标签数目
@@ -244,7 +254,7 @@ class Plotter:
         # 当标签为类别索引时
         if y_true.shape[1] == 1:
             y_true = np.eye(len(labels))[y_true.squeeze().astype(int)]
-        y_pred = result.mean
+        y_pred = result.outputs
 
         # 找到每行最大值的索引
         max_indices = np.argmax(y_pred, axis=1)
@@ -292,15 +302,8 @@ class Plotter:
         """
         # 按时间排序
         sorted_indices = np.argsort(test_set.z.squeeze())
-        data = result.mean[sorted_indices]
-
-        # plt.figure(figsize=Plotter.__FIG_SIZE, dpi=Plotter.__DPI)
-        # sns.heatmap(result.mean[:10, :10], annot=True, cmap='Reds', cbar=True)
+        data = result.outputs[sorted_indices]
         Plotter.show_heatmaps(data, 'Features', 'Inputs')
-        # plt.xlabel('Inputs')
-        # plt.ylabel('Features')
-        # plt.title('Attention Weights')
-        # plt.show()
 
     @staticmethod
     def show_heatmaps(matrices: ndarray, xlabel, ylabel):
@@ -310,7 +313,7 @@ class Plotter:
         matrices = np.expand_dims(matrices, axis=0)
         num_rows, num_cols = matrices.shape[0], matrices.shape[1]
 
-        fig, axes = plt.subplots(num_rows, num_cols, figsize=Plotter.__FIG_SIZE, sharex=True, sharey=True,
+        fig, axes = plt.subplots(num_rows, num_cols, figsize=Plotter.__SIZE, sharex=True, sharey=True,
                                  squeeze=False)
         for i in range(num_rows):
             for j in range(num_cols):
@@ -319,19 +322,27 @@ class Plotter:
                 sns.heatmap(matrices[i][j], ax=ax, cmap='Reds', cbar=True)
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
 
-                num_labels = matrices.shape[2]
-                step = 100
-                if num_labels > 1000:
+                num_labels = matrices.shape[2]  # 测试样本数
+                step = num_labels // 10
+                if num_labels > 100:
+                    step = 100
+                elif num_labels > 1000:
                     step = 200
                 elif num_labels > 2000:
                     step = 500
                 ax.set_yticks(np.arange(0, num_labels, step))
                 ax.set_yticklabels(np.arange(0, num_labels, step))
 
-                num_labels = matrices.shape[3]
-                step = 10  # 每隔多少个标签显示一次
-                ax.set_xticks(np.arange(0, num_labels, step))
-                ax.set_xticklabels(np.arange(0, num_labels, step))
+                num_labels = matrices.shape[3]  # 注意力特征数
+                step = num_labels // 10
+                if num_labels > 100:
+                    step = 100
+                elif num_labels > 1000:
+                    step = 200
+                elif num_labels > 2000:
+                    step = 500
+                ax.set_xticks(np.arange(0, num_labels, step) + 0.5)
+                ax.set_xticklabels(np.arange(0, num_labels, step), rotation=0, ha='center')
 
                 if i == num_rows - 1:
                     ax.set_xlabel(xlabel)

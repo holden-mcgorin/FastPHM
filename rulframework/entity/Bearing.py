@@ -4,10 +4,7 @@
 """
 from enum import Enum
 from typing import List
-from numpy import ndarray
 from pandas import DataFrame
-
-from rulframework.predict.Result import Result
 
 
 class BearingStage:
@@ -50,18 +47,17 @@ class Bearing:
 
     def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
                  fault_type: List[BearingFault] = None,
-                 raw_data: DataFrame = None, feature_data: DataFrame = None, train_data: ndarray = None,
-                 stage_data: BearingStage = None, result: Result = None):
+                 raw_data: DataFrame = None, feature_data: DataFrame = None,
+                 stage_data: BearingStage = None):
         self.name = name  # 此轴承名称
         self.frequency = frequency  # 此轴承的采样频率
         self.continuum = continuum  # 此轴承的连续采样区间大小
         self.span = span  # 此轴承连续采样代表的时间
         self.fault_type = fault_type  # 故障类型
+
         self.raw_data = raw_data  # 此轴承的原始数据
         self.feature_data = feature_data  # 此轴承的特征数据
-        self.train_data = train_data  # 此轴承用于训练模型的数据
         self.stage_data = stage_data  # 此轴承的全寿命阶段划分数据
-        self.result = result  # 此轴承的RUL预测数据
 
     def __str__(self) -> str:
         # 生成故障描述
@@ -75,7 +71,7 @@ class Bearing:
 
         frequency_str = 'frequency: "' + str(self.frequency) + 'Hz"'
         continuum = 'continuum: ' + str(self.continuum) + '"'
-        span_str = 'span: "' + str(self.span) + 's"'
+        span_str = 'window_size: "' + str(self.span) + 's"'
 
         return self.name + ',  ' + ", ".join([frequency_str, continuum, span_str]) + '  ' + fault_str
 

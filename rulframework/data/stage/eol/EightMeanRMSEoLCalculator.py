@@ -10,8 +10,8 @@ class EightMeanRMSEoLCalculator(ABCEoLCalculator):
         feature_data = feature_data.iloc[:, 0]
         eol_raw, eol_feature, failure_threshold_raw, failure_threshold_feature = 0, 0, 0, 0
         normal_stage_feature = feature_data[:fpt_feature]
-        failure_threshold_feature = 8 * normal_stage_feature.abs().mean()
-        print(normal_stage_feature.abs().mean())
+        failure_threshold_feature = 8 * normal_stage_feature.abs().outputs()
+        print(normal_stage_feature.abs().outputs())
 
         for i in range(fpt_feature, len(feature_data)):
             if abs(feature_data[i]) > failure_threshold_feature:

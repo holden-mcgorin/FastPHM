@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 
-from pandas import DataFrame
+from numpy import ndarray
+
+from rulframework.data.Dataset import Dataset
+from rulframework.model.Result import Result
 
 
 class ABCModel(ABC):
@@ -17,7 +20,7 @@ class ABCModel(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def __call__(self, x: list) -> list:
+    def __call__(self, x: ndarray) -> ndarray:
         raise NotImplementedError
 
     @property
@@ -25,10 +28,11 @@ class ABCModel(ABC):
     def loss(self) -> list:
         raise NotImplementedError
 
-    @abstractmethod
-    def train(self, train_data_x: DataFrame, train_data_y: DataFrame, num_epochs: int = 1000):
-        raise NotImplementedError
+    def test(self, test_set: Dataset) -> Result:
+        return Result(outputs=self(test_set.x))
 
     @abstractmethod
-    def predict(self, input_data: list) -> list:
+    def train(self, train_set: Dataset, epochs: int = 100,
+              batch_size: int = 128, weight_decay: float = 0,
+              criterion=None, optimizer=None):
         raise NotImplementedError

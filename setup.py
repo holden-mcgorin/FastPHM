@@ -6,6 +6,6 @@ setup(
     packages=find_packages(),
     author="AndrewStudio",
     author_email="andrewstudio@foxmail.com",
-    description="a framework for rul mean",
+    description="a framework for rul outputs",
     # 添加其他元数据
 )
