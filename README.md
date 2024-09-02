@@ -32,6 +32,18 @@
 - doc —— 框架详细说明文档（编写自定义组件时建议查看）
 - example —— 试验代码示例（原生python）
 
+## 📦    数据集来源
+### 1. XJTU-SY西交大轴承数据集
+https://biaowang.tech/xjtu-sy-bearing-datasets/
+### 2. PHM2012轴承数据集
+https://phm-datasets.s3.amazonaws.com/NASA/10.+FEMTO+Bearing.zip
+### 3. C-MAPSS涡扇发动机数据集
+https://data.nasa.gov/Aeorspace/CMAPSS-Jet-Engine-Simulated-Data/ff5v-kuh6  
+### 4. PHM2008数据集
+https://data.nasa.gov/download/nk8v-ckry/application%2Fzip
+### 5. 更多数据集
+https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/
+
 ## ⚠    注意事项
 - 读取数据集时，不要改变原始数据集内部文件的相对位置（可以只保留部分数据，但不要改变相对位置），可能导致无法读取数据
 
