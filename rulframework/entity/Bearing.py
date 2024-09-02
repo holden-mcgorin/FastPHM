@@ -6,30 +6,10 @@ from enum import Enum
 from typing import List
 from pandas import DataFrame
 
-
-class BearingStage:
-    """
-    轴承阶段数据
-    """
-
-    def __init__(self, fpt_raw=None, fpt_feature=None,
-                 eol_raw=None, eol_feature=None,
-                 failure_threshold_raw=None, failure_threshold_feature=None):
-        self.fpt_raw = fpt_raw
-        self.fpt_feature = fpt_feature
-        self.eol_raw = eol_raw
-        self.eol_feature = eol_feature
-        self.failure_threshold_raw = failure_threshold_raw
-        self.failure_threshold_feature = failure_threshold_feature
-
-    def __str__(self) -> str:
-        return f"fpt_raw = {self.fpt_raw}, fpt_feature = {self.fpt_feature}, " \
-               f"eol_raw = {self.eol_raw}, eol_feature = {self.eol_feature}, " \
-               f"failure_threshold_raw = {self.failure_threshold_raw}, " \
-               f"failure_threshold_feature = {self.failure_threshold_feature}"
+from rulframework.entity.ABCEntity import ABCEntity, Stage
 
 
-class BearingFault(Enum):
+class Fault(Enum):
     """
     轴承故障类型枚举
     """
@@ -39,25 +19,26 @@ class BearingFault(Enum):
     CF = 'Cage Fault'
     BF = 'Ball Fault'
 
+    def __str__(self):
+        return self.name
+        # return self.value
 
-class Bearing:
+
+class Bearing(ABCEntity):
     """
     轴承对象
     """
 
     def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
-                 fault_type: List[BearingFault] = None,
-                 raw_data: DataFrame = None, feature_data: DataFrame = None,
-                 stage_data: BearingStage = None):
-        self.name = name  # 此轴承名称
+                 fault_type: List[Fault] = None, raw_data: DataFrame = None, feature_data: DataFrame = None,
+                 stage_data: Stage = None):
+        super().__init__(name, raw_data, feature_data)
+        self.stage_data = stage_data  # 此轴承的全寿命阶段划分数据
+
         self.frequency = frequency  # 此轴承的采样频率
         self.continuum = continuum  # 此轴承的连续采样区间大小
         self.span = span  # 此轴承连续采样代表的时间
         self.fault_type = fault_type  # 故障类型
-
-        self.raw_data = raw_data  # 此轴承的原始数据
-        self.feature_data = feature_data  # 此轴承的特征数据
-        self.stage_data = stage_data  # 此轴承的全寿命阶段划分数据
 
     def __str__(self) -> str:
         # 生成故障描述

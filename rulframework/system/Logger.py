@@ -1,4 +1,5 @@
 import logging
+from colorama import Fore, Style, init
 
 
 class Logger(logging.Formatter):
@@ -9,15 +10,14 @@ class Logger(logging.Formatter):
     __level = logging.DEBUG
 
     __log_format = '%(levelname)s - %(asctime)s >> %(message)s'
-    # __log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
     __COLORS = {
-        'DEBUG': '\033[94m',  # 蓝色
-        'INFO': '\033[92m',  # 绿色
-        'WARNING': '\033[93m',  # 黄色
-        'ERROR': '\033[91m',  # 红色
-        'CRITICAL': '\033[95m',  # 紫色
-        'RESET': '\033[0m'  # 重置颜色
+        'DEBUG': Fore.BLUE,        # 蓝色
+        'INFO': Fore.GREEN,        # 绿色
+        'WARNING': Fore.YELLOW,    # 黄色
+        'ERROR': Fore.RED,         # 红色
+        'CRITICAL': Fore.MAGENTA,  # 紫色
+        'RESET': Style.RESET_ALL   # 重置颜色
     }
 
     __banner_framework = """
@@ -58,6 +58,9 @@ class Logger(logging.Formatter):
     """
 
     def __init__(self, log_format=None):
+        # 初始化 colorama
+        init(autoreset=True)
+
         if log_format is None:
             log_format = self.__log_format
         super().__init__(log_format, datefmt='%H:%M:%S')
@@ -66,10 +69,6 @@ class Logger(logging.Formatter):
         # 创建 logger
         logger = logging.getLogger(__name__)
         logger.setLevel(self.__level)
-
-        # 配置基本日志配置
-        # logging.basicConfig(datefmt='%H:%M:%S')
-        # logging.basicConfig(format=log_format, datefmt=datefmt, level=logging.DEBUG)
 
         # 创建控制台处理器
         ch = logging.StreamHandler()
@@ -83,12 +82,10 @@ class Logger(logging.Formatter):
 
         self.__logger = logger
         Logger.__instance = self
-        # self.info(self.__banner_author)
 
     def format(self, record):
         color = self.__COLORS.get(record.levelname, self.__COLORS['RESET'])
-        reset = self.__COLORS['RESET']
-        log_fmt = f"{color}{self._style._fmt}{reset}"
+        log_fmt = f"{color}{self._style._fmt}{self.__COLORS['RESET']}"
         formatter = logging.Formatter(log_fmt, datefmt='%H:%M:%S')
         return formatter.format(record)
 

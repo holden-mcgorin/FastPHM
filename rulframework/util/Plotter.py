@@ -1,3 +1,6 @@
+import os
+from functools import wraps
+
 from numpy import ndarray
 from scipy.stats import mode
 
@@ -6,22 +9,55 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 from rulframework.data.Dataset import Dataset
-from rulframework.entity.Bearing import Bearing, BearingFault
+from rulframework.entity.ABCEntity import ABCEntity
+from rulframework.entity.Bearing import Bearing, Fault
 from rulframework.model.ABCModel import ABCModel
 from rulframework.model.Result import Result
 from rulframework.util.ThresholdTrimmer import ThresholdTrimmer
+
+
+def postprocess(func):
+    """
+    所有画图方法的后置处理
+    1. 是否保存图片
+    :param func:
+    :return:
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        title = func(*args, **kwargs)
+        if Plotter.IS_SAVE:
+            plt.savefig(os.path.join(Plotter.FIG_DIR, title + '.' + Plotter.FORMAT), format=Plotter.FORMAT)
+        plt.show()
+        return title
+
+    return wrapper
 
 
 class Plotter:
     """
     画图器，所有的图片统一由画图器处理
     """
+
+    # 画图设置
     __DPI = 200  # 分辨率，默认100
     __SIZE = (10, 6)  # 图片大小
     __COLOR_NORMAL_STAGE = 'green'
     __COLOR_DEGENERATION_STAGE = 'orange'
     __COLOR_FAILURE_STAGE = 'red'
     __COLOR_FAILURE_THRESHOLD = 'darkred'
+
+    # 图片保存设置
+    IS_SAVE = False
+    # IS_SAVE = False
+    FORMAT = 'svg'
+    # FORMAT = 'jpg'
+    # FORMAT = 'png'
+    FIG_DIR = '.\\fig'
+
+    if not os.path.exists(FIG_DIR) and IS_SAVE:
+        os.makedirs(FIG_DIR)
 
     def __init__(self):
         raise NotImplementedError("不需要实例化,可以直接调用静态方法！")
@@ -35,13 +71,15 @@ class Plotter:
         cls.__SIZE = size
 
     @staticmethod
+    @postprocess
     def loss(model: ABCModel):
         plt.plot(range(0, len(model.loss)), model.loss, label='Training Loss')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
-        plt.title('Training Loss Over Epochs')
+        title = 'Training Loss Over Epochs'
+        plt.title(title)
         plt.legend()
-        plt.show()
+        return title
 
     @staticmethod
     def __staged(data, fpt, eol):
@@ -59,49 +97,49 @@ class Plotter:
                  color=Plotter.__COLOR_FAILURE_STAGE)
 
     @staticmethod
-    def raw(bearing: Bearing, is_staged=True, is_save=False):
+    @postprocess
+    def raw(entity: ABCEntity, is_staged=True, label_x='Time (Sample Index)', label_y='value'):
         """
         绘画原始振动信号图像
-        :param bearing:需要画图的轴承对象
+        :param label_y:
+        :param label_x:
+        :param entity:需要画图的对象
         :param is_staged:是否划分轴承退化阶段
-        :param is_save: 是否保存图片，默认不保存
         :return:
         """
-        if bearing.raw_data is None:
-            raise Exception("此轴承原始振动信号变量raw_data为None，请先使用数据加载器加载原始数据赋值给此轴承对象！")
-
         plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
-        if bearing.stage_data is None or not is_staged:
-            for key in bearing.raw_data.keys():
-                plt.plot(bearing.raw_data[key], label=key)
+        if entity.stage_data is None or not is_staged:
+            for key in entity.raw_data.keys():
+                y = entity.raw_data[key]
+                x = np.arange(len(y))
+                plt.plot(x, y, label=key)
         else:
-            fpt = bearing.stage_data.fpt_raw
-            eol = bearing.stage_data.eol_raw
-            data = bearing.raw_data
+            fpt = entity.stage_data.fpt_raw
+            eol = entity.stage_data.eol_raw
+            data = entity.raw_data
             Plotter.__staged(data, fpt, eol)
 
-        plt.title(bearing.name + ' Raw Vibration Signals')
-        plt.xlabel('Time (Sample Index)')
-        plt.ylabel('vibration')
+        title = entity.name + ' Raw Sensor Signals'
+        plt.title(title)
+        plt.xlabel(label_x)
+        plt.ylabel(label_y)
         plt.legend()
-        if is_save:
-            plt.savefig(bearing.name + ' Raw Vibration Signals')
-        plt.show()
+        return title
 
     @staticmethod
-    def __feature(bearing: Bearing, is_staged=True):
-        data = bearing.feature_data
+    def __feature(entity: ABCEntity, is_staged=True):
+        data = entity.feature_data
 
-        if bearing.stage_data is None or not is_staged:
-            for key in bearing.feature_data:
-                plt.plot(bearing.feature_data[key], label=key)
+        if entity.stage_data is None or not is_staged:
+            for key in entity.feature_data:
+                plt.plot(entity.feature_data[key], label=key)
         else:
-            fpt = bearing.stage_data.fpt_feature
-            eol = bearing.stage_data.eol_feature
+            fpt = entity.stage_data.fpt_feature
+            eol = entity.stage_data.eol_feature
             Plotter.__staged(data, fpt, eol)
             # 画失效阈值
-            plt.axhline(y=bearing.stage_data.failure_threshold_feature, color=Plotter.__COLOR_FAILURE_THRESHOLD,
+            plt.axhline(y=entity.stage_data.failure_threshold_feature, color=Plotter.__COLOR_FAILURE_THRESHOLD,
                         label='failure threshold')
 
             # 绘制垂直线表示中间点
@@ -119,25 +157,26 @@ class Plotter:
             plt.text(eol + x_lim[1] / 75, y_lim[0] + 0.018 * (y_lim[1] - y_lim[0]), 'EoL', color='black', fontsize=12)
 
     @staticmethod
-    def feature(bearing: Bearing, is_staged=True, is_save=False):
+    @postprocess
+    def feature(entity: ABCEntity, is_staged=True, label_x='Time (Sample Index)', label_y='feature value'):
         """
         绘画轴承特征图，当存在阶段数据且设为True时画阶段特征图
         :return:
         """
         plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
-        Plotter.__feature(bearing, is_staged)
+        Plotter.__feature(entity, is_staged)
 
         legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
         plt.gca().add_artist(legend)
-        plt.title(bearing.name + ' Feature Graph')
-        plt.xlabel('Time (Sample Index)')
-        plt.ylabel('processor value')
-        if is_save:
-            plt.savefig(bearing.name + ' Feature Graph')
-        plt.show()
+        title = entity.name + ' Feature Values'
+        plt.title(title)
+        plt.xlabel(label_x)
+        plt.ylabel(label_y)
+        return title
 
     @staticmethod
+    @postprocess
     def rul_degeneration(bearing: Bearing, result: Result, is_trim: bool = True, is_staged: bool = True):
         plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
@@ -167,25 +206,26 @@ class Plotter:
 
         legend = plt.legend(loc='upper left', bbox_to_anchor=(0, 1))
         plt.gca().add_artist(legend)
-        plt.title(bearing.name + ' Degeneration Trend')
+        title = bearing.name + ' Degeneration Trend'
+        plt.title(title)
         plt.xlabel('Time (Sample Index)')
         plt.ylabel('processor value')
-        plt.show()
+        return title
 
     @staticmethod
-    def rul_end2end(test_set: Dataset, result: Result, is_scatter=True):
+    @postprocess
+    def rul_end2end(test_set: Dataset, result: Result, is_scatter=True, label_x='Time', label_y='RUL'):
         plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
-        x = test_set.z.reshape(-1) / 60
+        x = test_set.z.reshape(-1)
         y = result.outputs.reshape(-1)
 
-        # 筛选出所有小于 1 的值
-        filtered_array = test_set.y[test_set.y < 1]
-        # 找到小于 1 的最大值
-        max_value = filtered_array.max()
-        # 找到该最大值在原数组中的下标（画标准线）
-        max_index = np.where(test_set.y == max_value)[0][0]
-        plt.plot([0, x[max_index], max(x)], [1, 1, 0], color='red')
+        # 找到第二大的值在原数组中的下标（画标准线）
+        unique_array = np.unique(test_set.y)
+        max_val = unique_array[-1]
+        second_val = unique_array[-2]
+        max_index = np.where(test_set.y == second_val)[0][0]
+        plt.plot([0, x[max_index], max(x)], [max_val, max_val, 0], color='red')
 
         if is_scatter:
             plt.scatter(x, y, label='Our proposed model', s=1)
@@ -197,14 +237,16 @@ class Plotter:
             y = y[sorted_indices]
             plt.plot(x, y, label='Our proposed model')
 
-        plt.title(f'RUL prediction result of {test_set.name}')
-        plt.xlabel('Time (min)')
-        plt.ylabel('Relative RUL')
+        title = 'RUL prediction result of ' + test_set.name
+        plt.title(title)
+        plt.xlabel(label_x)
+        plt.ylabel(label_y)
         plt.legend()
-        plt.show()
+        return title
 
     @staticmethod
-    def fault_diagnosis_evolution(test_set: Dataset, result: Result, interval=1):
+    @postprocess
+    def fault_diagnosis_evolution(test_set: Dataset, result: Result, types: list, interval=1):
         # todo 存在bug，当interval不能被行数整除时会报错
         plt.figure(figsize=Plotter.__SIZE, dpi=Plotter.__DPI)
 
@@ -232,14 +274,19 @@ class Plotter:
 
         plt.scatter(x, y, label='Fault type', s=1)
 
-        plt.title(f'Fault Type Prediction Result of {test_set.name}')
+        # 设置 y 轴标签
+        plt.yticks(ticks=np.arange(len(types)), labels=types)
+
+        title = 'Fault Type Prediction Result of ' + test_set.name
+        plt.title(title)
         plt.xlabel('Time (min)')
-        plt.ylabel('Predicted Fault Label')
+        plt.ylabel('Predicted Fault Type')
         plt.legend()
-        plt.show()
+        return title
 
     @staticmethod
-    def fault_diagnosis_heatmap(test_set: Dataset, result: Result):
+    @postprocess
+    def fault_diagnosis_heatmap(test_set: Dataset, result: Result, types: list):
         """
         故障诊断热图（混淆矩阵图）单标签预测
         多标签预测无法使用，会出现不正常的数据 todo 待增加多标签预测的表示法
@@ -249,7 +296,7 @@ class Plotter:
         #  todo 没有考虑复合故障
 
         # 标签及标签数目
-        labels = list(BearingFault.__members__)
+        labels = list(types)
         y_true = test_set.y
         # 当标签为类别索引时
         if y_true.shape[1] == 1:
@@ -276,25 +323,26 @@ class Plotter:
         conf_matrix_percent = np.zeros_like(conf_matrix, dtype=float)
         for i in range(len(labels)):
             if row_sums[i] != 0:
-                conf_matrix_percent[i] = conf_matrix[i] / row_sums[i] * 100
+                conf_matrix_percent[i] = conf_matrix[i] / row_sums[i]
 
         # conf_matrix_percent = conf_matrix_percent.astype(np.int).T
 
         # 绘制热图
-        heatmap = sns.heatmap(conf_matrix_percent.T, annot=True, fmt=".2f", cmap="Blues", xticklabels=labels,
-                              yticklabels=labels, vmin=0, vmax=100)
-
-        # 设置标签
-        plt.xlabel('True label')
-        plt.ylabel('Predicted label')
-
+        heatmap = sns.heatmap(conf_matrix_percent.T, annot=True, fmt=".2%", cmap="Blues", xticklabels=labels,
+                              yticklabels=labels, vmin=0, vmax=1)
         # 将y轴文字恢复正常角度
         heatmap.set_yticklabels(labels, rotation=0)
 
-        # 显示图形
-        plt.show()
+        # 设置标签
+        title = 'Accuracy of Fault Diagnosis'
+        plt.title(title)
+        plt.xlabel('True labeler')
+        plt.ylabel('Predicted labeler')
+
+        return title
 
     @staticmethod
+    @postprocess
     def attention_heatmap(test_set: Dataset, result: Result):
         """
         生成注意力权重热图
@@ -304,9 +352,12 @@ class Plotter:
         sorted_indices = np.argsort(test_set.z.squeeze())
         data = result.outputs[sorted_indices]
         Plotter.show_heatmaps(data, 'Features', 'Inputs')
+        title = 'Attention Weights of ' + test_set.name
+        plt.title(title)
+        return title
 
     @staticmethod
-    def show_heatmaps(matrices: ndarray, xlabel, ylabel):
+    def show_heatmaps(matrices: ndarray, x_label, y_label):
         """显示矩阵热图"""
         # matrices = matrices.T
         matrices = np.expand_dims(matrices, axis=0)
@@ -323,15 +374,18 @@ class Plotter:
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
 
                 num_labels = matrices.shape[2]  # 测试样本数
+                # 计算步长，使得总共显示10个刻度
                 step = num_labels // 10
-                if num_labels > 100:
-                    step = 100
-                elif num_labels > 1000:
-                    step = 200
-                elif num_labels > 2000:
-                    step = 500
-                ax.set_yticks(np.arange(0, num_labels, step))
-                ax.set_yticklabels(np.arange(0, num_labels, step))
+                # 计算适合的步长，使刻度均匀分布并去掉零头
+                # 使步长为最接近 step 的最小100的倍数
+                step = round(step / 100) * 100
+                if step == 0:
+                    step = 1
+
+                # 设置刻度
+                yticks = np.arange(0, num_labels, step)
+                ax.set_yticks(yticks)
+                ax.set_yticklabels(yticks)
 
                 num_labels = matrices.shape[3]  # 注意力特征数
                 step = num_labels // 10
@@ -345,9 +399,6 @@ class Plotter:
                 ax.set_xticklabels(np.arange(0, num_labels, step), rotation=0, ha='center')
 
                 if i == num_rows - 1:
-                    ax.set_xlabel(xlabel)
+                    ax.set_xlabel(x_label)
                 if j == 0:
-                    ax.set_ylabel(ylabel)
-
-        plt.title('Attention Weights')
-        plt.show()
+                    ax.set_ylabel(y_label)

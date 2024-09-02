@@ -34,7 +34,7 @@ class BnnModel(ABCModel):
 
         hist_epochs = np.zeros((int(epochs / 10), 1))
         self.train_losses = np.zeros((int(epochs / 10), 1))
-        for epoch in range(epochs):  # loop over the label multiple times
+        for epoch in range(epochs):  # loop over the labeler multiple times
             self.optimizer.zero_grad()
             # forward + backward + optimize
             loss = self.model.sample_elbo(x, y, 1)

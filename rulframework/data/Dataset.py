@@ -4,14 +4,24 @@ from numpy import ndarray
 
 
 class Dataset:
-    def __init__(self, x: ndarray = None, y: ndarray = None, z: ndarray = None, sub_label_map=None, name: str = None):
+    def __init__(self, x: ndarray = None, y: ndarray = None, z: ndarray = None,
+                 sub_label_map: dict = None, name: str = None):
         self.name = name
-        self.__x = x  # 特征
-        self.__y = y  # 标签
-        self.__z = z  # 已运行时间（s）
+        self.__x = x  # 特征Feature
+        self.__y = y  # 标签Label
+        self.__z = z  # 已运行时间Time（s）
         self.sub_label_map = sub_label_map  # y的{标签：索引}字典,当y是多标签的时候才有用
 
         self.__validate(x, y, z)
+
+    def __copy__(self):
+        return Dataset(
+            x=self.__x.copy() if self.__x is not None else None,
+            y=self.__y.copy() if self.__y is not None else None,
+            z=self.__z.copy() if self.__z is not None else None,
+            sub_label_map=self.sub_label_map.copy() if self.sub_label_map is not None else None,
+            name=self.name if self.name is not None else None,
+        )
 
     def clear(self):
         self.__x = None
@@ -69,8 +79,11 @@ class Dataset:
             self.sub_label_map = another_dataset.sub_label_map
 
         # 添加数据集名称
-        if self.name is not None and another_dataset.name is not None:
-            self.name = self.name + ';' + another_dataset.name
+        if another_dataset.name is not None:
+            if self.name is not None:
+                self.name = self.name + ';' + another_dataset.name
+            else:
+                self.name = another_dataset.name
 
     def split(self, ratio):
         """
@@ -125,7 +138,8 @@ class Dataset:
         results = []
         for key, indices in self.sub_label_map.items():
             sub_label_map = {key: [0, indices[1] - indices[0]]}
-            results.append(Dataset(self.__x, self.__y[:, indices[0]: indices[1]], self.__z, sub_label_map, self.name))
+            results.append(
+                Dataset(self.__x, self.__y[:, indices[0]: indices[1]], self.__z, sub_label_map, self.name))
         return tuple(results)
 
     def __validate(self, x, y, z):

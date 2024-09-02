@@ -1,12 +1,12 @@
 from typing import List
 
-from rulframework.data.label.ABCGenerator import ABCGenerator
+from rulframework.data.labeler.ABCLabeler import ABCLabeler
 from rulframework.data.Dataset import Dataset
 from rulframework.entity.Bearing import Bearing
 
 
-class MultiLabelGenerator(ABCGenerator):
-    def __init__(self, generators: List[ABCGenerator]):
+class MultiLabeler(ABCLabeler):
+    def __init__(self, generators: List[ABCLabeler]):
         self.generators = generators
 
     @property
@@ -16,9 +16,9 @@ class MultiLabelGenerator(ABCGenerator):
         """
         return None
 
-    def _generate(self, bearing: Bearing) -> Dataset:
-        dataset = self.generators[0].generate(bearing)
+    def _label(self, bearing: Bearing) -> Dataset:
+        dataset = self.generators[0].__call__(bearing)
         for generator in self.generators[1:]:
-            another_dataset = generator.generate(bearing)
+            another_dataset = generator.__call__(bearing)
             dataset.add_sub_label(generator.name, another_dataset.y)
         return dataset

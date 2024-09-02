@@ -5,7 +5,7 @@ from rulframework.model.Result import Result
 from rulframework.metric.ABCMetric import ABCMetric
 
 
-class End2EndMSE(ABCMetric):
+class MSE(ABCMetric):
     @property
     def name(self) -> str:
         return 'MSE'

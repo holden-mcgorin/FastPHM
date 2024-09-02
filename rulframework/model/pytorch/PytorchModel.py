@@ -42,7 +42,7 @@ class PytorchModel(ABCModel):
 
         # 用于保存每次epoch的训练损失
         self.train_losses = []
-        Logger.info(f'\n>> 成功初始化模型\n  当前使用设备：{self.device}\n  模型参数类型：{self.dtype}')
+        Logger.info(f'\n<< Successfully initialized model:\n\tdevice: {self.device}\n\tdtype: {self.dtype}')
 
     def __call__(self, x: ndarray) -> ndarray:
         input_data = torch.from_numpy(x).to(dtype=self.dtype, device=self.device)
@@ -51,10 +51,11 @@ class PytorchModel(ABCModel):
         return output.cpu().numpy()
 
     def train(self, train_set: Dataset, epochs=100,
-              batch_size=128, weight_decay=0,
+              batch_size=128, weight_decay=0, lr=0.001,
               criterion=None, optimizer=None):
         """
         训练模型
+        :param lr:
         :param train_set:
         :param optimizer: 优化器（默认：Adam，学习率0.001）
         :param weight_decay: 正则化系数
@@ -63,13 +64,14 @@ class PytorchModel(ABCModel):
         :param criterion:
         :return:无返回值
         """
+        Logger.info('Start training model...')
         # 初始化损失函数
         if criterion is None:
             criterion = nn.MSELoss()
 
         # 初始化优化器
         if optimizer is None:
-            optimizer = optim.Adam(self.model.parameters(), lr=0.001, weight_decay=weight_decay)  # 添加正则化项
+            optimizer = optim.Adam(self.model.parameters(), lr=lr, weight_decay=weight_decay)  # 添加正则化项
 
         x = torch.tensor(train_set.x, dtype=self.dtype, device=self.device)
         y = torch.tensor(train_set.y, dtype=self.dtype, device=self.device)
@@ -93,3 +95,4 @@ class PytorchModel(ABCModel):
             self.train_losses.append(avg_loss)  # 保存训练损失
 
             Logger.debug(f"Epoch {epoch + 1}/{epochs}, Loss: {avg_loss:.10f}")
+        Logger.info('Model training completed!!!')

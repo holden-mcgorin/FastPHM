@@ -1,13 +1,15 @@
 import os
 import re
-from typing import Dict
+from typing import Dict, Union
 
 import pandas as pd
-from rulframework.data.loader.ABCDataLoader import ABCDataLoader
-from rulframework.entity.Bearing import Bearing, BearingFault
+from pandas import DataFrame
+
+from rulframework.data.loader.bearing.ABCBearingLoader import ABCBearingLoader
+from rulframework.entity.Bearing import Fault
 
 
-class XJTUDataLoader(ABCDataLoader):
+class XJTULoader(ABCBearingLoader):
     @property
     def frequency(self) -> int:
         return 25600
@@ -23,39 +25,41 @@ class XJTUDataLoader(ABCDataLoader):
     @property
     def fault_type_dict(self) -> dict:
         fault_type_dict = {
-            'Bearing1_1': [BearingFault.OF],
-            'Bearing1_2': [BearingFault.OF],
-            'Bearing1_3': [BearingFault.OF],
-            'Bearing1_4': [BearingFault.CF],
-            'Bearing1_5': [BearingFault.IF, BearingFault.OF],
-            'Bearing2_1': [BearingFault.IF],
-            'Bearing2_2': [BearingFault.OF],
-            'Bearing2_3': [BearingFault.CF],
-            'Bearing2_4': [BearingFault.OF],
-            'Bearing2_5': [BearingFault.OF],
-            'Bearing3_1': [BearingFault.OF],
-            'Bearing3_2': [BearingFault.IF, BearingFault.OF, BearingFault.CF, BearingFault.BF],
-            'Bearing3_3': [BearingFault.IF],
-            'Bearing3_4': [BearingFault.IF],
-            'Bearing3_5': [BearingFault.OF],
+            'Bearing1_1': [Fault.OF],
+            'Bearing1_2': [Fault.OF],
+            'Bearing1_3': [Fault.OF],
+            'Bearing1_4': [Fault.CF],
+            'Bearing1_5': [Fault.IF, Fault.OF],
+            'Bearing2_1': [Fault.IF],
+            'Bearing2_2': [Fault.OF],
+            'Bearing2_3': [Fault.CF],
+            'Bearing2_4': [Fault.OF],
+            'Bearing2_5': [Fault.OF],
+            'Bearing3_1': [Fault.OF],
+            'Bearing3_2': [Fault.IF, Fault.OF, Fault.CF, Fault.BF],
+            'Bearing3_3': [Fault.IF],
+            'Bearing3_4': [Fault.IF],
+            'Bearing3_5': [Fault.OF],
         }
         return fault_type_dict
 
-    def _build_item_dict(self, root) -> Dict[str, str]:
-        item_dict = {}
+    def _register(self, root: str) -> (Dict[str, str], Dict[str, Union[DataFrame, None]]):
+        file_dict = {}
+        entity_dict = {}
         for condition in ['35Hz12kN', '37.5Hz11kN', '40Hz10kN']:
             condition_dir = os.path.join(root, condition)
             for bearing_name in os.listdir(condition_dir):
-                item_dict[bearing_name] = os.path.join(root, condition, bearing_name)
-        return item_dict
+                file_dict[bearing_name] = os.path.join(root, condition, bearing_name)
+                entity_dict[bearing_name] = None
+        return file_dict, entity_dict
 
-    def _load_raw_data(self, item_name):
+    def _load(self, entity_name) -> DataFrame:
         """
         加载轴承的原始振动信号，返回包含raw_data的Bearing对象
-        :param item_name:
+        :param entity_name:
         :return: Bearing对象（包含raw_data)
         """
-        bearing_dir = self._item_dict[item_name]
+        bearing_dir = self._file_dict[entity_name]
 
         # 读取csv数据并合并
         dataframes = []

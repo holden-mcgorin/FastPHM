@@ -5,13 +5,12 @@ from rulframework.model.Result import Result
 from rulframework.metric.ABCMetric import ABCMetric
 
 
-class End2EndMAE(ABCMetric):
+class RMSE(ABCMetric):
     @property
     def name(self) -> str:
-        return 'MAE'
+        return 'RMSE'
 
     def __call__(self, test_set: Dataset, result: Result):
         r_hat = result.outputs
         r = test_set.y
-        mae = np.mean(np.abs(r - r_hat))
-        return f"{mae:.4f}"
+        return f"{float(np.sqrt(np.mean((r_hat - r) ** 2, axis=0))):.4f}"
