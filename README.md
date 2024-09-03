@@ -36,7 +36,7 @@
 ### 1. XJTU-SY西交大轴承数据集
 https://biaowang.tech/xjtu-sy-bearing-datasets/
 ### 2. PHM2012轴承数据集
-https://github.com/wkzs111/phm-ieee-2012-data-challenge-dataset
+https://github.com/Lucky-Loek/ieee-phm-2012-data-challenge-dataset
 ### 3. C-MAPSS涡扇发动机数据集
 https://data.nasa.gov/Aeorspace/CMAPSS-Jet-Engine-Simulated-Data/ff5v-kuh6  
 ### 4. PHM2008数据集
