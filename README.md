@@ -45,7 +45,7 @@ https://data.nasa.gov/download/nk8v-ckry/application%2Fzip
 https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/
 
 ## ⚠    注意事项
-- 该框架使用Python 3.8.10编写，使用其他版本python运行可能会出现兼容性问题，若出现问题欢迎在issue提问
+- 该框架使用Python 3.8.10编写，使用其他版本python运行可能会出现兼容性问题，若出现问题欢迎在issue反馈
 - 读取数据集时，不要改变原始数据集内部文件的相对位置（可以只保留部分数据），不同的位置可能导致无法读取数据
 
 
