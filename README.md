@@ -1,4 +1,6 @@
 # 故障预测框架（Prognostics Framework）
+该项目已迁移至GitHub，未来将在GitHub更新项目，欢迎大家前往关注😀：  
+https://github.com/holden-mcgorin/FastPHM.git
 
 ## 🚀    功能简介
 - 简化剩余使用寿命预测、故障诊断的代码编写，附带示例+经典论文复现代码
