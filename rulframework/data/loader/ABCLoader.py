@@ -29,9 +29,10 @@ class ABCLoader(ABC):
     """
     所有数据读取器的抽象基类、
     采用懒加载的方式加载数据
-    所有子类必须重写下列方法：
-        1. _register
-        2. _load
+    所有子类必须重写下列方法，对应加载数据的3个步骤
+        1. _register（注册：建立数据到文件的映射表）
+        2. _load（装载：从文件中读取数据）
+        3. _assemble（组装；返回实体对象、设置实体对象的属性，如RUL、故障模式、工况）
     """
 
     def __init__(self, root: str):
@@ -40,17 +41,10 @@ class ABCLoader(ABC):
         :param root: 数据集的根目录
         """
         self._root = root  # 此数据集根目录
-        # {数据文件-地址}字典、{实体名称-数据}字典
+        # {数据名称-文件地址}字典、{实体名称-数据}字典
         self._file_dict, self._entity_dict = self._register(root)
 
         Logger.debug('\n<< ' + str(self))
-
-    def __str__(self) -> str:
-        items = '\n'.join([f"\t{key}, location: {value}" for key, value in self._file_dict.items()])
-        return f'Root directory of dataset: {self._root}\n{items}'
-
-    def __iter__(self):
-        return NameIterator(list(self._entity_dict.keys()))
 
     def __call__(self, entity_name, columns: str = None):
         """
@@ -64,6 +58,13 @@ class ABCLoader(ABC):
         entity = self._assemble(entity_name, data_frame, columns)
         Logger.info(f'Successfully loaded data entity: {entity_name}')
         return entity
+
+    def __str__(self) -> str:
+        items = '\n'.join([f"\t{key}, location: {value}" for key, value in self._file_dict.items()])
+        return f'Root directory of dataset: {self._root}\n{items}'
+
+    def __iter__(self):
+        return NameIterator(list(self._entity_dict.keys()))
 
     @abstractmethod
     def _register(self, root: str) -> (Dict[str, str], Dict[str, Union[DataFrame, None]]):

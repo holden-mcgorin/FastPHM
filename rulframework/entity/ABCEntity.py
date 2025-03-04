@@ -25,26 +25,19 @@ class Stage:
 
 
 class ABCEntity(ABC):
+    """
+    数据实体，如：
+        1. 轴承
+        2. 发动机
+        3. 电池
+    数据实体包含三类数据：
+        1.原始数据（传感器收集到的数据）
+        2.特征数据（预处理后得到的数据，如归一化、RMS、峭度、最大值、最小值……）
+        3.阶段数据（阶段划分数据，如正常阶段、退化阶段）
+    """
     def __init__(self, name: str,
                  raw_data: DataFrame = None, feature_data: DataFrame = None, stage_data: Stage = None):
-        self.name = name  # 此轴承名称
-        self.raw_data = raw_data  # 此轴承的原始数据
-        self.feature_data = feature_data  # 此轴承的特征数据
-        self.stage_data = stage_data
-
-    @property
-    def life(self):
-        """
-        该实体的全寿命时长（单位：秒）
-        :return:
-        """
-        return None
-
-    @property
-    def rul(self):
-        """
-        Remaining Useful Life
-        该实体的剩余使用寿命（单位：秒）
-        :return:
-        """
-        return None
+        self.name = name  # 此实体名称
+        self.raw_data = raw_data  # 此实体的原始数据
+        self.feature_data = feature_data  # 此实体的特征数据
+        self.stage_data = stage_data  # 此实体的阶段数据

@@ -10,7 +10,7 @@ class MSE(ABCMetric):
     def name(self) -> str:
         return 'MSE'
 
-    def __call__(self, test_set: Dataset, result: Result):
+    def value(self, test_set: Dataset, result: Result) -> float:
         r_hat = result.outputs
         r = test_set.y
-        return f"{float(np.mean((r_hat - r) ** 2, axis=0)):.4f}"
+        return float(np.mean((r_hat - r) ** 2, axis=0))

@@ -27,11 +27,12 @@ class Fault(Enum):
 class Bearing(ABCEntity):
     """
     轴承对象
+    适用数据集：PHM2012、XJTU-SY
     """
 
-    def __init__(self, name: str, span: int = None, continuum: int = None, frequency: int = None,
-                 fault_type: List[Fault] = None, raw_data: DataFrame = None, feature_data: DataFrame = None,
-                 stage_data: Stage = None):
+    def __init__(self, name: str,
+                 span: int = None, continuum: int = None, frequency: int = None, fault_type: List[Fault] = None,
+                 raw_data: DataFrame = None, feature_data: DataFrame = None, stage_data: Stage = None):
         super().__init__(name, raw_data, feature_data)
         self.stage_data = stage_data  # 此轴承的全寿命阶段划分数据
 

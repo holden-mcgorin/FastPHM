@@ -27,6 +27,11 @@ class BasicBlock(nn.Module):
         out = F.relu(out)
         return out
 
+if __name__ == '__main__':
+    model = BasicBlock(2,2)
+    feature = torch.randn(3, 2, 2)
+    label = model(feature)
+
 
 class ResNet(nn.Module):
     def __init__(self, block, num_blocks, num_classes=1000):
@@ -67,12 +72,3 @@ class ResNet(nn.Module):
 
 def ResNet18():
     return ResNet(BasicBlock, [2, 2, 2, 2], 5)
-
-
-# 测试代码
-if __name__ == '__main__':
-    model = ResNet18()
-    # model = CNN()
-    x = torch.randn(3, 2048)
-    y = model(x)
-    print(y.size())  # 输出形状：torch.Size([1, 1000])

@@ -5,7 +5,7 @@ from rulframework.data.stage.eol.ABCEoLCalculator import ABCEoLCalculator
 
 class NinetyThreePercentRMSEoLCalculator(ABCEoLCalculator):
 
-    def get_eol(self, raw_data: DataFrame, feature_data: DataFrame, scale: int, fpt_raw: int, fpt_feature: int) -> (
+    def __call__(self, raw_data: DataFrame, feature_data: DataFrame, scale: int, fpt_raw: int, fpt_feature: int) -> (
             int, int, int, int):
         # todo 这里只取第一列做计算fpt，多列情况不适应
         raw_data = raw_data.iloc[:, 0]

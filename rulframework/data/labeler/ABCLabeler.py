@@ -4,6 +4,7 @@ from rulframework.data.Dataset import Dataset
 from rulframework.entity.ABCEntity import ABCEntity
 
 
+# todo 改名LabelConstructor
 class ABCLabeler(ABC):
 
     @property

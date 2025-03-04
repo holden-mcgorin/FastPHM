@@ -39,7 +39,7 @@ class Cache:
         with open(cache_file, 'wb') as f:
             Logger.debug(f"Start generating cache file: {cache_file}")
             pickle.dump(target, f)
-        Logger.info(f"Successfully generated cache file: {cache_file}")
+        Logger.debug(f"Successfully generated cache file: {cache_file}")
 
     @classmethod
     def load(cls, name, is_able=True):
@@ -55,7 +55,7 @@ class Cache:
             with open(cache_file, 'rb') as f:
                 Logger.debug(f"Start loading cache file: {cache_file}")
                 cache = pickle.load(f)
-                Logger.info(f"Successfully loaded cache file: {cache_file}")
+                Logger.debug(f"Successfully loaded cache file: {cache_file}")
                 return cache
         else:
             Logger.warning(f'cache file {cache_file} does not exist!')

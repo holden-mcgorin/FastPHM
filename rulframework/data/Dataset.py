@@ -14,6 +14,9 @@ class Dataset:
 
         self.__validate(x, y, z)
 
+    def __len__(self):
+        return self.__x.shape[0]
+
     def __copy__(self):
         return Dataset(
             x=self.__x.copy() if self.__x is not None else None,

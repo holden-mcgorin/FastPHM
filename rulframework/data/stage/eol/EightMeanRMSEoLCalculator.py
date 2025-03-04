@@ -4,7 +4,7 @@ from rulframework.data.stage.eol.ABCEoLCalculator import ABCEoLCalculator
 
 
 class EightMeanRMSEoLCalculator(ABCEoLCalculator):
-    def get_eol(self, raw_data: DataFrame, feature_data: DataFrame, scale, fpt_raw, fpt_feature):
+    def __call__(self, raw_data: DataFrame, feature_data: DataFrame, scale, fpt_raw, fpt_feature):
         # todo 这里只取第一列做计算fpt，多列情况不适应
         raw_data = raw_data.iloc[:, 0]
         feature_data = feature_data.iloc[:, 0]

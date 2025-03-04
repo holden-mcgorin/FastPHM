@@ -6,7 +6,7 @@ from pandas import DataFrame
 class ABCEoLCalculator(ABC):
 
     @abstractmethod
-    def get_eol(self, raw_data: DataFrame, feature_data: DataFrame, scale: int, fpt_raw: int, fpt_feature: int) -> (
+    def __call__(self, raw_data: DataFrame, feature_data: DataFrame, scale: int, fpt_raw: int, fpt_feature: int) -> (
             int, int, int, int):
         """
         :param raw_data:

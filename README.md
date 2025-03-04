@@ -11,6 +11,7 @@
 - 支持多种退化阶段划分算法（3σ原则FPT、10倍振幅EoL）
 - 支持多种预测算法（端到端预测、单/多步滚动预测、不确定性预测..）
 - 支持实验结果可视化（混淆矩阵图、阶段划分图、预测结果图、注意力分布图..）
+- 支持模型、数据集、实验结果、缓存的多种文件格式导入和导出（csv、pkl）
 - 支持多种评价指标（MAE、MSE、RMSE、MAPE、PHM2012score、NASAscore..）
 - 支持自定义组件（轻松扩展新的算法）
 
@@ -45,7 +46,7 @@ https://data.nasa.gov/download/nk8v-ckry/application%2Fzip
 https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/
 
 ## ⚠    注意事项
-- 该框架使用Python 3.8.10编写，使用其他版本python运行可能会出现兼容性问题，若出现问题欢迎在issue反馈
+- 该框架使用Python 3.8.10编写，使用其他版本python运行可能会出现兼容性问题，若出现问题欢迎在issue提问
 - 读取数据集时，不要改变原始数据集内部文件的相对位置（可以只保留部分数据），不同的位置可能导致无法读取数据
 
 

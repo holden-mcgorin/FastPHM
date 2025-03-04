@@ -29,8 +29,16 @@ class Condition(Enum):
 
 
 class Turbofan(ABCEntity):
-    def __init__(self, name: str, fault_type: List[Fault] = None, condition: List[Condition] = None,
-                 raw_data: DataFrame = None):
-        super().__init__(name, raw_data)
+    """
+    适用数据集：C-MAPSS
+    """
+
+    def __init__(self, name: str,
+                 fault_type: List[Fault] = None, condition: List[Condition] = None,
+                 rul: int = None, life: int = None,
+                 raw_data: DataFrame = None, feature_data: DataFrame = None):
+        super().__init__(name, raw_data, feature_data)
         self.fault_type = fault_type  # 故障类型
         self.condition = condition  # 工况
+        self.rul = rul  # 剩余使用寿命
+        self.life = life  # 全寿命时长

@@ -36,7 +36,10 @@ class FaultLabeler(ABCLabeler):
 
         # 生成标签y
         # 获取健康状态的下标
-        normal_index = self.fault_types.index(Fault.NC)
+        try:
+            normal_index = self.fault_types.index(Fault.NC)
+        except ValueError:
+            normal_index = None
         # 获取故障状态的下标
         fault_indices = []
         for i, e in enumerate(self.fault_types):
@@ -48,18 +51,25 @@ class FaultLabeler(ABCLabeler):
         if self.is_onehot:
             # 生成健康标签
             y_normal = np.zeros((bearing.stage_data.fpt_raw // self.interval, cols))
-            y_normal[:, normal_index] = 1
+            if normal_index is not None:
+                y_normal[:, normal_index] = 1
             # 生成故障标签
             y_fault = np.zeros(((bearing.raw_data.shape[0] - bearing.stage_data.fpt_raw) // self.interval, cols))
             y_fault[:, fault_indices] = 1
         else:
             # 生成健康标签
             y_normal = np.zeros((bearing.stage_data.fpt_raw // self.interval, 1))
-            y_normal[:, 0] = normal_index
+            if normal_index is not None:
+                y_normal[:, 0] = normal_index
             # 生成故障标签
             y_fault = np.zeros(((bearing.raw_data.shape[0] - bearing.stage_data.fpt_raw) // self.interval, 1))
             y_fault[:, 0] = fault_indices[0]  # 非独热编码时自适用单标签多分类问题
-        y = np.vstack((y_normal, y_fault))
+
+        # 合并健康阶段与故障阶段
+        if y_normal is None:
+            y = y_fault
+        else:
+            y = np.vstack((y_normal, y_fault))
 
         # 生成时间z
         z = np.linspace(0, bearing.life, x.shape[0]).reshape(-1, 1) / self.time_ratio

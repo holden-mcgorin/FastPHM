@@ -28,11 +28,11 @@ class PHM2008Loader(ABCTurbofanLoader):
         entity_dict = {}
         for filename in os.listdir(root):
             name = filename[:-4]
-            if name in trajectories:
+            if name in self.trajectories:
                 file_dict[name] = os.path.join(root, filename)
                 # 注册未分裂的完整数据
                 entity_dict[name] = None
-                for i in range(1, trajectories[name] + 1):
+                for i in range(1, self.trajectories[name] + 1):
                     entity_name = name + '_' + str(i)
                     entity_dict[entity_name] = None
         return file_dict, entity_dict
@@ -60,7 +60,7 @@ class PHM2008Loader(ABCTurbofanLoader):
             grouped = df.groupby(df.columns[0])
             dfs = {group: pd.DataFrame(data) for group, data in grouped}
 
-            for i in range(1, trajectories[prefix_raw] + 1):
+            for i in range(1, self.trajectories[prefix_raw] + 1):
                 self._entity_dict[prefix_raw + '_' + str(i)] = dfs[i].drop(dfs[i].columns[0], axis=1)
 
         return self._entity_dict[entity_name]
@@ -69,7 +69,7 @@ class PHM2008Loader(ABCTurbofanLoader):
         turbofan = Turbofan(name=entity_name)
 
         # 增加表头
-        raw_data.columns = header
+        raw_data.columns = self.header
         raw_data = self._load(entity_name)
         # 如果有column参数则删除对应列数据
         if columns_to_drop is not None:

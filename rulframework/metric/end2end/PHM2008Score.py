@@ -5,12 +5,15 @@ from rulframework.metric.ABCMetric import ABCMetric
 from rulframework.model.Result import Result
 
 
-class NASAScore(ABCMetric):
+class PHM2008Score(ABCMetric):
+    """
+    别名：PHM2008 Score、NASA Score
+    """
     @property
     def name(self) -> str:
-        return 'NASA Score'
+        return 'PHM2008 Score'
 
-    def __call__(self, test_set: Dataset, result: Result) -> str:
+    def value(self, test_set: Dataset, result: Result) -> float:
         r_hat = result.outputs.reshape(-1)
         r = test_set.y.reshape(-1)
 
@@ -26,4 +29,4 @@ class NASAScore(ABCMetric):
 
             score += s
 
-        return f"{float(score):.4f}"
+        return float(score)

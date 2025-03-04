@@ -16,8 +16,9 @@ class ABCModel(ABC):
     """
 
     @abstractmethod
-    def __init__(self, model):
-        raise NotImplementedError
+    def __init__(self, name=None, model=None):
+        self.name = name
+        self.model = model
 
     @abstractmethod
     def __call__(self, x: ndarray) -> ndarray:
@@ -28,8 +29,13 @@ class ABCModel(ABC):
     def loss(self) -> list:
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def num_param(self) -> int:
+        raise NotImplementedError
+
     def test(self, test_set: Dataset) -> Result:
-        return Result(outputs=self(test_set.x))
+        return Result(outputs=self(test_set.x), name=self.name)
 
     @abstractmethod
     def train(self, train_set: Dataset, epochs: int = 100,

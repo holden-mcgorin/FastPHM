@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import numpy as np
 from numpy import ndarray
 
 
@@ -6,7 +9,9 @@ class Result:
     轴承预测数据
     """
 
-    def __init__(self, begin_index: int = None, name: str = None, outputs: ndarray = None,
+    # todo 需要重新设置数据结构，使得可以支持分开保存、拼接多个模型的预测结果（已实现内部拼接，还需实现外部拼接）
+
+    def __init__(self, name: str = 'prediction', begin_index: int = None, outputs: ndarray = None,
                  upper: ndarray = None, mean: ndarray = None, lower: ndarray = None) -> None:
         """
         :param begin_index: 开始预测时的下标
@@ -34,3 +39,17 @@ class Result:
 
     def __str__(self) -> str:
         return f"begin_index = {self.begin_index}\noutputs = {self.outputs}"
+
+    def append(self, another_result: Result):
+        # todo 待完善
+        if self.outputs is None:
+            self.outputs = another_result.outputs
+        else:
+            self.outputs = np.vstack((self.outputs, another_result.outputs))
+
+    @property
+    def is_empty(self):
+        if self.outputs is None and self.mean is None and self.lower is None and self.upper is None:
+            return True
+        else:
+            return False

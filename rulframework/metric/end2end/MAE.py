@@ -10,8 +10,7 @@ class MAE(ABCMetric):
     def name(self) -> str:
         return 'MAE'
 
-    def __call__(self, test_set: Dataset, result: Result):
+    def value(self, test_set: Dataset, result: Result) -> float:
         r_hat = result.outputs
         r = test_set.y
-        mae = np.mean(np.abs(r - r_hat))
-        return f"{mae:.4f}"
+        return float(np.mean(np.abs(r - r_hat)))
