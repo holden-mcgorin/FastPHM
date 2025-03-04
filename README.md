@@ -1,5 +1,5 @@
 # 故障预测框架（Prognostics Framework）
-该项目已迁移至GitHub，未来将在GitHub更新项目，欢迎大家前往关注😀：  
+该项目已迁移至GitHub，欢迎大家前往关注😀：  
 https://github.com/holden-mcgorin/FastPHM.git
 
 ## 🚀    功能简介
