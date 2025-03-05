@@ -29,7 +29,7 @@
 - 原生python示例：example文件夹
 
 ## 📂    文件结构说明
-- rulframework —— 框架代码
+- fastphm —— 框架代码
 - doc —— 框架详细说明文档（编写自定义组件时建议查看）
 - example —— 试验代码示例（原生python）
 
