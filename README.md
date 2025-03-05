@@ -1,32 +1,51 @@
-# FastPHM（一个简单易上手的故障预测框架）
+<div align="center">
+    <h1>⚡ FastPHM ⚡</h1>
+</div>
+
+<div align="center"><h3>✨ 
+快速上手、快速运行的 PHM 实验框架！✨</h3></div>
+
+<div align="center">
+
+[![GPLv3 License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Gitee star](https://gitee.com/holdenmcgorin/FastPHM/badge/star.svg?theme=dark)](https://gitee.com/ghost-him/ZeroLaunch-rs/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/holden-mcgorin/FastPHM.svg?style=social)](https://github.com/ghost-him/ZeroLaunch-rs/stargazers)
+
+</div>
+
+<div align="center">
+
+[简体中文](README.md) | [English](readme-en.md)
+
+</div>
+
+<div align="center">
+    <a href="https://gitee.com/holdenmcgorin/FastPHM" target="_blank">Gitee</a> •
+    <a href="https://github.com/holden-mcgorin/FastPHM" target="_blank">GitHub</a>
+</div>
+
+### 
+> 用于快速搭建 PHM 相关实验（剩余使用寿命预测、故障诊断……），简化代码开发
+
+
 
 ## 🚀    功能简介
-- 简化剩余使用寿命预测、故障诊断的代码编写，附带示例+经典论文复现代码
-- 对中间生成数据进行缓存并自动管理，提升程序运行速度与实验效率
 - 兼容多种深度学习框架进行模型搭建（PyTorch、TensorFlow、Pyro）
 - 支持自动导出实验参数与结果（模型、正则化系数、迭代次数、采样次数..）
 - 支持多种实验对象（轴承、涡扇发动机、电池..）
 - 支持多种数据集自动导入（XJTU-SY、PHM2012、C-MAPSS、PHM2008..）
 - 支持多种预处理+特征提取方法（滑动窗口、归一化、均方根、峭度..）
-- 支持多种退化阶段划分算法（3σ原则FPT、10倍振幅EoL）
+- 支持多种退化阶段划分算法（3σ原则FPT..）
 - 支持多种预测算法（端到端预测、单/多步滚动预测、不确定性预测..）
 - 支持实验结果可视化（混淆矩阵图、阶段划分图、预测结果图、注意力分布图..）
 - 支持模型、数据集、实验结果、缓存的多种文件格式导入和导出（csv、pkl）
 - 支持多种评价指标（MAE、MSE、RMSE、MAPE、PHM2012score、NASAscore..）
 - 支持自定义组件（轻松扩展新的算法）
+- 对中间生成数据进行缓存并自动管理，提升程序运行速度与实验效率
 
-
-## 💡    安装方法
-### 使用git库远程安装
-1. pip install git+https://github.com/holden-mcgorin/FastPHM
-### 使用源代码安装
-1. 下载源代码 或 git clone https://github.com/holden-mcgorin/FastPHM.git
-2. 进入此项目根目录
-3. pip install .
-
-## 💻    代码示例
-- notebook示例：项目根目录
-- 原生python示例：example文件夹
+## 💻    实验示例
+- Notebook示例：项目根目录
+- 原生Python示例：example文件夹
 
 ## 📂    文件结构说明
 - fastphm —— 框架代码
@@ -46,14 +65,15 @@ https://data.nasa.gov/download/nk8v-ckry/application%2Fzip
 https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/
 
 ## ⚠    注意事项
-- 该框架使用Python 3.8.10编写，使用其他版本python运行可能会出现兼容性问题，若出现问题欢迎在issue提问
-- 读取数据集时，不要改变原始数据集内部文件的相对位置（可以只保留部分数据），不同的位置可能导致无法读取数据
+> - 该框架使用Python 3.8.10编写，使用其他版本python运行可能会出现兼容性问题，若出现问题欢迎在issue提问
+> - 读取数据集时，不要改变原始数据集内部文件的相对位置（可以只保留部分数据），不同的位置可能导致无法读取数据
+
 
 
 觉得项目写的还行的大佬们点个star呗，觉得哪里写得不行的地方也欢迎issue一下，您的关注是我最大的更新动力！😀
 
 
 ##### @键哥工作室 @AndrewStudio
-##### 个人邮箱：andrewstudio@foxmail.com
-##### 个人网站：http://134.175.206.112/#/home
+##### 📧 个人邮箱：andrewstudio@foxmail.com
+##### 🌐 个人网站：http://134.175.206.112/#/home
 
