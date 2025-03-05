@@ -8,8 +8,8 @@
 <div align="center">
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Gitee star](https://gitee.com/holdenmcgorin/FastPHM/badge/star.svg?theme=dark)](https://gitee.com/ghost-him/ZeroLaunch-rs/stargazers)
-[![GitHub stars](https://img.shields.io/github/stars/holden-mcgorin/FastPHM.svg?style=social)](https://github.com/ghost-him/ZeroLaunch-rs/stargazers)
+[![Gitee star](https://gitee.com/holdenmcgorin/FastPHM/badge/star.svg?theme=dark)](https://gitee.com/holdenmcgorin/FastPHM/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/holden-mcgorin/FastPHM.svg?style=social)](https://github.com/holden-mcgorin/FastPHM/stargazers)
 
 </div>
 
