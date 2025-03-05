@@ -1,18 +1,18 @@
 import torch
 from torch import nn
 
-from rulframework.data.Dataset import Dataset
-from rulframework.data.labeler.RulTurbofanLabeler import RulTurbofanLabeler
-from rulframework.data.loader.turbofan.CMAPSSLoader import CMAPSSLoader
-from rulframework.metric.Evaluator import Evaluator
-from rulframework.metric.end2end.MSE import MSE
-from rulframework.metric.end2end.MAE import MAE
-from rulframework.metric.end2end.PHM2008Score import PHM2008Score
-from rulframework.metric.end2end.PHM2012Score import PHM2012Score
-from rulframework.metric.end2end.PercentError import PercentError
-from rulframework.metric.end2end.RMSE import RMSE
-from rulframework.model.pytorch.PytorchModel import PytorchModel
-from rulframework.util.Plotter import Plotter
+from fastphm.data.Dataset import Dataset
+from fastphm.data.labeler.RulTurbofanLabeler import RulTurbofanLabeler
+from fastphm.data.loader.turbofan.CMAPSSLoader import CMAPSSLoader
+from fastphm.metric.Evaluator import Evaluator
+from fastphm.metric.end2end.MSE import MSE
+from fastphm.metric.end2end.MAE import MAE
+from fastphm.metric.end2end.PHM2008Score import PHM2008Score
+from fastphm.metric.end2end.PHM2012Score import PHM2012Score
+from fastphm.metric.end2end.PercentError import PercentError
+from fastphm.metric.end2end.RMSE import RMSE
+from fastphm.model.pytorch.PytorchModel import PytorchModel
+from fastphm.util.Plotter import Plotter
 
 
 class ProposedModel(nn.Module):

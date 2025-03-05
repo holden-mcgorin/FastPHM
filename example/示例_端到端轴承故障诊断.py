@@ -1,17 +1,17 @@
 from torch import nn
 
-from rulframework.data.Dataset import Dataset
-from rulframework.data.FeatureExtractor import FeatureExtractor
-from rulframework.data.labeler.FaultLabeler import FaultLabeler
-from rulframework.data.loader.bearing.XJTULoader import XJTULoader
-from rulframework.data.processor.RMSProcessor import RMSProcessor
-from rulframework.entity.Bearing import Fault
-from rulframework.model.pytorch.PytorchModel import PytorchModel
-from rulframework.data.stage.BearingStageCalculator import BearingStageCalculator
-from rulframework.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
-from rulframework.model.pytorch.basic.CNN import CNN
-from rulframework.util.Cache import Cache
-from rulframework.util.Plotter import Plotter
+from fastphm.data.Dataset import Dataset
+from fastphm.data.FeatureExtractor import FeatureExtractor
+from fastphm.data.labeler.FaultLabeler import FaultLabeler
+from fastphm.data.loader.bearing.XJTULoader import XJTULoader
+from fastphm.data.processor.RMSProcessor import RMSProcessor
+from fastphm.entity.Bearing import Fault
+from fastphm.model.pytorch.PytorchModel import PytorchModel
+from fastphm.data.stage.BearingStageCalculator import BearingStageCalculator
+from fastphm.data.stage.fpt.ThreeSigmaFPTCalculator import ThreeSigmaFPTCalculator
+from fastphm.model.pytorch.basic.CNN import CNN
+from fastphm.util.Cache import Cache
+from fastphm.util.Plotter import Plotter
 
 fault_types = [Fault.NC, Fault.OF, Fault.IF, Fault.CF]
 

@@ -1,4 +1,4 @@
-# 故障预测框架（Prognostics Framework）
+# FastPHM（一个简单易上手的故障预测框架）
 该项目在GitHub同步更新，欢迎大家关注😀：  
 https://github.com/holden-mcgorin/FastPHM.git
 
@@ -31,7 +31,7 @@ https://github.com/holden-mcgorin/FastPHM.git
 - 原生python示例：example文件夹
 
 ## 📂    文件结构说明
-- rulframework —— 框架代码
+- fastphm —— 框架代码
 - doc —— 框架详细说明文档（编写自定义组件时建议查看）
 - example —— 试验代码示例（原生python）
 
