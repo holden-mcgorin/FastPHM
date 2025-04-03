@@ -25,7 +25,7 @@ A fast-start, fast-executing PHM experimental framework !✨</h3></div>
 </div>
 
 ### 
-> A fast-start, fast-executing PHM experimental framework for rapid experiment setup and streamlined code development
+> Committed to simplifying PHM-related experimental code development (such as remaining useful life prediction and fault diagnosis) while enhancing program execution efficiency.
 
 
 
