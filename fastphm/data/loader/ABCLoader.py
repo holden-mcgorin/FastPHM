@@ -44,7 +44,7 @@ class ABCLoader(ABC):
         # {数据名称-文件地址}字典、{实体名称-数据}字典
         self._file_dict, self._entity_dict = self._register(root)
 
-        Logger.debug('\n<< ' + str(self))
+        Logger.debug(str(self))
 
     def __call__(self, entity_name, columns: str = None):
         """
@@ -53,15 +53,15 @@ class ABCLoader(ABC):
         :param columns: 列
         :return:
         """
-        Logger.info(f'Loading data entity: {entity_name}')
+        Logger.info(f'[DataLoader]  -> Loading data entity: {entity_name}')
         data_frame = self._load(entity_name)
         entity = self._assemble(entity_name, data_frame, columns)
-        Logger.info(f'Successfully loaded data entity: {entity_name}')
+        Logger.info(f'[DataLoader]  ✓ Successfully loaded: {entity_name}')
         return entity
 
     def __str__(self) -> str:
-        items = '\n'.join([f"\t{key}, location: {value}" for key, value in self._file_dict.items()])
-        return f'Root directory of dataset: {self._root}\n{items}'
+        items = '\n'.join([f"\t✓ {key}, location: {value}" for key, value in self._file_dict.items()])
+        return f'\n[DataLoader]  Root directory: {self._root}\n{items}'
 
     def __iter__(self):
         return NameIterator(list(self._entity_dict.keys()))
@@ -69,7 +69,8 @@ class ABCLoader(ABC):
     @abstractmethod
     def _register(self, root: str) -> (Dict[str, str], Dict[str, Union[DataFrame, None]]):
         """
-        生成数据项与其位置的字典
+        file_dict：数据项名称 -> 数据项文件地址
+        entity_dict：数据项名称 -> 数据项对象
         键：数据项名称
         值：数据项文件目录
         :return:

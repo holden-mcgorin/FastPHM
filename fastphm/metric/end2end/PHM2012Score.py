@@ -9,10 +9,14 @@ class PHM2012Score(ABCMetric):
 
     @property
     def name(self) -> str:
-        return 'PHM2012 Score'
+        return 'PHM2012Score'
+
+    @property
+    def is_higher_better(self) -> bool:
+        return False
 
     def value(self, test_set: Dataset, result: Result) -> float:
-        r_hat = result.outputs
+        r_hat = result.y_hat
         r = test_set.y
 
         # 去掉真实值为0的项

@@ -8,10 +8,14 @@ from fastphm.model.Result import Result
 class PercentError(ABCMetric):
     @property
     def name(self) -> str:
-        return 'Percent Error'
+        return 'PercentError'
+
+    @property
+    def is_higher_better(self) -> bool:
+        return False
 
     def value(self, test_set: Dataset, result: Result) -> float:
-        r_hat = result.outputs
+        r_hat = result.y_hat
         r = test_set.y
 
         r = np.sum(r)
@@ -29,7 +33,7 @@ class PercentError(ABCMetric):
         :param result:
         :return:
         """
-        r_hat = result.outputs
+        r_hat = result.y_hat
         r = test_set.y
 
         # 去掉真实值为0的项

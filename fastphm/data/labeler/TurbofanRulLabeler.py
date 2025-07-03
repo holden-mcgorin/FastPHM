@@ -9,12 +9,9 @@ from fastphm.entity.Bearing import Bearing
 from fastphm.entity.Turbofan import Turbofan
 
 
-class RulTurbofanLabeler(ABCLabeler):
-    """
+class TurbofanRulLabeler(ABCLabeler):
 
-    """
-
-    def __init__(self, window_size, window_step=1, max_rul=-1, last_cycle: bool = False):
+    def __init__(self, window_size, window_step=1, max_rul=-1, last_sample: bool = False):
         """
         涡扇发动机数据打标器
         对于涡扇发动机数据集来说，评价指标通常只评价整个发动机的RUL，而不是滑动窗口生成的所有切片，
@@ -22,13 +19,13 @@ class RulTurbofanLabeler(ABCLabeler):
         :param window_size:
         :param window_step:
         :param max_rul:
-        :param last_cycle: 是否只取每个发动机最后一个样本（该选择对score评价指标至关重要）
+        :param last_sample: 是否只取每个发动机最后一个样本（该选择对score评价指标至关重要）
         """
-        self.window_size = window_size
+        self.window_size = window_size  # 为-1代表窗口大小为整个时序长度
         self.window_step = window_step
         self.max_rul = max_rul
-        self.last_cycle = last_cycle
-        self.window = SlideWindowProcessor(window_size=self.window_size, window_step=self.window_step)
+        self.last_sample = last_sample
+        self.sliding_window = SlideWindowProcessor(window_size=self.window_size, window_step=self.window_step)
 
     @property
     def name(self):
@@ -36,17 +33,16 @@ class RulTurbofanLabeler(ABCLabeler):
 
     def _label(self, turbofan: Turbofan) -> Dataset:
         data = turbofan.feature_data.values
-        x = self.window(data)
-        x = x.transpose((0, 2, 1))  # (批量,时间,传感器) -> (批量,传感器,时间)
+        x = self.sliding_window(data)
         y = np.arange(x.shape[0], 0, -1).reshape(-1, 1) + turbofan.rul - 1
         y[y > self.max_rul] = self.max_rul
         z = np.arange(x.shape[0]) + 1
         z = z.reshape(-1, 1)
 
         # 是否仅取最后一个样本
-        if self.last_cycle:
+        if self.last_sample:
             x = x[np.newaxis, -1]
             y = y[np.newaxis, -1]
             z = z[np.newaxis, -1]
 
-        return Dataset(x, y, z, name=turbofan.name)
+        return Dataset(x=x, y=y, z=z, name=turbofan.name)

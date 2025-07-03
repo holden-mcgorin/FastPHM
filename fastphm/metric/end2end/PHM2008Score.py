@@ -11,10 +11,14 @@ class PHM2008Score(ABCMetric):
     """
     @property
     def name(self) -> str:
-        return 'PHM2008 Score'
+        return 'PHM2008Score'
+
+    @property
+    def is_higher_better(self) -> bool:
+        return False
 
     def value(self, test_set: Dataset, result: Result) -> float:
-        r_hat = result.outputs.reshape(-1)
+        r_hat = result.y_hat.reshape(-1)
         r = test_set.y.reshape(-1)
 
         # 初始化 Score

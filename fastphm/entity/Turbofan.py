@@ -23,6 +23,13 @@ class Condition(Enum):
     """
     ONE = 'ONE (Sea Level)'
     SIX = 'SIX'
+    # SIX的子枚举，即6种工况下更具体的子工况
+    SIX_1 = 'condition1'
+    SIX_2 = 'condition2'
+    SIX_3 = 'condition3'
+    SIX_4 = 'condition4'
+    SIX_5 = 'condition5'
+    SIX_6 = 'condition6'
 
     def __str__(self):
         return self.name

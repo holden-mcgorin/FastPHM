@@ -3,90 +3,50 @@ from colorama import Fore, Style, init
 
 
 class Logger(logging.Formatter):
-    """ 自定义日志格式化器，支持彩色输出 """
+    """ 自定义日志格式化器，支持彩色输出 + 等级对齐 """
     __instance = None
 
-    # __level = logging.INFO
     __level = logging.DEBUG
-
-    __log_format = '%(levelname)s - %(asctime)s >> %(message)s'
+    __log_format = '[%(levelname)s %(asctime)s]  %(message)s'
 
     __COLORS = {
-        'DEBUG': Fore.BLUE,        # 蓝色
-        'INFO': Fore.GREEN,        # 绿色
-        'WARNING': Fore.YELLOW,    # 黄色
-        'ERROR': Fore.RED,         # 红色
-        'CRITICAL': Fore.MAGENTA,  # 紫色
-        'RESET': Style.RESET_ALL   # 重置颜色
+        'DEBUG': Fore.BLUE,
+        'INFO': Fore.GREEN,
+        'WARNING': Fore.YELLOW,
+        'ERROR': Fore.RED,
+        'CRITICAL': Fore.MAGENTA,
+        'RESET': Style.RESET_ALL
     }
 
-    __banner_framework = """
-    ██████╗ ██╗  ██╗███╗   ███╗    ███████╗██████╗  █████╗ ███╗   ███╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗
-    ██╔══██╗██║  ██║████╗ ████║    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝
-    ██████╔╝███████║██╔████╔██║    █████╗  ██████╔╝███████║██╔████╔██║█████╗  ██║ █╗ ██║██║   ██║██████╔╝█████╔╝ 
-    ██╔═══╝ ██╔══██║██║╚██╔╝██║    ██╔══╝  ██╔══██╗██╔══██║██║╚██╔╝██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██╔═██╗ 
-    ██║     ██║  ██║██║ ╚═╝ ██║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗
-    ╚═╝     ╚═╝  ╚═╝╚═╝     ╚═╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
-    """
-
-    __banner_author = """
-     █████╗ ███╗   ██╗██████╗ ██████╗ ███████╗██╗    ██╗    ███████╗████████╗██╗   ██╗██████╗ ██╗ ██████╗ 
-     ██╔══██╗████╗  ██║██╔══██╗██╔══██╗██╔════╝██║    ██║    ██╔════╝╚══██╔══╝██║   ██║██╔══██╗██║██╔═══██╗
-     ███████║██╔██╗ ██║██║  ██║██████╔╝█████╗  ██║ █╗ ██║    ███████╗   ██║   ██║   ██║██║  ██║██║██║   ██║
-     ██╔══██║██║╚██╗██║██║  ██║██╔══██╗██╔══╝  ██║███╗██║    ╚════██║   ██║   ██║   ██║██║  ██║██║██║   ██║
-     ██║  ██║██║ ╚████║██████╔╝██║  ██║███████╗╚███╔███╔╝    ███████║   ██║   ╚██████╔╝██████╔╝██║╚██████╔╝
-     ╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝╚══════╝ ╚══╝╚══╝     ╚══════╝   ╚═╝    ╚═════╝ ╚═════╝ ╚═╝ ╚═════╝                                                                                                  
-    """
-
-    __banner_author_chinese = """
-      #        #      #############                        #  #               #          
-      #  ###   #                #                 #        #  #                #         
-      ###  # #####      ######  #      #############       #  #     #    ##############  
-     #     #   # #      #    #  #            #            #   ########   #            #  
-    #     # #######     #    #  #            #            #  # #        #          # #   
-     #### #    # #      ######  #            #           ##  # #          ###########    
-      #  #   #####              # #          #          # # #  #  #          #           
-      #  ###   #     ###############         #         #  ##   #####        #     #      
-    #####  # #####              #            #            #    #           #########     
-      #    #   #        ######  #            #            #    #               #   #     
-      #  # #   # #      #    #  #            #            #    #   #           #         
-      #   # #######     #    #  #            #            #    ######      #########     
-      # # #    #        ######  #            #     #      #    #               #         
-      ## # #   #        #       #     ###############     #    #               #    #    
-      # #   #  # ##           # #                         #    #         #############   
-             #####             #                          #    #                         
-    """
-
     def __init__(self, log_format=None):
-        # 初始化 colorama
         init(autoreset=True)
 
         if log_format is None:
             log_format = self.__log_format
-        super().__init__(log_format, datefmt='%H:%M:%S')
-        self.__logger = None
+        super(Logger, self).__init__(log_format, datefmt='%H:%M:%S')
 
-        # 创建 logger
         logger = logging.getLogger(__name__)
         logger.setLevel(self.__level)
 
-        # 创建控制台处理器
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-
-        # 设置自定义的彩色格式化器
+        ch.setLevel(self.__level)
         ch.setFormatter(self)
 
-        # 添加处理器到 logger
         logger.addHandler(ch)
-
         self.__logger = logger
         Logger.__instance = self
 
     def format(self, record):
-        color = self.__COLORS.get(record.levelname, self.__COLORS['RESET'])
-        log_fmt = f"{color}{self._style._fmt}{self.__COLORS['RESET']}"
-        formatter = logging.Formatter(log_fmt, datefmt='%H:%M:%S')
+        # 等级对齐为 7 个字符（如 "INFO   ", "WARNING"）
+        levelname_raw = record.levelname
+        padded_levelname = f"{levelname_raw:<7}"  # 左对齐，宽度7
+
+        color = self.__COLORS.get(levelname_raw, self.__COLORS['RESET'])
+        # 替换格式中的 levelname 为对齐后的内容
+        original_fmt = self._style._fmt.replace("%(levelname)s", padded_levelname)
+        colored_fmt = f"{color}{original_fmt}{self.__COLORS['RESET']}"
+
+        formatter = logging.Formatter(colored_fmt, datefmt='%H:%M:%S')
         return formatter.format(record)
 
     @classmethod
@@ -94,6 +54,36 @@ class Logger(logging.Formatter):
         if cls.__instance is None:
             cls()
         return cls.__instance
+
+    @classmethod
+    def set_level_debug(cls):
+        Logger.__level = logging.DEBUG
+        instance = cls.get_instance()
+        instance.__logger.setLevel(cls.__level)
+
+    @classmethod
+    def set_level_info(cls):
+        Logger.__level = logging.INFO
+        instance = cls.get_instance()
+        instance.__logger.setLevel(cls.__level)
+
+    @classmethod
+    def set_level_warning(cls):
+        Logger.__level = logging.WARNING
+        instance = cls.get_instance()
+        instance.__logger.setLevel(cls.__level)
+
+    @classmethod
+    def set_level_error(cls):
+        Logger.__level = logging.ERROR
+        instance = cls.get_instance()
+        instance.__logger.setLevel(cls.__level)
+
+    @classmethod
+    def set_level_critical(cls):
+        Logger.__level = logging.CRITICAL
+        instance = cls.get_instance()
+        instance.__logger.setLevel(cls.__level)
 
     @classmethod
     def debug(cls, string: str):
@@ -119,3 +109,20 @@ class Logger(logging.Formatter):
     def critical(cls, string: str):
         instance = cls.get_instance()
         instance.__logger.critical(string)
+
+    # def get_symbols(use_unicode=True):
+    #     if use_unicode:
+    #         return {
+    #             'ok': '✔',✓
+    #             'fail': '✘',×
+    #             'info': 'ℹ',
+    #             'arrow': '➜'->
+    #         }
+    #     else:
+    #         return {
+    #             'ok': '[OK]',
+    #             'fail': '[FAIL]',
+    #             'info': '[INFO]',
+    #             'arrow': '-->'
+    #         }
+

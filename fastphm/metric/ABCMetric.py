@@ -19,13 +19,29 @@ class ABCMetric(ABC):
         定义此评价指标的名称
         :return: 此评价指标的名称
         """
-        raise NotImplementedError
+        pass
+
+    @property
+    @abstractmethod
+    def is_higher_better(self) -> bool:
+        pass
 
     @abstractmethod
     def value(self, test_set: Dataset, result: Result) -> float:
+        """
+        获取评估得到的原始数值
+        :param test_set:
+        :param result:
+        :return:
+        """
         pass
 
     def format(self, value: float) -> str:
+        """
+        对原始数值格式化
+        :param value:
+        :return:
+        """
         return str(f'{value:.4f}')
 
     def __call__(self, test_set: Dataset, result: Result) -> str:

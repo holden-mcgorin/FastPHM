@@ -1,9 +1,8 @@
+import math
 import os
 from functools import wraps
 import string
 from typing import Union, List
-
-from scipy.stats import mode
 
 import numpy as np
 import seaborn as sns
@@ -12,7 +11,6 @@ from matplotlib import pyplot as plt
 from fastphm.data.Dataset import Dataset
 from fastphm.entity.ABCEntity import ABCEntity
 from fastphm.entity.Bearing import Bearing
-from fastphm.model.ABCModel import ABCModel
 from fastphm.model.Result import Result
 from fastphm.system.Logger import Logger
 from fastphm.util.ThresholdTrimmer import ThresholdTrimmer
@@ -31,6 +29,14 @@ def postprocess(func):
         title = func(*args, **kwargs)
         if Plotter.IS_SAVE:
             plt.savefig(os.path.join(Plotter.FIG_DIR, title + '.' + Plotter.FORMAT), format=Plotter.FORMAT)
+        if Plotter.IS_LEGEND:
+            # 获取当前图中的所有图形元素
+            handles, labels = plt.gca().get_legend_handles_labels()
+            # 过滤掉被 matplotlib 忽略的 label（以 _ 开头的）
+            filtered = [(h, l) for h, l in zip(handles, labels) if not l.startswith('_')]
+            # 如果存在有效的图例项，则添加 legend
+            if filtered:
+                plt.legend()
         plt.tight_layout(pad=Plotter.PAD)
         plt.show()
         return title
@@ -43,9 +49,9 @@ class Plotter:
     画图器，所有的图片统一由画图器处理
     """
 
-    # 画图设置
+    # 画图设置(注意：DPI或SIZE过大会报错)
     DPI = 200  # 分辨率，默认100
-    SIZE = (7, 4.8)  # 图片大小
+    SIZE = (5, 3.5)  # 图片大小
     PAD = 0.5  # 图片边缘填充
     IS_LEGEND = True  # 是否输出图例
     FORMAT = 'svg'  # 图像输出格式：可选jpg, png, svg
@@ -69,9 +75,10 @@ class Plotter:
 
     @staticmethod
     @postprocess
-    def loss(model: ABCModel):
+    def loss(loss_history_dicts: dict):
         plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
-        plt.plot(range(0, len(model.loss)), model.loss, label='Training Loss')
+        for key in loss_history_dicts.keys():
+            plt.plot(loss_history_dicts[key], label=key)
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
 
@@ -84,19 +91,19 @@ class Plotter:
         :param eol:
         :return:
         """
-        plt.plot(np.arange(fpt + 1), data[:fpt + 1], label='normal stage', color=Plotter.__COLOR_NORMAL_STAGE)
+        plt.plot(np.arange(fpt + 1), data[:fpt + 1], label='Normal stage', color=Plotter.__COLOR_NORMAL_STAGE)
         if fpt is not None and eol is not None:
-            plt.plot(np.arange(eol - fpt + 1) + fpt, data[fpt:eol + 1], label='degeneration stage',
+            plt.plot(np.arange(eol - fpt + 1) + fpt, data[fpt:eol + 1], label='Degeneration stage',
                      color=Plotter.__COLOR_DEGENERATION_STAGE)
-            plt.plot(np.arange(len(data[eol:])) + eol, data[eol:], label='failure stage',
+            plt.plot(np.arange(len(data[eol:])) + eol, data[eol:], label='Failure stage',
                      color=Plotter.__COLOR_FAILURE_STAGE)
             # 绘制垂直线表示中间点
             plt.axvline(x=fpt, color='black', linestyle='--', label='EFP')
             plt.axvline(x=eol, color='skyblue', linestyle='--', label='EoL')
         if fpt is not None and eol is None:
-            plt.plot(np.arange(len(data[fpt:])) + fpt, data[fpt:], label='degeneration stage',
+            plt.plot(np.arange(len(data[fpt:])) + fpt, data[fpt:], label='Degeneration stage',
                      color=Plotter.__COLOR_DEGENERATION_STAGE)
-            plt.axvline(x=fpt, color='black', linestyle='--', label='EFP')
+            plt.axvline(x=fpt, color='black', linestyle='--', label='Change point')
 
     @staticmethod
     @postprocess
@@ -127,6 +134,52 @@ class Plotter:
         plt.title(title)
         plt.xlabel(label_x)
         plt.ylabel(label_y)
+        if Plotter.IS_LEGEND:
+            plt.legend()
+        return title
+
+    @staticmethod
+    @postprocess
+    def raw3d(entity: ABCEntity):
+        fig = plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
+        ax = fig.add_subplot(111, projection='3d')
+
+        for sensor_idx, key in enumerate(entity.raw_data.keys()):
+            z = entity.raw_data[key]  # 当前传感器的值
+            x = np.arange(len(z))  # 时间
+            y = np.full_like(x, sensor_idx)  # 将每个传感器放在不同的z平面上
+            ax.plot(x, y, z, label=f'{key}')
+
+        title = entity.name + ' Raw Sensor Signals'
+        # 设置标签
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Index')
+        ax.set_zlabel('Value')
+        ax.set_title(title)
+
+        if Plotter.IS_LEGEND:
+            plt.legend()
+        return title
+
+    @staticmethod
+    @postprocess
+    def feature3d(entity: ABCEntity):
+        fig = plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
+        ax = fig.add_subplot(111, projection='3d')
+
+        for sensor_idx, key in enumerate(entity.feature_data.keys()):
+            z = entity.feature_data[key]  # 当前传感器的值
+            x = np.arange(len(z))  # 时间
+            y = np.full_like(x, sensor_idx)  # 将每个传感器放在不同的z平面上
+            ax.plot(x, y, z, label=f'{key}')
+
+        title = entity.name + ' Raw Sensor Signals'
+        # 设置标签
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Index')
+        ax.set_zlabel('Value')
+        ax.set_title(title)
+
         if Plotter.IS_LEGEND:
             plt.legend()
         return title
@@ -192,7 +245,7 @@ class Plotter:
         画退化曲线
         """
         if result.mean is None:
-            result.mean = result.outputs.squeeze()
+            result.mean = result.y_hat.squeeze()
 
         if is_trim:
             trimmer = ThresholdTrimmer(bearing.stage_data.failure_threshold_feature)
@@ -220,77 +273,40 @@ class Plotter:
 
     @staticmethod
     @postprocess
-    def rul_end2end(test_set: Dataset, result: Union[Result, List[Result]],
-                    is_scatter=True, label_x='Time', label_y='RUL'):
-        plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
+    def rul_end2end(test_set: Dataset, result: Result,
+                    is_scatter=True, cols=None, rows=None,
+                    label_x='Time', label_y='RUL', title='default'):
 
-        x = test_set.z.reshape(-1)
-        results = []
-        if isinstance(result, Result):
-            results.append(result)
-        else:
-            results = result
+        num_fig = len(test_set.entity_map)
+        cols, rows = Plotter.__auto_cols_rows(num_fig, cols, rows)
 
-        if is_scatter:
-            for i, result in enumerate(results):
-                y = result.outputs.reshape(-1)
-                plt.scatter(x, y, label=result.name, s=2 * (len(results) - i))
-        else:
-            for result in results:
-                y = result.outputs.reshape(-1)
-                # 将数据按时间排序
-                sorted_indices = np.argsort(x)
-                # 重新排列矩阵的行
-                x1 = x[sorted_indices]
-                y = y[sorted_indices]
-                plt.plot(x1, y, label=result.name)
+        plt.figure(figsize=(Plotter.SIZE[0] * cols, Plotter.SIZE[1] * rows), dpi=Plotter.DPI)
 
-        # 找到第二大的值在原数组中的下标（标准线的转折处）
-        unique_array = np.unique(test_set.y)
-        max_val = unique_array[-1]
-        second_val = unique_array[-2]
-        min_val = unique_array[0]
-        max_index = np.where(test_set.y == second_val)[0][0]
-        plt.axvline(x=x[max_index], color='black', linestyle='--', label='EFP')
-        plt.plot([0, x[max_index], max(x)], [max_val, max_val, min_val], color='red', label='RUL target')
+        test_sets = test_set.split_by_entity()
+        results = result.split_by_entity()
 
-        title = 'RUL prediction result of ' + test_set.name
-        plt.title(title)
-        plt.xlabel(label_x)
-        plt.ylabel(label_y)
-        if Plotter.IS_LEGEND:
-            plt.legend()
-            # # 获取当前图中的句柄和标签
-            # handles, labels = plt.gca().get_legend_handles_labels()
-            # # 调整顺序
-            # order = [1, 0, 2]  # 指定显示顺序为：标签2 -> 标签1
-            # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order])
-        return title
-
-    @staticmethod
-    @postprocess
-    def rul_end2end_batch(test_sets: [Dataset], results: [Result],
-                          width: int, height: int,
-                          is_scatter=True,
-                          label_x='Time', label_y='RUL'):
-        size = len(test_sets)
-        new_figure_size = (Plotter.SIZE[0] * width / size * 4, Plotter.SIZE[1] * height / size * 4)
-        plt.figure(figsize=new_figure_size, dpi=Plotter.DPI)
-
-        for i in range(size):
-            plt.subplot(height, width, i + 1)
+        for i in range(num_fig):
+            plt.subplot(rows, cols, i + 1)
             x = test_sets[i].z.reshape(-1)
-            y = results[i].outputs.reshape(-1)
+            y = results[i].y_hat.reshape(-1)
 
-            # 找到第二大的值在原数组中的下标（画标准线）
-            unique_array = np.unique(test_sets[i].y)
-            max_val = unique_array[-1]
-            second_val = unique_array[-2]
-            max_index = np.where(test_sets[i].y == second_val)[0][0]
-            x_efp = x[max_index]
-            x_fpt = x[max_index]
-            x_max = max(x)
+            # 画辅助线
+            unique_array = np.unique(test_sets[i].y.reshape(-1))
+            max_y = unique_array[-1]
+            min_y = unique_array[0]
+            max_x = max(x)
+            min_x = min(x)
+            if np.where(test_sets[i].y == max_y)[0].shape[0] > 2 and unique_array.shape[0] > 2:  # 存在FPT
+                fpt_y = unique_array[-2]
+                fpt_index = np.where(test_sets[i].y == fpt_y)[0][0]
+                fpt_x = x[fpt_index]
+                # 画标准线和fpt线
+                plt.axvline(x=fpt_x, color='black', linestyle='--', label='FPT')
+                plt.plot([min_x, fpt_x, max_x], [max_y, max_y, min_y], linestyle='-', color='red', label='RUL target')
+            else:  # 不存在FPT
+                plt.plot([min_x, max_x], [max_y, min_y], linestyle='-', color='red', label='RUL target')
 
+            # 画预测线
             if is_scatter:
                 plt.scatter(x, y, label='RUL Predicted', s=3)
             else:
@@ -301,29 +317,32 @@ class Plotter:
                 y = y[sorted_indices]
                 plt.plot(x, y, marker='o', markersize=2, label='RUL Predicted')
 
-            plt.axvline(x=x_efp, color='black', linestyle='--', label='EFP')
-            plt.plot([0, x_fpt, x_max], [max_val, max_val, 0], linestyle='-', color='red', label='RUL target')
+            sub_title = test_sets[i].name if title == 'default' else title
+            if num_fig == 1:
+                plt.title(sub_title)
+            elif num_fig <= 26:
+                plt.title(f"({string.ascii_lowercase[i]}) {sub_title}")
+            else:
+                plt.title(f"({i + 1}) {sub_title}")
 
-            plt.title(f"({string.ascii_lowercase[i]}) {test_sets[i].name}")
             plt.xlabel(label_x)
             plt.ylabel(label_y)
             if Plotter.IS_LEGEND:
                 plt.legend()
 
-        # plt.tight_layout(pad=2.0)
-        plt.tight_layout()
-
-        return None
+        if Plotter.IS_LEGEND:
+            plt.legend()
+        return title
 
     @staticmethod
     @postprocess
     def rul_ascending(test_set: Dataset, result: Union[Result, List[Result]],
-                      is_scatter=True, label_x='Time', label_y='RUL'):
+                      is_scatter=True, label_x='Time', label_y='RUL', title='RUL prediction result'):
         plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
 
         # 获取RUL标签升序序列
         y = test_set.y.reshape(-1)
-        y_hat = result.outputs.reshape(-1)
+        y_hat = result.y_hat.reshape(-1)
         sort_indices = np.argsort(y)
         y = y[sort_indices]
         y_hat = y_hat[sort_indices]
@@ -336,189 +355,141 @@ class Plotter:
         else:
             plt.plot(np.arange(1, y.shape[0] + 1), y_hat, label=result.name, marker='o', markersize=4)
 
-        title = 'RUL prediction result of ' + test_set.name
-        plt.title(title)
         plt.xlabel(label_x)
         plt.ylabel(label_y)
+        plt.title(title)
+
         if Plotter.IS_LEGEND:
             plt.legend()
         return title
 
     @staticmethod
     @postprocess
-    def fault_evolution(test_set: Dataset, result: Result, types: list):
-        plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
-        plt.ylim(-0.4, result.outputs.shape[1] - 0.6)
+    def fault_evolution(test_set: Dataset, result: Result, types: list,
+                        cols=None, rows=None, title='default'):
+        """
+        故障演化图
+        """
+        num_fig = len(test_set.entity_map)
+        cols, rows = Plotter.__auto_cols_rows(num_fig, cols, rows)
 
-        y_pred = (result.outputs > 0.5).astype(int)
+        plt.figure(figsize=(Plotter.SIZE[0] * cols, Plotter.SIZE[1] * rows), dpi=Plotter.DPI)
 
-        # 获取类别数（即列数）
-        n_categories = len(types)
+        test_sets = test_set.split_by_entity()
+        results = result.split_by_entity()
 
-        # 为了刻度从0开始
-        plt.scatter(0, 0, color='white')
-
-        for category in range(n_categories):
-            # 获取当前类别值为1的行索引
-            indices = np.where(y_pred[:, category] == 1)[0]
-            x = test_set.z.reshape(-1)[indices]
-            plt.scatter(x, category + x * 0, s=1)
-
-        # 设置 y 轴标签
-        plt.yticks(ticks=np.arange(len(types)), labels=types)
-        plt.xlabel('Time (min)')
-        plt.ylabel('Predicted Fault Type')
-        # if Plotter.IS_LEGEND:
-        #     plt.legend()
-
-    @staticmethod
-    @postprocess
-    def fault_evolution_batch(test_sets: [Dataset], results: [Result],
-                              width: int, height: int,
-                              types: list):
-        size = len(test_sets)
-        new_figure_size = (Plotter.SIZE[0] * width / size * 4, Plotter.SIZE[1] * height / size * 4)
-        plt.figure(figsize=new_figure_size, dpi=Plotter.DPI)
-
-        for i in range(size):
-            plt.subplot(height, width, i + 1)
-            plt.ylim(-0.4, results[i].outputs.shape[1] - 0.6)
-
-            y_pred = (results[i].outputs > 0.5).astype(int)
-
-            # 获取类别数（即列数）
-            n_categories = len(types)
-            for category in range(n_categories):
-                # 获取当前类别值为1的行索引
-                indices = np.where(y_pred[:, category] == 1)[0]
-                x = test_sets[i].z.reshape(-1)[indices]
-                plt.scatter(x, n_categories - category - 1 + x * 0, s=1, label=types[n_categories - category - 1])
+        for i in range(num_fig):
+            plt.subplot(rows, cols, i + 1)
 
             # 为了刻度从0开始
             plt.scatter(0, 0, color='white')
+            plt.ylim(-0.4, results[i].y_hat.shape[1] - 0.6)
 
-            plt.title(f"({string.ascii_lowercase[i]}) {test_sets[i].name}")
-            plt.yticks(ticks=np.arange(len(types)), labels=types[::-1])
-            plt.xlabel('Time (min)')
-            plt.ylabel('Predicted Fault Type')
-            # if Plotter.IS_LEGEND:
-            #     plt.legend()
+            # 判断任务类型是多分类还是多标签分类
+            task_type = 'unknown'
+            if test_sets[i].y.shape[1] == 1:
+                task_type = 'multi class'
+            if np.any((results[i].y_hat < 0) | (results[i].y_hat > 1)):
+                task_type = 'multi class'
 
-        plt.tight_layout()
+            # 离散化预测值
+            if task_type == 'multi class':
+                y_pred = np.zeros_like(results[i].y_hat)
+                max_indices = np.argmax(results[i].y_hat, axis=1)
+                y_pred[np.arange(results[i].y_hat.shape[0]), max_indices] = 1
+            else:  # 'multi label'
+                y_pred = (results[i].y_hat > 0.5).astype(int)
 
-        return None
+            # 画预测结果
+            for category in range(len(types)):
+                # 获取当前类别值为1的行索引
+                indices = np.where(y_pred[:, category] == 1)[0]
+                x = test_sets[i].z.reshape(-1)[indices]
+                plt.scatter(x, category + x * 0, s=1)
 
-    @staticmethod
-    @postprocess
-    def fault_diagnosis_evolution(test_set: Dataset, result: Result, types: list, interval=1):
-        # todo 存在bug，当interval不能被行数整除时会报错
-        plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
-
-        plt.ylim(-0.4, result.outputs.shape[1] - 0.6)
-
-        x = test_set.z
-        y = np.argmax(result.outputs, axis=1).reshape(-1, 1)  # 找出每行最大值的下标
-
-        # 将数据按时间排序
-        xy = np.hstack((x, y))
-        last_column_index = xy[:, 0]
-        sorted_indices = np.argsort(last_column_index)
-        # 重新排列矩阵的行
-        xy = xy[sorted_indices]
-
-        x = xy[:, 0]
-        y = xy[:, 1]
-
-        x = x.reshape(-1, interval)
-        x = np.mean(x, axis=1).reshape(-1)
-        y = y.reshape(-1, interval)
-        # 找出每行出现最多次的元素构成新的列向量
-        y = np.apply_along_axis(lambda l: mode(l, keepdims=False)[0], axis=1, arr=y).reshape(-1)
-
-        plt.scatter(x, y, label='Fault type', s=1)
-
-        # 设置 y 轴标签
-        plt.yticks(ticks=np.arange(len(types)), labels=types)
-
-        title = 'Fault Type Prediction Result of ' + test_set.name
-        plt.title(title)
-        plt.xlabel('Time (min)')
-        plt.ylabel('Predicted Fault Type')
-        if Plotter.IS_LEGEND:
-            plt.legend()
-
-        return title
-
-    @staticmethod
-    @postprocess
-    def fault_diagnosis_evolution_batch(test_sets: [Dataset], results: [Result],
-                                        width: int, height: int,
-                                        types: list):
-        # todo 存在bug，当interval不能被行数整除时会报错
-        size = len(test_sets)
-        new_figure_size = (Plotter.SIZE[0] * width / size * 4, Plotter.SIZE[1] * height / size * 4)
-        plt.figure(figsize=new_figure_size, dpi=Plotter.DPI)
-
-        for i in range(size):
-            plt.subplot(height, width, i + 1)
-            plt.ylim(-0.4, results[i].outputs.shape[1] - 0.6)
-
-            x = test_sets[i].z
-            y = np.argmax(results[i].outputs, axis=1)  # 找出每行最大值的下标
-            y = y.reshape(-1, 1)
-
-            # 将数据按时间排序
-            xy = np.hstack((x, y))
-            last_column_index = xy[:, 0]
-            sorted_indices = np.argsort(last_column_index)
-            # 重新排列矩阵的行
-            xy = xy[sorted_indices]
-
-            x = xy[:, 0]
-            y = xy[:, 1]
-
-            plt.scatter(x, y, label='Fault type', s=1)
+            # 画早期故障点
+            sort = np.argsort(test_sets[i].z.reshape(-1))
+            sort_y = test_sets[i].y[sort]
+            sort_z = test_sets[i].z[sort]
+            mask = np.any(sort_y != 0, axis=1)  # 如果该行中有至少一个元素非0，则为 True
+            first_nonzero_index = np.argmax(mask)
+            z_efp = sort_z[first_nonzero_index]
+            if first_nonzero_index != 0:  # 没有健康阶段则不画FPT线
+                plt.axvline(x=z_efp, color='black', linestyle='--', label='EFP')
 
             # 设置 y 轴标签
             plt.yticks(ticks=np.arange(len(types)), labels=types)
-
-            plt.title(f"({string.ascii_lowercase[i]}) {test_sets[i].name}")
             plt.xlabel('Time (min)')
             plt.ylabel('Predicted Fault Type')
-            if Plotter.IS_LEGEND:
-                plt.legend()
 
-        return None
+            sub_title = test_sets[i].name if title == 'default' else title
+            if num_fig == 1:
+                plt.title(sub_title)
+            elif num_fig <= 26:
+                plt.title(f"({string.ascii_lowercase[i]}) {sub_title}")
+            else:
+                plt.title(f"({i + 1}) {sub_title}")
+
+            # if Plotter.IS_LEGEND:
+            #     plt.legend()
+        plt.tight_layout()
+
+    @staticmethod
+    def confusion_matrix(test_set: Dataset, result: Result, types: list):
+        # 判断任务类型是多分类还是多标签分类
+        task_type = 'unknown'
+        if test_set.y.shape[1] == 1:
+            task_type = 'multi class'
+        if np.any((result.y_hat < 0) | (result.y_hat > 1)):
+            task_type = 'multi class'
+
+        if task_type == 'multi class':
+            Plotter.confusion_matrix_multiclass(test_set=test_set, result=result, types=types)
+        else:
+            Plotter.confusion_matrix_multilabel(test_set=test_set, result=result, types=types)
+
+    @staticmethod
+    def __auto_cols_rows(num_fig, cols, rows) -> (int, int):
+        if not (cols and rows):
+            cols = math.ceil(math.sqrt(num_fig))
+            rows = math.ceil(num_fig / cols)
+        return cols, rows
 
     @staticmethod
     @postprocess
-    def diagnosis_confusion_matrix_compound(test_set: Dataset, result: Result, types: list,
-                                            width: int, height: int):
+    def confusion_matrix_multilabel(test_set: Dataset, result: Result, types: list,
+                                    cols: int = None, rows: int = None):
         """
         故障诊断混淆矩阵图（复合故障）（多标签分类）
         """
+        num_fig = len(types)
+        cols, rows = Plotter.__auto_cols_rows(num_fig, cols, rows)
+
         from sklearn.metrics import multilabel_confusion_matrix
 
         plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
 
-        prediction = np.where(result.outputs > 0.5, 1, 0)
-        mcm = multilabel_confusion_matrix(test_set.y, prediction)
+        # 阈值二值化
+        y_true = (test_set.y > 0.5).astype(int)
+        y_pred = (result.y_hat > 0.5).astype(int)
+        mcm = multilabel_confusion_matrix(y_true, y_pred)
 
-        fig, axes = plt.subplots(height, width)
-        if width == 1 or height == 1:  # 如果只有一个标签
+        fig, axes = plt.subplots(rows, cols)
+        if cols == 1 or rows == 1:  # 如果只有一个标签
             axes = np.expand_dims(axes, axis=0)
 
-        for i in range(len(types)):
-            ax = axes[i // width, i % width]  # 获取具体的子图
+        for i in range(num_fig):
+            ax = axes[i // cols, i % cols]  # 获取具体的子图
 
             # 计算每个标签的混淆矩阵的百分比
-            conf_matrix_percent = mcm[i] / mcm[i].sum(axis=1)[:, np.newaxis]
+            row_sums = mcm[i].sum(axis=1, keepdims=True)
+            row_sums[row_sums == 0] = 1  # 防止除以 0
+            conf_matrix_percent = mcm[i] / row_sums
 
             # 使用 seaborn 画混淆矩阵热图，自动调整字体颜色
-            heatmap = sns.heatmap(conf_matrix_percent, annot=True, fmt=".2%", cmap="Blues",
-                                  xticklabels=['Negative', 'Positive'], yticklabels=['Negative', 'Positive'], vmin=0,
-                                  vmax=1,
-                                  cbar=False, ax=ax, square=True)
+            sns.heatmap(conf_matrix_percent, annot=True, fmt=".2%", cmap="Blues",
+                        xticklabels=['Negative', 'Positive'], yticklabels=['Negative', 'Positive'],
+                        vmin=0, vmax=1, cbar=False, ax=ax, square=True)
 
             ax.set_title(f"({string.ascii_lowercase[i]}) {types[i].name}")
             ax.set_xlabel('True label')
@@ -526,10 +497,10 @@ class Plotter:
 
     @staticmethod
     @postprocess
-    def diagnosis_confusion_matrix(test_set: Dataset, result: Result, types: list):
+    def confusion_matrix_multiclass(test_set: Dataset, result: Result, types: list):
         """
         故障诊断热图（混淆矩阵图）单标签预测（多分类）
-        多标签预测无法使用，会出现不正常的数据 todo 待增加多标签预测的表示法
+        多标签预测无法使用，会出现不正常的数据（只适用多分类而不是多标签分类）
         :return:
         """
         plt.figure(figsize=Plotter.SIZE, dpi=Plotter.DPI)
@@ -540,7 +511,7 @@ class Plotter:
         # 当标签为类别索引时
         if y_true.shape[1] == 1:
             y_true = np.eye(len(labels))[y_true.squeeze().astype(int)]
-        y_pred = result.outputs
+        y_pred = result.y_hat
 
         # 找到每行最大值的索引
         max_indices = np.argmax(y_pred, axis=1)
@@ -583,29 +554,33 @@ class Plotter:
 
     @staticmethod
     @postprocess
-    def attention_heatmap_batch(test_sets: [Dataset], results: [Result],
-                                height: int, width: int,
-                                label_x='Inputs', label_y='Features'):
+    def attention(test_set: Dataset, result: Result,
+                  cols: int = None, rows: int = None,
+                  label_x='Inputs', label_y='Features'):
 
-        size = len(test_sets)
-        new_figure_size = (Plotter.SIZE[0] * width / size * 4, Plotter.SIZE[1] * height / size * 4)
+        num_fig = len(test_set.entity_map)
+        cols, rows = Plotter.__auto_cols_rows(num_fig, cols, rows)
 
-        fig, axes = plt.subplots(height, width, figsize=new_figure_size, dpi=Plotter.DPI, sharex=False, sharey=False,
-                                 squeeze=False)
+        test_sets = test_set.split_by_entity()
+        results = result.split_by_entity()
 
-        for i in range(height):
-            for j in range(width):
-                index = width * i + j
-                if size <= index:
+        fig, axes = plt.subplots(rows, cols, squeeze=False,
+                                 figsize=(Plotter.SIZE[0] * cols, Plotter.SIZE[1] * rows),
+                                 dpi=Plotter.DPI)
+
+        for i in range(rows):
+            for j in range(cols):
+                index = cols * i + j
+                if num_fig <= index:
                     continue
 
                 sorted_indices = np.argsort(test_sets[index].z.squeeze())
-                data = results[index].outputs[sorted_indices].T
+                data = results[index].y_hat[sorted_indices].T
 
                 ax = axes[i, j]
                 # sns.heatmap(matrices[i][j], ax=ax, cmap='Reds', cbar=True, vmin=0, vmax=1)
-                sns.heatmap(data, ax=ax, cmap='viridis', cbar=True)
-                # sns.heatmap(data, ax=ax, cmap='Reds', cbar=True)
+                # sns.heatmap(data, ax=ax, cmap='viridis', cbar=True)
+                sns.heatmap(data, ax=ax, cmap='Reds', cbar=True)
 
                 # 设置y轴
                 num_y = data.shape[0]  # 注意力特征数/专家数
@@ -614,32 +589,16 @@ class Plotter:
                 ax.set_yticks(yticks + 0.5)
                 ax.set_yticklabels(yticks, rotation=270)
 
-                # 设置x轴
                 num_x = data.shape[1]
-                step = 1
-                if num_x > 10:
-                    step = num_x // 10
-                if num_x > 100:
-                    step = 50
-                if num_x > 200:
-                    step = 50
-                if num_x > 500:
-                    step = 100
-                if num_x > 1000:
-                    step = 200
-                if num_x > 1500:
-                    step = 300
-                if num_x > 2000:
-                    step = 400
-                if num_x > 2500:
-                    step = 600
-                if num_x > 5000:
-                    step = 1500
-                if num_x > 10000:
-                    step = 2500
-                yticks = np.arange(0, num_x, step)
-                ax.set_xticks(yticks)
-                ax.set_xticklabels(yticks, rotation=0, ha='center')
+                num_ticks = 6  # 你想要的总刻度数（包括起点和终点）
+
+                if num_x <= num_ticks:
+                    xticks = np.arange(num_x)
+                else:
+                    xticks = np.linspace(0, num_x - 1, num_ticks, dtype=int)
+
+                ax.set_xticks(xticks)
+                ax.set_xticklabels(xticks, rotation=0, ha='center')
 
                 title = test_sets[index].name
                 ax.set_title(f"({string.ascii_lowercase[index]}) {title}")
@@ -648,71 +607,20 @@ class Plotter:
                 ax.set_ylabel(label_y)
 
         plt.tight_layout()
-        return None
 
     @staticmethod
     @postprocess
-    def attention_heatmap(test_set: Dataset, result: Result):
-        """
-        生成注意力权重热图
-        :return:
-        """
-        # 按时间排序
-        sorted_indices = np.argsort(test_set.z.squeeze())
-        data = result.outputs[sorted_indices]
-
-        # matrices = matrices.T
-        data = np.expand_dims(data, axis=0)
-        data = np.expand_dims(data, axis=0)
-        num_rows, num_cols = data.shape[0], data.shape[1]
-
-        fig, axes = plt.subplots(num_rows, num_cols, figsize=Plotter.SIZE, sharex=True, sharey=True,
-                                 squeeze=False)
-        for i in range(num_rows):
-            for j in range(num_cols):
-                ax = axes[i, j]
-                # sns.heatmap(matrices[i][j], ax=ax, cmap='Reds', cbar=True, vmin=0, vmax=1)
-                sns.heatmap(data[i][j], ax=ax, cmap='Reds', cbar=True)
-                ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
-
-                num_labels = data.shape[2]  # 测试样本数
-
-                # 设置刻度
-                step = num_labels // 10
-                # step = round(step / 100) * 100
-                # if step == 0:
-                #     step = 1
-
-                yticks = np.arange(0, num_labels, step)
-                ax.set_yticks(yticks)
-                ax.set_yticklabels(yticks)
-
-                num_labels = data.shape[3]  # 注意力特征数
-
-                step = 1
-                if num_labels > 10:
-                    step = num_labels // 10
-                elif num_labels > 100:
-                    step = 100
-                elif num_labels > 1000:
-                    step = 200
-                elif num_labels > 2000:
-                    step = 500
-                ax.set_xticks(np.arange(0, num_labels, step) + 0.5)
-                ax.set_xticklabels(np.arange(0, num_labels, step), rotation=0, ha='center')
-
-                if i == num_rows - 1:
-                    ax.set_xlabel('Features')
-                if j == 0:
-                    ax.set_ylabel('Inputs')
-
-        title = 'Attention Weights of ' + test_set.name
-        plt.title(title)
-        return title
+    def dimensionality_reduction_2d(test_set: Dataset, result: Union[Result, None]):
+        pass
 
     @staticmethod
     @postprocess
-    def fault_diagnosis_feature(test_set: Dataset, result: Result, types: list, title=None):
+    def dimensionality_reduction_3d(test_set: Dataset, result: Union[Result, None]):
+        pass
+
+    @staticmethod
+    @postprocess
+    def tsne(test_set: Dataset, result: Union[Result, None], types: list, title=None):
         """
         针对不同的故障类型，使用T-SNE降维,使特征可视化
         :param title:
@@ -721,16 +629,19 @@ class Plotter:
         :param result: 高维特征
         :return:
         """
-
+        from fastphm.util.FeatureReduction import tsne
         # 生成二维特征
-        from fastphm.util.T_SNE import T_SNE
-        features = result.outputs
-        features_t = T_SNE.fit(features)
+        if result is None:  # 对测试集做tsne
+            features = test_set.x.reshape(test_set.x.shape[0], -1)
+            features_t = tsne(features)
+        else:  # 对结果做tsne
+            features = result.y_hat
+            features_t = tsne(features)
         y = test_set.y.reshape(-1)
 
         # 绘制散点图
         for i in range(len(types)):
-            plt.scatter(features_t[y == i, 0], features_t[y == i, 1], label=types[i])
+            plt.scatter(features_t[y == i, 0], features_t[y == i, 1], s=10, label=types[i])
 
         plt.xlabel('Dimension-1')
         plt.ylabel('Dimension-2')
